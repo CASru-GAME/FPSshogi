@@ -27,6 +27,14 @@ namespace App.Examples
             
             // 状態退出イベントを購読
             gameStateHolder.SubscribeToStateExit(OnGameStateExit);
+            
+            // 個別状態変化イベントを購読
+            gameStateHolder.SubscribeToChangeToStarting(OnChangeToStarting);
+            gameStateHolder.SubscribeToChangeToPlayerOneTurn(OnChangeToPlayerOneTurn);
+            gameStateHolder.SubscribeToChangeToPlayerTwoTurn(OnChangeToPlayerTwoTurn);
+            gameStateHolder.SubscribeToChangeToDuel(OnChangeToDuel);
+            gameStateHolder.SubscribeToChangeToPaused(OnChangeToPaused);
+            gameStateHolder.SubscribeToChangeToGameOver(OnChangeToGameOver);
         }
 
         private void UnsubscribeFromEvents()
@@ -37,6 +45,14 @@ namespace App.Examples
                 gameStateHolder.UnsubscribeFromStateChange(OnGameStateChanged);
                 gameStateHolder.UnsubscribeFromStateEnter(OnGameStateEnter);
                 gameStateHolder.UnsubscribeFromStateExit(OnGameStateExit);
+                
+                // 個別状態変化イベントの購読を解除
+                gameStateHolder.UnsubscribeFromChangeToStarting(OnChangeToStarting);
+                gameStateHolder.UnsubscribeFromChangeToPlayerOneTurn(OnChangeToPlayerOneTurn);
+                gameStateHolder.UnsubscribeFromChangeToPlayerTwoTurn(OnChangeToPlayerTwoTurn);
+                gameStateHolder.UnsubscribeFromChangeToDuel(OnChangeToDuel);
+                gameStateHolder.UnsubscribeFromChangeToPaused(OnChangeToPaused);
+                gameStateHolder.UnsubscribeFromChangeToGameOver(OnChangeToGameOver);
             }
         }
 
@@ -135,6 +151,43 @@ namespace App.Examples
         {
             Debug.Log("ポーズUIを非表示");
             // ポーズメニューの非表示
+        }
+
+        // 個別状態変化イベントのコールバック
+        private void OnChangeToStarting()
+        {
+            Debug.Log("[GameStateObserver] 個別イベント: Starting状態に変更されました");
+            ShowGameStartUI();
+        }
+
+        private void OnChangeToPlayerOneTurn()
+        {
+            Debug.Log("[GameStateObserver] 個別イベント: プレイヤー1のターンに変更されました");
+            HandlePlayerOneTurnStart();
+        }
+
+        private void OnChangeToPlayerTwoTurn()
+        {
+            Debug.Log("[GameStateObserver] 個別イベント: プレイヤー2のターンに変更されました");
+            HandlePlayerTwoTurnStart();
+        }
+
+        private void OnChangeToDuel()
+        {
+            Debug.Log("[GameStateObserver] 個別イベント: 決闘状態に変更されました");
+            HandleDuelStart();
+        }
+
+        private void OnChangeToPaused()
+        {
+            Debug.Log("[GameStateObserver] 個別イベント: 一時停止状態に変更されました");
+            ShowPauseUI();
+        }
+
+        private void OnChangeToGameOver()
+        {
+            Debug.Log("[GameStateObserver] 個別イベント: ゲームオーバー状態に変更されました");
+            HandleGameOver();
         }
 
         private void OnDestroy()
