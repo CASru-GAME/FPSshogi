@@ -1,5 +1,7 @@
 using UnityEngine;
 using App.Main.ShogiThings;
+using App.Main.GameMaster;
+using System.Collections.Generic;
 
 namespace App.Main.GameMaster
 {
@@ -7,7 +9,16 @@ namespace App.Main.GameMaster
     {
         [SerializeField] private GameStateHolder gameStateHolder;
         private IPiece[,] board = new IPiece[9, 9]; // 9x9の将棋盤を表す多次元配列
-
+        private Dictionary<PlayerType, List<PieceType>> capturedPieces = new Dictionary<PlayerType, List<PieceType>>()
+        {
+            { PlayerType.PlayerOne, new List<PieceType>() },
+            { PlayerType.PlayerTwo, new List<PieceType>() }
+        };
+        int savedFromX = 0;
+        int savedFromY = 0;
+        int savedToX = 0;
+        int savedToY = 0;
+        PlayerType currentPlayer = PlayerType.PlayerOne;
         private void Start()
         {
             // GameStateHolderの参照を取得
@@ -16,6 +27,9 @@ namespace App.Main.GameMaster
 
             // 盤面の初期化
             InitiateBoard();
+            // イベントの購読
+            gameStateHolder.SubscribeToChangeToDuelPlayerOneWin(OnChangeToDuelPlayerOneWin);
+            gameStateHolder.SubscribeToChangeToDuelPlayerTwoWin(OnChangeToDuelPlayerTwoWin);
         }
 
         private void InitiateBoard()
@@ -52,20 +66,35 @@ namespace App.Main.GameMaster
         }
 
         // その他の将棋盤操作メソッドをここに追加
-        public void MovePiece(int fromX, int fromY, int toX, int toY)
+        public void MovePiece(int fromX, int fromY, int toX, int toY, PlayerType player)
         {
-            if (!IsValidMove(fromX, fromY, toX, toY)) return;
-
-            // 駒の移動
-            RemovePiece(fromX, fromY);
-            
+            if (!IsValidMove(fromX, fromY, toX, toY, player)) return;
+            currentPlayer = player;
+            savedFromX = fromX;
+            savedFromY = fromY;
+            savedToX = toX;
+            savedToY = toY;
+            gameStateHolder.ChangeState(GameStateHolder.GameState.Duel);
         }
 
-        private bool IsValidMove(int fromX, int fromY, int toX, int toY)
+        public void SetPiece(int x, int y, IPiece piece, PlayerType player)
+        {
+            board[x, y] = piece;
+        }
+
+        private bool IsSettable(int x, int y, PlayerType player)
+        {
+            if (board[x, y] != null) return false; // 既に駒がある場合は置けない
+            return true;
+        }
+
+        private bool IsValidMove(int fromX, int fromY, int toX, int toY, PlayerType player)
         {
             // 駒の移動が有効かどうかを判定するロジックをここに実装
             if (toX < 0 || toX >= 9 || toY < 0 || toY >= 9)
                 return false; // 盤外への移動は無効
+            if (board[fromX, fromY].Player != player)
+                return false; // 自分の駒でない場合は無効
             if (board[toX, toY] != null && board[toX, toY].Player == board[fromX, fromY].Player)
                 return false; // 自分の駒がある場所への移動は無効
             if (board[fromX, fromY] == null)
@@ -88,6 +117,66 @@ namespace App.Main.GameMaster
         private void RemovePiece(int x, int y)
         {
             board[x, y] = null;
+        }
+
+        private void OnChangeToDuelPlayerOneWin()
+        {
+            if (currentPlayer == PlayerType.PlayerOne)
+            {
+                AddToCapturedPieces(PlayerType.PlayerOne, board[savedToX, savedToY].Type);
+                board[savedToX, savedToY] = board[savedFromX, savedFromY];
+                RemovePiece(savedFromX, savedFromY);
+            }
+            else
+            {
+                AddToCapturedPieces(PlayerType.PlayerOne, board[savedFromX, savedFromY].Type);
+                RemovePiece(savedFromX, savedFromY);
+            }
+
+            if (board[savedToX, savedToY].Type == PieceType.King)
+            {
+                // 王が取られた場合、ゲーム終了
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneWin);
+                return;
+            }
+
+            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
+        }
+
+        private void OnChangeToDuelPlayerTwoWin()
+        {
+            if (currentPlayer == PlayerType.PlayerTwo)
+            {
+                AddToCapturedPieces(PlayerType.PlayerTwo, board[savedToX, savedToY].Type);
+                board[savedToX, savedToY] = board[savedFromX, savedFromY];
+                RemovePiece(savedFromX, savedFromY);
+            }
+            else
+            {
+                AddToCapturedPieces(PlayerType.PlayerTwo, board[savedFromX, savedFromY].Type);
+                RemovePiece(savedFromX, savedFromY);
+            }
+
+            if (board[savedToX, savedToY].Type == PieceType.King)
+            {
+                // 王が取られた場合、ゲーム終了
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoWin);
+                return;
+            }
+
+            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
+        }
+
+        private void AddToCapturedPieces(PlayerType player, PieceType pieceType)
+        {
+            capturedPieces[player].Add(pieceType);
+        }
+
+        private void OnDestroy()
+        {
+            // イベントの購読解除
+            gameStateHolder.UnsubscribeFromChangeToDuelPlayerOneWin(OnChangeToDuelPlayerOneWin);
+            gameStateHolder.UnsubscribeFromChangeToDuelPlayerTwoWin(OnChangeToDuelPlayerTwoWin);
         }
     }
 }

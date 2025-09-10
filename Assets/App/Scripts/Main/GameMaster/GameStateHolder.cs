@@ -11,8 +11,11 @@ namespace App.Main.GameMaster
             PlayerOneTurn,
             PlayerTwoTurn,
             Duel,
+            DuelPlayerOneWin,
+            DuelPlayerTwoWin,
             Paused,
-            GameOver
+            PlayerOneWin,
+            PlayerTwoWin
         }
 
         [SerializeField] private GameState currentState = GameState.Starting;
@@ -27,8 +30,11 @@ namespace App.Main.GameMaster
         public event Action OnChangeToPlayerOneTurn;
         public event Action OnChangeToPlayerTwoTurn;
         public event Action OnChangeToDuel;
+        public event Action OnChangeToDuelPlayerOneWin;
+        public event Action OnChangeToDuelPlayerTwoWin;
         public event Action OnChangeToPaused;
-        public event Action OnChangeToGameOver;
+        public event Action OnChangeToPlayerOneWin;
+        public event Action OnChangeToPlayerTwoWin;
         
         // プロパティ
         public GameState CurrentState => currentState;
@@ -40,6 +46,13 @@ namespace App.Main.GameMaster
         public void ChangeState(GameState newState)
         {
             if (currentState == newState) return;
+            
+            // 許可された状態遷移かチェック
+            if (!IsValidStateTransition(currentState, newState))
+            {
+                Debug.LogWarning($"Invalid state transition from {currentState} to {newState}");
+                return;
+            }
             
             GameState previousState = currentState;
             
@@ -62,6 +75,48 @@ namespace App.Main.GameMaster
         }
         
         /// <summary>
+        /// 状態遷移が有効かどうかをチェックする
+        /// </summary>
+        /// <param name="from">遷移元の状態</param>
+        /// <param name="to">遷移先の状態</param>
+        /// <returns>有効な遷移の場合true</returns>
+        private bool IsValidStateTransition(GameState from, GameState to)
+        {
+            switch (from)
+            {
+                case GameState.Starting:
+                    return to == GameState.PlayerOneTurn;
+                
+                case GameState.PlayerOneTurn:
+                    return to == GameState.PlayerTwoTurn || to == GameState.Duel || to == GameState.Paused;
+                
+                case GameState.PlayerTwoTurn:
+                    return to == GameState.PlayerOneTurn || to == GameState.Duel || to == GameState.Paused;
+                
+                case GameState.Duel:
+                    return to == GameState.DuelPlayerOneWin || to == GameState.DuelPlayerTwoWin || to == GameState.Paused;
+                
+                case GameState.DuelPlayerOneWin:
+                    return to == GameState.PlayerOneWin;
+                
+                case GameState.DuelPlayerTwoWin:
+                    return to == GameState.PlayerTwoWin;
+                
+                case GameState.Paused:
+                    // ポーズから元の状態に戻ることを許可（実装に応じて調整）
+                    return to == GameState.PlayerOneTurn || to == GameState.PlayerTwoTurn || to == GameState.Duel;
+                
+                case GameState.PlayerOneWin:
+                case GameState.PlayerTwoWin:
+                    // 勝利状態からは遷移不可（ゲーム終了）
+                    return false;
+                
+                default:
+                    return false;
+            }
+        }
+        
+        /// <summary>
         /// 特定の状態変化イベントを発火する
         /// </summary>
         /// <param name="newState">新しい状態</param>
@@ -81,11 +136,20 @@ namespace App.Main.GameMaster
                 case GameState.Duel:
                     OnChangeToDuel?.Invoke();
                     break;
+                case GameState.DuelPlayerOneWin:
+                    OnChangeToDuelPlayerOneWin?.Invoke();
+                    break;
+                case GameState.DuelPlayerTwoWin:
+                    OnChangeToDuelPlayerTwoWin?.Invoke();
+                    break;
                 case GameState.Paused:
                     OnChangeToPaused?.Invoke();
                     break;
-                case GameState.GameOver:
-                    OnChangeToGameOver?.Invoke();
+                case GameState.PlayerOneWin:
+                    OnChangeToPlayerOneWin?.Invoke();
+                    break;
+                case GameState.PlayerTwoWin:
+                    OnChangeToPlayerTwoWin?.Invoke();
                     break;
             }
         }
@@ -236,21 +300,75 @@ namespace App.Main.GameMaster
         }
         
         /// <summary>
-        /// GameOver状態への変化イベントを購読する
+        /// PlayerOneWin状態への変化イベントを購読する
         /// </summary>
-        /// <param name="onChangeToGameOver">GameOver状態への変化時のコールバック</param>
-        public void SubscribeToChangeToGameOver(Action onChangeToGameOver)
+        /// <param name="onChangeToPlayerOneWin">PlayerOneWin状態への変化時のコールバック</param>
+        public void SubscribeToChangeToPlayerOneWin(Action onChangeToPlayerOneWin)
         {
-            OnChangeToGameOver += onChangeToGameOver;
+            OnChangeToPlayerOneWin += onChangeToPlayerOneWin;
         }
         
         /// <summary>
-        /// GameOver状態への変化イベントの購読を解除する
+        /// PlayerOneWin状態への変化イベントの購読を解除する
         /// </summary>
-        /// <param name="onChangeToGameOver">購読解除するコールバック</param>
-        public void UnsubscribeFromChangeToGameOver(Action onChangeToGameOver)
+        /// <param name="onChangeToPlayerOneWin">購読解除するコールバック</param>
+        public void UnsubscribeFromChangeToPlayerOneWin(Action onChangeToPlayerOneWin)
         {
-            OnChangeToGameOver -= onChangeToGameOver;
+            OnChangeToPlayerOneWin -= onChangeToPlayerOneWin;
+        }
+        
+        /// <summary>
+        /// PlayerTwoWin状態への変化イベントを購読する
+        /// </summary>
+        /// <param name="onChangeToPlayerTwoWin">PlayerTwoWin状態への変化時のコールバック</param>
+        public void SubscribeToChangeToPlayerTwoWin(Action onChangeToPlayerTwoWin)
+        {
+            OnChangeToPlayerTwoWin += onChangeToPlayerTwoWin;
+        }
+        
+        /// <summary>
+        /// PlayerTwoWin状態への変化イベントの購読を解除する
+        /// </summary>
+        /// <param name="onChangeToPlayerTwoWin">購読解除するコールバック</param>
+        public void UnsubscribeFromChangeToPlayerTwoWin(Action onChangeToPlayerTwoWin)
+        {
+            OnChangeToPlayerTwoWin -= onChangeToPlayerTwoWin;
+        }
+        
+        /// <summary>
+        /// DuelPlayerOneWin状態への変化イベントを購読する
+        /// </summary>
+        /// <param name="onChangeToDuelPlayerOneWin">DuelPlayerOneWin状態への変化時のコールバック</param>
+        public void SubscribeToChangeToDuelPlayerOneWin(Action onChangeToDuelPlayerOneWin)
+        {
+            OnChangeToDuelPlayerOneWin += onChangeToDuelPlayerOneWin;
+        }
+        
+        /// <summary>
+        /// DuelPlayerOneWin状態への変化イベントの購読を解除する
+        /// </summary>
+        /// <param name="onChangeToDuelPlayerOneWin">購読解除するコールバック</param>
+        public void UnsubscribeFromChangeToDuelPlayerOneWin(Action onChangeToDuelPlayerOneWin)
+        {
+            OnChangeToDuelPlayerOneWin -= onChangeToDuelPlayerOneWin;
+        }
+        
+        /// <summary>
+        /// DuelPlayerTwoWin状態への変化イベントを購読する
+        /// </summary>
+        /// <param name="onChangeToDuelPlayerTwoWin">DuelPlayerTwoWin状態への変化時のコールバック</param>
+        public void SubscribeToChangeToDuelPlayerTwoWin(Action onChangeToDuelPlayerTwoWin)
+        {
+            OnChangeToDuelPlayerTwoWin += onChangeToDuelPlayerTwoWin;
+        }
+        
+        /// <summary>
+        /// DuelPlayerTwoWin状態への変化イベントの購読を解除する
+        /// </summary>
+        /// <param name="onChangeToDuelPlayerTwoWin">購読解除するコールバック</param>
+        public void UnsubscribeFromChangeToDuelPlayerTwoWin(Action onChangeToDuelPlayerTwoWin)
+        {
+            OnChangeToDuelPlayerTwoWin -= onChangeToDuelPlayerTwoWin;
         }
         
         private void Start()
@@ -271,8 +389,11 @@ namespace App.Main.GameMaster
             OnChangeToPlayerOneTurn = null;
             OnChangeToPlayerTwoTurn = null;
             OnChangeToDuel = null;
+            OnChangeToDuelPlayerOneWin = null;
+            OnChangeToDuelPlayerTwoWin = null;
             OnChangeToPaused = null;
-            OnChangeToGameOver = null;
+            OnChangeToPlayerOneWin = null;
+            OnChangeToPlayerTwoWin = null;
         }
     }
 }

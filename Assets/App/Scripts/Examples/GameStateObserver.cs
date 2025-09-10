@@ -19,6 +19,12 @@ namespace App.Examples
 
         private void SubscribeToEvents()
         {
+            if (gameStateHolder == null)
+            {
+                Debug.LogError("GameStateHolder is null! Cannot subscribe to events.");
+                return;
+            }
+
             // 状態変更イベントを購読
             gameStateHolder.SubscribeToStateChange(OnGameStateChanged);
             
@@ -33,8 +39,11 @@ namespace App.Examples
             gameStateHolder.SubscribeToChangeToPlayerOneTurn(OnChangeToPlayerOneTurn);
             gameStateHolder.SubscribeToChangeToPlayerTwoTurn(OnChangeToPlayerTwoTurn);
             gameStateHolder.SubscribeToChangeToDuel(OnChangeToDuel);
+            gameStateHolder.SubscribeToChangeToDuelPlayerOneWin(OnChangeToDuelPlayerOneWin);
+            gameStateHolder.SubscribeToChangeToDuelPlayerTwoWin(OnChangeToDuelPlayerTwoWin);
             gameStateHolder.SubscribeToChangeToPaused(OnChangeToPaused);
-            gameStateHolder.SubscribeToChangeToGameOver(OnChangeToGameOver);
+            gameStateHolder.SubscribeToChangeToPlayerOneWin(OnChangeToPlayerOneWin);
+            gameStateHolder.SubscribeToChangeToPlayerTwoWin(OnChangeToPlayerTwoWin);
         }
 
         private void UnsubscribeFromEvents()
@@ -51,8 +60,11 @@ namespace App.Examples
                 gameStateHolder.UnsubscribeFromChangeToPlayerOneTurn(OnChangeToPlayerOneTurn);
                 gameStateHolder.UnsubscribeFromChangeToPlayerTwoTurn(OnChangeToPlayerTwoTurn);
                 gameStateHolder.UnsubscribeFromChangeToDuel(OnChangeToDuel);
+                gameStateHolder.UnsubscribeFromChangeToDuelPlayerOneWin(OnChangeToDuelPlayerOneWin);
+                gameStateHolder.UnsubscribeFromChangeToDuelPlayerTwoWin(OnChangeToDuelPlayerTwoWin);
                 gameStateHolder.UnsubscribeFromChangeToPaused(OnChangeToPaused);
-                gameStateHolder.UnsubscribeFromChangeToGameOver(OnChangeToGameOver);
+                gameStateHolder.UnsubscribeFromChangeToPlayerOneWin(OnChangeToPlayerOneWin);
+                gameStateHolder.UnsubscribeFromChangeToPlayerTwoWin(OnChangeToPlayerTwoWin);
             }
         }
 
@@ -73,8 +85,17 @@ namespace App.Examples
                 case GameStateHolder.GameState.Duel:
                     HandleDuelStart();
                     break;
-                case GameStateHolder.GameState.GameOver:
-                    HandleGameOver();
+                case GameStateHolder.GameState.DuelPlayerOneWin:
+                    HandleDuelPlayerOneWin();
+                    break;
+                case GameStateHolder.GameState.DuelPlayerTwoWin:
+                    HandleDuelPlayerTwoWin();
+                    break;
+                case GameStateHolder.GameState.PlayerOneWin:
+                    HandlePlayerOneWin();
+                    break;
+                case GameStateHolder.GameState.PlayerTwoWin:
+                    HandlePlayerTwoWin();
                     break;
             }
         }
@@ -129,10 +150,28 @@ namespace App.Examples
             // 決闘シーンの開始処理
         }
 
-        private void HandleGameOver()
+        private void HandleDuelPlayerOneWin()
         {
-            Debug.Log("ゲーム終了");
-            // ゲーム終了処理、結果表示など
+            Debug.Log("決闘でプレイヤー1が勝利しました");
+            // 決闘勝利処理
+        }
+
+        private void HandleDuelPlayerTwoWin()
+        {
+            Debug.Log("決闘でプレイヤー2が勝利しました");
+            // 決闘勝利処理
+        }
+
+        private void HandlePlayerOneWin()
+        {
+            Debug.Log("プレイヤー1がゲームに勝利しました！");
+            // 最終勝利処理、結果表示など
+        }
+
+        private void HandlePlayerTwoWin()
+        {
+            Debug.Log("プレイヤー2がゲームに勝利しました！");
+            // 最終勝利処理、結果表示など
         }
 
         private void ShowGameStartUI()
@@ -184,10 +223,28 @@ namespace App.Examples
             ShowPauseUI();
         }
 
-        private void OnChangeToGameOver()
+        private void OnChangeToDuelPlayerOneWin()
         {
-            Debug.Log("[GameStateObserver] 個別イベント: ゲームオーバー状態に変更されました");
-            HandleGameOver();
+            Debug.Log("[GameStateObserver] 個別イベント: 決闘でプレイヤー1が勝利しました");
+            HandleDuelPlayerOneWin();
+        }
+
+        private void OnChangeToDuelPlayerTwoWin()
+        {
+            Debug.Log("[GameStateObserver] 個別イベント: 決闘でプレイヤー2が勝利しました");
+            HandleDuelPlayerTwoWin();
+        }
+
+        private void OnChangeToPlayerOneWin()
+        {
+            Debug.Log("[GameStateObserver] 個別イベント: プレイヤー1が最終勝利しました");
+            HandlePlayerOneWin();
+        }
+
+        private void OnChangeToPlayerTwoWin()
+        {
+            Debug.Log("[GameStateObserver] 個別イベント: プレイヤー2が最終勝利しました");
+            HandlePlayerTwoWin();
         }
 
         private void OnDestroy()
@@ -199,27 +256,50 @@ namespace App.Examples
         // テスト用：ボタンからの状態変更
         public void TestChangeToPlayerOneTurn()
         {
-            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
+            if (gameStateHolder != null)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
         }
 
         public void TestChangeToPlayerTwoTurn()
         {
-            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
+            if (gameStateHolder != null)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
         }
 
         public void TestChangeToDuel()
         {
-            gameStateHolder.ChangeState(GameStateHolder.GameState.Duel);
+            if (gameStateHolder != null)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.Duel);
         }
 
         public void TestPauseGame()
         {
-            gameStateHolder.ChangeState(GameStateHolder.GameState.Paused);
+            if (gameStateHolder != null)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.Paused);
         }
 
-        public void TestGameOver()
+        public void TestDuelPlayerOneWin()
         {
-            gameStateHolder.ChangeState(GameStateHolder.GameState.GameOver);
+            if (gameStateHolder != null)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.DuelPlayerOneWin);
+        }
+
+        public void TestDuelPlayerTwoWin()
+        {
+            if (gameStateHolder != null)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.DuelPlayerTwoWin);
+        }
+
+        public void TestPlayerOneWin()
+        {
+            if (gameStateHolder != null)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneWin);
+        }
+
+        public void TestPlayerTwoWin()
+        {
+            if (gameStateHolder != null)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoWin);
         }
     }
 }
