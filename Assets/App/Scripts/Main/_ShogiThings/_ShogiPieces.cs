@@ -3,14 +3,16 @@ namespace App.Main.ShogiThings
     public class King : IPiece
     {
         public PieceType Type { get; private set; }
+        public PlayerType Player { get; private set; }
         public int[][] Movement { get; private set; }
         public int[][] PromotedMovement { get; private set; }
         public bool IsPromoted { get; private set; }
         public bool IsPromotable { get; private set; }
 
-        public King()
+        public King(PlayerType player)
         {
             Type = PieceType.King;
+            Player = player;
             Movement = new int[][] {
                 new int[] { 1, 1 },
                 new int[] { 1, 0 },
@@ -34,14 +36,16 @@ namespace App.Main.ShogiThings
     public class Hisya : IPiece
     {
         public PieceType Type { get; private set; }
+        public PlayerType Player { get; private set; }
         public int[][] Movement { get; private set; }
         public int[][] PromotedMovement { get; private set; }
         public bool IsPromoted { get; private set; }
         public bool IsPromotable { get; private set; }
 
-        public Hisya()
+        public Hisya(PlayerType player)
         {
             Type = PieceType.Hisya;
+            Player = player;
             Movement = new int[][] {
                 new int[] { 1, 0 },
                 new int[] { 2, 0 },
@@ -121,20 +125,23 @@ namespace App.Main.ShogiThings
         public void Promote()
         {
             IsPromoted = true;
+            Movement = PromotedMovement;
         }
     }
 
     public class Kakugyo : IPiece
     {
         public PieceType Type { get; private set; }
+        public PlayerType Player { get; private set; }
         public int[][] Movement { get; private set; }
         public int[][] PromotedMovement { get; private set; }
         public bool IsPromoted { get; private set; }
         public bool IsPromotable { get; private set; }
 
-        public Kakugyo()
+        public Kakugyo(PlayerType player)
         {
             Type = PieceType.Kakugyo;
+            Player = player;
             Movement = new int[][] {
                 new int[] { 1, 1 },
                 new int[] { 2, 2 },
@@ -213,20 +220,23 @@ namespace App.Main.ShogiThings
         public void Promote()
         {
             IsPromoted = true;
+            Movement = PromotedMovement;
         }
     }
 
     public class Kin : IPiece
     {
         public PieceType Type { get; private set; }
+        public PlayerType Player { get; private set; }
         public int[][] Movement { get; private set; }
         public int[][] PromotedMovement { get; private set; }
         public bool IsPromoted { get; private set; }
         public bool IsPromotable { get; private set; }
 
-        public Kin()
+        public Kin(PlayerType player)
         {
             Type = PieceType.Kin;
+            Player = player;
             Movement = new int[][] {
                 new int[] { 1, 1 },
                 new int[] { 1, 0 },
@@ -249,14 +259,16 @@ namespace App.Main.ShogiThings
     public class Gin : IPiece
     {
         public PieceType Type { get; private set; }
+        public PlayerType Player { get; private set; }
         public int[][] Movement { get; private set; }
         public int[][] PromotedMovement { get; private set; }
         public bool IsPromoted { get; private set; }
         public bool IsPromotable { get; private set; }
 
-        public Gin()
+        public Gin(PlayerType player)
         {
             Type = PieceType.Gin;
+            Player = player;
             Movement = new int[][] {
                 new int[] { 1, 1 },
                 new int[] { 1, -1 },
@@ -279,20 +291,23 @@ namespace App.Main.ShogiThings
         public void Promote()
         {
             IsPromoted = true;
+            Movement = PromotedMovement;
         }
     }
 
     public class Keima : IPiece
     {
         public PieceType Type { get; private set; }
+        public PlayerType Player { get; private set; }
         public int[][] Movement { get; private set; }
         public int[][] PromotedMovement { get; private set; }
         public bool IsPromoted { get; private set; }
         public bool IsPromotable { get; private set; }
 
-        public Keima()
+        public Keima(PlayerType player)
         {
             Type = PieceType.Keima;
+            Player = player;
             Movement = new int[][] {
                 new int[] { 1, 2 },
                 new int[] { -1, 2 }
@@ -312,20 +327,23 @@ namespace App.Main.ShogiThings
         public void Promote()
         {
             IsPromoted = true;
+            Movement = PromotedMovement;
         }
     }
 
     public class Kyosya : IPiece
     {
         public PieceType Type { get; private set; }
+        public PlayerType Player { get; private set; }
         public int[][] Movement { get; private set; }
         public int[][] PromotedMovement { get; private set; }
         public bool IsPromoted { get; private set; }
         public bool IsPromotable { get; private set; }
 
-        public Kyosya()
+        public Kyosya(PlayerType player)
         {
             Type = PieceType.Kyosya;
+            Player = player;
             Movement = new int[][] {
                 new int[] { 0, 1 },
                 new int[] { 0, 2 },
@@ -351,20 +369,23 @@ namespace App.Main.ShogiThings
         public void Promote()
         {
             IsPromoted = true;
+            Movement = PromotedMovement;
         }
     }
 
     public class Fuhyo : IPiece
     {
         public PieceType Type { get; private set; }
+        public PlayerType Player { get; private set; }
         public int[][] Movement { get; private set; }
         public int[][] PromotedMovement { get; private set; }
         public bool IsPromoted { get; private set; }
         public bool IsPromotable { get; private set; }
 
-        public Fuhyo()
+        public Fuhyo(PlayerType player)
         {
-            Type = PieceType.fuhyo;
+            Type = PieceType.Fuhyo;
+            Player = player;
             Movement = new int[][] {
                 new int[] { 0, 1 }
             };
@@ -383,12 +404,14 @@ namespace App.Main.ShogiThings
         public void Promote()
         {
             IsPromoted = true;
+            Movement = PromotedMovement;
         }
     }
 
     public interface IPiece
     {
         public PieceType Type { get; }
+        public PlayerType Player { get; }
         public int[][] Movement { get; }
         public int[][] PromotedMovement { get; }
         public bool IsPromoted { get; }
@@ -405,6 +428,11 @@ namespace App.Main.ShogiThings
         Gin,
         Keima,
         Kyosya,
-        fuhyo
+        Fuhyo
+    }
+    public enum PlayerType
+    {
+        PlayerOne,
+        PlayerTwo
     }
 }
