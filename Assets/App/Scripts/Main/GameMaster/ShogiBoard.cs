@@ -95,11 +95,27 @@ namespace App.Main.GameMaster
         {
             if (!IsValidMove(fromX, fromY, toX, toY, player)) return;
             currentPlayer = player;
-            savedFromX = fromX;
-            savedFromY = fromY;
-            savedToX = toX;
-            savedToY = toY;
-            gameStateHolder.ChangeState(GameStateHolder.GameState.Duel);
+
+            if (IsDuel(fromX, fromY, toX, toY))
+            {
+                savedFromX = fromX;
+                savedFromY = fromY;
+                savedToX = toX;
+                savedToY = toY;
+                gameStateHolder.ChangeState(GameStateHolder.GameState.Duel);
+                return;
+            }
+            else
+            {
+                // 通常の移動処理
+                board[toX, toY] = board[fromX, fromY];
+                RemovePiece(fromX, fromY);
+                // 成る判定
+                if (IsPromotableMove(fromY, toY, board[toX, toY]))
+                {
+                    board[toX, toY].Promote();
+                }
+            }
         }
 
         public void SetPiece(int x, int y, IPiece piece, PlayerType player)
@@ -107,6 +123,20 @@ namespace App.Main.GameMaster
             if (!IsCaptured(player, piece.Type)) return; // 持ち駒にない場合は置けない
             if (!IsSettable(x, y, piece, player)) return;
             board[x, y] = piece;
+        }
+
+        private bool IsPromotableMove(int fromY, int toY, IPiece piece)
+        {
+            if (piece == null) return false;
+            if (piece.Type == PieceType.King || piece.Type == PieceType.Kin) return false; // 王と金は成れない
+            if (piece.Player == PlayerType.PlayerOne && (fromY >= 6 || toY >= 6)) return true; // プレイヤー1の成る条件
+            if (piece.Player == PlayerType.PlayerTwo && (fromY <= 2 || toY <= 2)) return true; // プレイヤー2の成る条件
+            return false;
+        }
+
+        private bool IsDuel(int fromX, int fromY, int toX, int toY)
+        {
+            return board[toX, toY] != null && board[toX, toY].Player != board[fromX, fromY].Player;
         }
 
         private bool IsCaptured(PlayerType player, PieceType pieceType)
@@ -193,6 +223,10 @@ namespace App.Main.GameMaster
                 AddToCapturedPieces(PlayerType.PlayerOne, board[savedToX, savedToY].Type);
                 board[savedToX, savedToY] = board[savedFromX, savedFromY];
                 RemovePiece(savedFromX, savedFromY);
+                if (IsPromotableMove(savedFromY, savedToY, board[savedToX, savedToY]))
+                {
+                    board[savedToX, savedToY].Promote();
+                }
             }
             else
             {
@@ -200,7 +234,7 @@ namespace App.Main.GameMaster
                 RemovePiece(savedFromX, savedFromY);
             }
 
-            if (board[savedToX, savedToY].Type == PieceType.King)
+            if (capturedPieces[PlayerType.PlayerOne].Contains(PieceType.King))
             {
                 // 王が取られた場合、ゲーム終了
                 gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneWin);
@@ -217,6 +251,10 @@ namespace App.Main.GameMaster
                 AddToCapturedPieces(PlayerType.PlayerTwo, board[savedToX, savedToY].Type);
                 board[savedToX, savedToY] = board[savedFromX, savedFromY];
                 RemovePiece(savedFromX, savedFromY);
+                if (IsPromotableMove(savedFromY, savedToY, board[savedToX, savedToY]))
+                {
+                    board[savedToX, savedToY].Promote();
+                }
             }
             else
             {
@@ -224,7 +262,7 @@ namespace App.Main.GameMaster
                 RemovePiece(savedFromX, savedFromY);
             }
 
-            if (board[savedToX, savedToY].Type == PieceType.King)
+            if (capturedPieces[PlayerType.PlayerTwo].Contains(PieceType.King))
             {
                 // 王が取られた場合、ゲーム終了
                 gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoWin);
