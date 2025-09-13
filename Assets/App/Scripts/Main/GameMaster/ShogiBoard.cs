@@ -64,6 +64,32 @@ namespace App.Main.GameMaster
             board[7, 7] = new Kakugyo(PlayerType.PlayerTwo);
         }
 
+        //UIや他のスクリプトから呼び出すためのメソッド
+        public IPiece GetPieceAt(int x, int y)
+        {
+            return board[x, y];
+        }
+        public IPiece[,] GetBoard()
+        {
+            return board;
+        }
+        public Dictionary<PieceType, int> GetCapturedPieces(PlayerType player)
+        {
+            Dictionary<PieceType, int> pieceCount = new Dictionary<PieceType, int>();
+            foreach (var piece in capturedPieces[player])
+            {
+                if (pieceCount.ContainsKey(piece))
+                {
+                    pieceCount[piece]++;
+                }
+                else
+                {
+                    pieceCount[piece] = 1;
+                }
+            }
+            return pieceCount;
+        }
+
         // その他の将棋盤操作メソッドをここに追加
         public void MovePiece(int fromX, int fromY, int toX, int toY, PlayerType player)
         {
