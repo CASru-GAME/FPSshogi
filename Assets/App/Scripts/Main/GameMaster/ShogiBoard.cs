@@ -1,6 +1,5 @@
 using UnityEngine;
 using App.Main.ShogiThings;
-using App.Main.GameMaster;
 using System.Collections.Generic;
 
 namespace App.Main.GameMaster
@@ -79,13 +78,55 @@ namespace App.Main.GameMaster
 
         public void SetPiece(int x, int y, IPiece piece, PlayerType player)
         {
+            if (!IsCaptured(player, piece.Type)) return; // 持ち駒にない場合は置けない
+            if (!IsSettable(x, y, piece, player)) return;
             board[x, y] = piece;
         }
 
-        private bool IsSettable(int x, int y, PlayerType player)
+        private bool IsCaptured(PlayerType player, PieceType pieceType)
+        {
+            return capturedPieces[player].Contains(pieceType);
+        }
+
+        private bool IsSettable(int x, int y, IPiece piece, PlayerType player)
         {
             if (board[x, y] != null) return false; // 既に駒がある場合は置けない
+            if (IsNifu(x, player)) return false; // 二歩の判定
+            if (IsDeadEndPiece(x, y, piece)) return false; // 駒が詰む場合は置けない
             return true;
+        }
+
+        private bool IsNifu(int x, PlayerType player)
+        {
+            // 二歩の判定ロジックをここに実装
+            for (int y = 0; y < 9; y++)
+            {
+                if (board[x, y] != null && board[x, y].Type == PieceType.Fuhyo && board[x, y].Player == player)
+                {
+                    return true; // 同じ列に歩が既に存在する場合は二歩
+                }
+            }
+            return false;
+        }
+
+        private bool IsDeadEndPiece(int x, int y, IPiece piece)
+        {
+            // 駒が詰むかどうかの判定ロジックをここに実装
+            if (piece.Type == PieceType.Kyosya || piece.Type == PieceType.Keima || piece.Type == PieceType.Fuhyo)
+            {
+                if ((piece.Player == PlayerType.PlayerOne && y == 8) || (piece.Player == PlayerType.PlayerTwo && y == 0))
+                {
+                    return true; // 香車、桂馬、歩が最終列にいる場合は詰み
+                }
+            }
+            if (piece.Type == PieceType.Keima)
+            {
+                if ((piece.Player == PlayerType.PlayerOne && y >= 7) || (piece.Player == PlayerType.PlayerTwo && y <= 1))
+                {
+                    return true; // 桂馬が最終二列にいる場合は詰み
+                }
+            }
+            return false;
         }
 
         private bool IsValidMove(int fromX, int fromY, int toX, int toY, PlayerType player)
