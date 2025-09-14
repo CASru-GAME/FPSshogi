@@ -1,12 +1,13 @@
 using UnityEngine;
 using App.Main.ShogiThings;
+using App.Common.Initialize;
 using System.Collections.Generic;
 
 namespace App.Main.GameMaster
 {
-    public class ShogiBoard : MonoBehaviour
+    public class ShogiBoard : MonoBehaviour, IInitializable
     {
-        [SerializeField] private GameStateHolder gameStateHolder;
+        private GameStateHolder gameStateHolder;
         private IPiece[,] board = new IPiece[9, 9]; // 9x9の将棋盤を表す多次元配列
         private Dictionary<PlayerType, List<PieceType>> capturedPieces = new Dictionary<PlayerType, List<PieceType>>()
         {
@@ -18,7 +19,9 @@ namespace App.Main.GameMaster
         int savedToX = 0;
         int savedToY = 0;
         PlayerType currentPlayer = PlayerType.PlayerOne;
-        private void Start()
+        public int InitializationPriority => 100; // 優先度（低いほど先に初期化される）
+        public System.Type[] Dependencies => new System.Type[] { typeof(GameStateHolder) }; // 依存関係
+        public void Initialize()
         {
             // GameStateHolderの参照を取得
             if (gameStateHolder == null)
