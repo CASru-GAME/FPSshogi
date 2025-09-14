@@ -74,7 +74,7 @@ namespace App.Common.Controller
     /// }
     /// </code>
     /// </example>
-    public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
+    public partial class @_InputSystemActions: IInputActionCollection2, IDisposable
     {
         /// <summary>
         /// Provides access to the underlying asset instance.
@@ -84,7 +84,7 @@ namespace App.Common.Controller
         /// <summary>
         /// Constructs a new instance.
         /// </summary>
-        public @InputSystem_Actions()
+        public @_InputSystemActions()
         {
             asset = InputActionAsset.FromJson(@"{
     ""version"": 1,
@@ -198,9 +198,9 @@ namespace App.Common.Controller
             m_Debug_Debug = m_Debug.FindAction("Debug", throwIfNotFound: true);
         }
 
-        ~@InputSystem_Actions()
+        ~@_InputSystemActions()
         {
-            UnityEngine.Debug.Assert(!m_Debug.enabled, "This will cause a leak and performance issues, InputSystem_Actions.Debug.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Debug.enabled, "This will cause a leak and performance issues, _InputSystemActions.Debug.Disable() has not been called.");
         }
 
         /// <summary>
@@ -282,12 +282,12 @@ namespace App.Common.Controller
         /// </summary>
         public struct DebugActions
         {
-            private @InputSystem_Actions m_Wrapper;
+            private @_InputSystemActions m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public DebugActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+            public DebugActions(@_InputSystemActions wrapper) { m_Wrapper = wrapper; }
             /// <summary>
             /// Provides access to the underlying input action "Debug/Debug".
             /// </summary>
