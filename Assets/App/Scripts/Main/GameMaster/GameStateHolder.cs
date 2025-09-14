@@ -1,10 +1,14 @@
 using System;
 using UnityEngine;
+using App.Common.Initialize;
 
 namespace App.Main.GameMaster
 {
-    public class GameStateHolder : MonoBehaviour
+    public class GameStateHolder : MonoBehaviour, IInitializable
     {
+        public int InitializationPriority => 50; // 優先度（低いほど先に初期化される）
+        public System.Type[] Dependencies => new System.Type[0]; // 依存関係なし
+
         public enum GameState
         {
             Starting,
@@ -19,12 +23,12 @@ namespace App.Main.GameMaster
         }
 
         [SerializeField] private GameState currentState = GameState.Starting;
-        
+
         // イベント定義
         public event Action<GameState, GameState> OnGameStateChanged;
         public event Action<GameState> OnGameStateEnter;
         public event Action<GameState> OnGameStateExit;
-        
+
         // 個別状態変化イベント
         public event Action OnChangeToStarting;
         public event Action OnChangeToPlayerOneTurn;
@@ -35,10 +39,15 @@ namespace App.Main.GameMaster
         public event Action OnChangeToPaused;
         public event Action OnChangeToPlayerOneWin;
         public event Action OnChangeToPlayerTwoWin;
-        
+
         // プロパティ
         public GameState CurrentState => currentState;
-        
+
+        public void Initialize()
+        {
+            Debug.Log("GameStateHolder 初期化完了");
+        }
+
         /// <summary>
         /// ゲーム状態を変更する
         /// </summary>
@@ -46,34 +55,34 @@ namespace App.Main.GameMaster
         public void ChangeState(GameState newState)
         {
             if (currentState == newState) return;
-            
+
             // 許可された状態遷移かチェック
             if (!IsValidStateTransition(currentState, newState))
             {
                 Debug.LogWarning($"Invalid state transition from {currentState} to {newState}");
                 return;
             }
-            
+
             GameState previousState = currentState;
-            
+
             // 現在の状態から退出
             OnGameStateExit?.Invoke(currentState);
-            
+
             // 状態を変更
             currentState = newState;
-            
+
             // 新しい状態に入る
             OnGameStateEnter?.Invoke(currentState);
-            
+
             // 状態変更イベントを発火
             OnGameStateChanged?.Invoke(previousState, currentState);
-            
+
             // 個別状態変化イベントを発火
             InvokeSpecificStateChangeEvent(newState);
-            
+
             Debug.Log($"GameState changed from {previousState} to {currentState}");
         }
-        
+
         /// <summary>
         /// 状態遷移が有効かどうかをチェックする
         /// </summary>
@@ -86,36 +95,36 @@ namespace App.Main.GameMaster
             {
                 case GameState.Starting:
                     return to == GameState.PlayerOneTurn;
-                
+
                 case GameState.PlayerOneTurn:
                     return to == GameState.PlayerTwoTurn || to == GameState.Duel || to == GameState.Paused;
-                
+
                 case GameState.PlayerTwoTurn:
                     return to == GameState.PlayerOneTurn || to == GameState.Duel || to == GameState.Paused;
-                
+
                 case GameState.Duel:
                     return to == GameState.DuelPlayerOneWin || to == GameState.DuelPlayerTwoWin || to == GameState.Paused;
-                
+
                 case GameState.DuelPlayerOneWin:
                     return to == GameState.PlayerOneWin;
-                
+
                 case GameState.DuelPlayerTwoWin:
                     return to == GameState.PlayerTwoWin;
-                
+
                 case GameState.Paused:
                     // ポーズから元の状態に戻ることを許可（実装に応じて調整）
                     return to == GameState.PlayerOneTurn || to == GameState.PlayerTwoTurn || to == GameState.Duel;
-                
+
                 case GameState.PlayerOneWin:
                 case GameState.PlayerTwoWin:
                     // 勝利状態からは遷移不可（ゲーム終了）
                     return false;
-                
+
                 default:
                     return false;
             }
         }
-        
+
         /// <summary>
         /// 特定の状態変化イベントを発火する
         /// </summary>
@@ -153,7 +162,7 @@ namespace App.Main.GameMaster
                     break;
             }
         }
-        
+
         /// <summary>
         /// 状態変更イベントを購読する
         /// </summary>
@@ -162,7 +171,7 @@ namespace App.Main.GameMaster
         {
             OnGameStateChanged += onStateChanged;
         }
-        
+
         /// <summary>
         /// 状態変更イベントの購読を解除する
         /// </summary>
@@ -171,7 +180,7 @@ namespace App.Main.GameMaster
         {
             OnGameStateChanged -= onStateChanged;
         }
-        
+
         /// <summary>
         /// 状態入場イベントを購読する
         /// </summary>
@@ -180,7 +189,7 @@ namespace App.Main.GameMaster
         {
             OnGameStateEnter += onStateEnter;
         }
-        
+
         /// <summary>
         /// 状態入場イベントの購読を解除する
         /// </summary>
@@ -189,7 +198,7 @@ namespace App.Main.GameMaster
         {
             OnGameStateEnter -= onStateEnter;
         }
-        
+
         /// <summary>
         /// 状態退出イベントを購読する
         /// </summary>
@@ -198,7 +207,7 @@ namespace App.Main.GameMaster
         {
             OnGameStateExit += onStateExit;
         }
-        
+
         /// <summary>
         /// 状態退出イベントの購読を解除する
         /// </summary>
@@ -207,7 +216,7 @@ namespace App.Main.GameMaster
         {
             OnGameStateExit -= onStateExit;
         }
-        
+
         // 個別状態変化イベントの購読メソッド
         /// <summary>
         /// Starting状態への変化イベントを購読する
@@ -217,7 +226,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToStarting += onChangeToStarting;
         }
-        
+
         /// <summary>
         /// Starting状態への変化イベントの購読を解除する
         /// </summary>
@@ -226,7 +235,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToStarting -= onChangeToStarting;
         }
-        
+
         /// <summary>
         /// PlayerOneTurn状態への変化イベントを購読する
         /// </summary>
@@ -235,7 +244,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToPlayerOneTurn += onChangeToPlayerOneTurn;
         }
-        
+
         /// <summary>
         /// PlayerOneTurn状態への変化イベントの購読を解除する
         /// </summary>
@@ -244,7 +253,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToPlayerOneTurn -= onChangeToPlayerOneTurn;
         }
-        
+
         /// <summary>
         /// PlayerTwoTurn状態への変化イベントを購読する
         /// </summary>
@@ -253,7 +262,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToPlayerTwoTurn += onChangeToPlayerTwoTurn;
         }
-        
+
         /// <summary>
         /// PlayerTwoTurn状態への変化イベントの購読を解除する
         /// </summary>
@@ -262,7 +271,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToPlayerTwoTurn -= onChangeToPlayerTwoTurn;
         }
-        
+
         /// <summary>
         /// Duel状態への変化イベントを購読する
         /// </summary>
@@ -271,7 +280,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToDuel += onChangeToDuel;
         }
-        
+
         /// <summary>
         /// Duel状態への変化イベントの購読を解除する
         /// </summary>
@@ -280,7 +289,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToDuel -= onChangeToDuel;
         }
-        
+
         /// <summary>
         /// Paused状態への変化イベントを購読する
         /// </summary>
@@ -289,7 +298,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToPaused += onChangeToPaused;
         }
-        
+
         /// <summary>
         /// Paused状態への変化イベントの購読を解除する
         /// </summary>
@@ -298,7 +307,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToPaused -= onChangeToPaused;
         }
-        
+
         /// <summary>
         /// PlayerOneWin状態への変化イベントを購読する
         /// </summary>
@@ -307,7 +316,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToPlayerOneWin += onChangeToPlayerOneWin;
         }
-        
+
         /// <summary>
         /// PlayerOneWin状態への変化イベントの購読を解除する
         /// </summary>
@@ -316,7 +325,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToPlayerOneWin -= onChangeToPlayerOneWin;
         }
-        
+
         /// <summary>
         /// PlayerTwoWin状態への変化イベントを購読する
         /// </summary>
@@ -325,7 +334,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToPlayerTwoWin += onChangeToPlayerTwoWin;
         }
-        
+
         /// <summary>
         /// PlayerTwoWin状態への変化イベントの購読を解除する
         /// </summary>
@@ -334,7 +343,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToPlayerTwoWin -= onChangeToPlayerTwoWin;
         }
-        
+
         /// <summary>
         /// DuelPlayerOneWin状態への変化イベントを購読する
         /// </summary>
@@ -343,7 +352,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToDuelPlayerOneWin += onChangeToDuelPlayerOneWin;
         }
-        
+
         /// <summary>
         /// DuelPlayerOneWin状態への変化イベントの購読を解除する
         /// </summary>
@@ -352,7 +361,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToDuelPlayerOneWin -= onChangeToDuelPlayerOneWin;
         }
-        
+
         /// <summary>
         /// DuelPlayerTwoWin状態への変化イベントを購読する
         /// </summary>
@@ -361,7 +370,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToDuelPlayerTwoWin += onChangeToDuelPlayerTwoWin;
         }
-        
+
         /// <summary>
         /// DuelPlayerTwoWin状態への変化イベントの購読を解除する
         /// </summary>
@@ -370,20 +379,20 @@ namespace App.Main.GameMaster
         {
             OnChangeToDuelPlayerTwoWin -= onChangeToDuelPlayerTwoWin;
         }
-        
+
         private void Start()
         {
             // 初期状態に入るイベントを発火
             OnGameStateEnter?.Invoke(currentState);
         }
-        
+
         private void OnDestroy()
         {
             // メモリリーク防止のため、すべてのイベントを解除
             OnGameStateChanged = null;
             OnGameStateEnter = null;
             OnGameStateExit = null;
-            
+
             // 個別状態変化イベントを解除
             OnChangeToStarting = null;
             OnChangeToPlayerOneTurn = null;
