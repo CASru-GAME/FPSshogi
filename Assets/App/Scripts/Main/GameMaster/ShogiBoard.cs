@@ -7,7 +7,7 @@ namespace App.Main.GameMaster
 {
     public class ShogiBoard : MonoBehaviour, IInitializable
     {
-        private GameStateHolder gameStateHolder;
+        [SerializeField] private GameStateHolder gameStateHolder;
         private IPiece[,] board = new IPiece[9, 9]; // 9x9の将棋盤を表す多次元配列
         private Dictionary<PlayerType, List<PieceType>> capturedPieces = new Dictionary<PlayerType, List<PieceType>>()
         {
