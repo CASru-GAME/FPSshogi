@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using App.Common.Initialize;
 
-namespace App.Main.Initialize
+namespace App.Common.Initialize
 {
     /// <summary>
     /// ゲーム開始時の初期化を行うクラス（依存関係解決対応）
