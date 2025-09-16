@@ -10,7 +10,7 @@ namespace App.Common.Controller
     /// </summary>
     public class Controller : MonoBehaviour, IInitializable
     {
-        [SerializeField] private _InputSystemActions inputActionAsset;
+        [SerializeField] private InputSystemActions inputActionAsset;
         [SerializeField] private bool enableInputLogging = false;
 
         // 初期化システム用プロパティ
@@ -45,7 +45,7 @@ namespace App.Common.Controller
             // InputActionAssetが設定されていない場合、自動検索
             if (inputActionAsset == null)
             {
-                inputActionAsset = new _InputSystemActions();
+                inputActionAsset = new InputSystemActions();
             }
             // Debug ActionMapの取得
             playerActionMap = inputActionAsset.Debug;
