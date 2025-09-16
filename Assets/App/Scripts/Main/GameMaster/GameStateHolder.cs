@@ -382,12 +382,6 @@ namespace App.Main.GameMaster
             OnChangeToDuelPlayerTwoWin -= onChangeToDuelPlayerTwoWin;
         }
 
-        private void Start()
-        {
-            // 初期状態に入るイベントを発火
-            OnGameStateEnter?.Invoke(currentState);
-        }
-
         private void OnDestroy()
         {
             // メモリリーク防止のため、すべてのイベントを解除

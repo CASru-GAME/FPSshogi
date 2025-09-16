@@ -74,7 +74,7 @@ namespace App.Common.Controller
     /// }
     /// </code>
     /// </example>
-    public partial class @InputSystemActions: IInputActionCollection2, IDisposable
+    public partial class @InputSystemActionAssets: IInputActionCollection2, IDisposable
     {
         /// <summary>
         /// Provides access to the underlying asset instance.
@@ -84,7 +84,7 @@ namespace App.Common.Controller
         /// <summary>
         /// Constructs a new instance.
         /// </summary>
-        public @InputSystemActions()
+        public @InputSystemActionAssets()
         {
             asset = InputActionAsset.FromJson(@"{
     ""version"": 1,
@@ -721,12 +721,12 @@ namespace App.Common.Controller
             m_Debug_Debug = m_Debug.FindAction("Debug", throwIfNotFound: true);
         }
 
-        ~@InputSystemActions()
+        ~@InputSystemActionAssets()
         {
-            UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, InputSystemActions.Player.Disable() has not been called.");
-            UnityEngine.Debug.Assert(!m_Shogi.enabled, "This will cause a leak and performance issues, InputSystemActions.Shogi.Disable() has not been called.");
-            UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputSystemActions.UI.Disable() has not been called.");
-            UnityEngine.Debug.Assert(!m_Debug.enabled, "This will cause a leak and performance issues, InputSystemActions.Debug.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, InputSystemActionAssets.Player.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Shogi.enabled, "This will cause a leak and performance issues, InputSystemActionAssets.Shogi.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputSystemActionAssets.UI.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Debug.enabled, "This will cause a leak and performance issues, InputSystemActionAssets.Debug.Disable() has not been called.");
         }
 
         /// <summary>
@@ -817,12 +817,12 @@ namespace App.Common.Controller
         /// </summary>
         public struct PlayerActions
         {
-            private @InputSystemActions m_Wrapper;
+            private @InputSystemActionAssets m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public PlayerActions(@InputSystemActions wrapper) { m_Wrapper = wrapper; }
+            public PlayerActions(@InputSystemActionAssets wrapper) { m_Wrapper = wrapper; }
             /// <summary>
             /// Provides access to the underlying input action "Player/Look".
             /// </summary>
@@ -1009,12 +1009,12 @@ namespace App.Common.Controller
         /// </summary>
         public struct ShogiActions
         {
-            private @InputSystemActions m_Wrapper;
+            private @InputSystemActionAssets m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public ShogiActions(@InputSystemActions wrapper) { m_Wrapper = wrapper; }
+            public ShogiActions(@InputSystemActionAssets wrapper) { m_Wrapper = wrapper; }
             /// <summary>
             /// Provides access to the underlying input action "Shogi/SelectUp".
             /// </summary>
@@ -1171,12 +1171,12 @@ namespace App.Common.Controller
         /// </summary>
         public struct UIActions
         {
-            private @InputSystemActions m_Wrapper;
+            private @InputSystemActionAssets m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public UIActions(@InputSystemActions wrapper) { m_Wrapper = wrapper; }
+            public UIActions(@InputSystemActionAssets wrapper) { m_Wrapper = wrapper; }
             /// <summary>
             /// Provides access to the underlying input action "UI/SelectUp".
             /// </summary>
@@ -1327,12 +1327,12 @@ namespace App.Common.Controller
         /// </summary>
         public struct DebugActions
         {
-            private @InputSystemActions m_Wrapper;
+            private @InputSystemActionAssets m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public DebugActions(@InputSystemActions wrapper) { m_Wrapper = wrapper; }
+            public DebugActions(@InputSystemActionAssets wrapper) { m_Wrapper = wrapper; }
             /// <summary>
             /// Provides access to the underlying input action "Debug/Debug".
             /// </summary>
