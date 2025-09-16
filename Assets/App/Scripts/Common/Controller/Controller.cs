@@ -1,9 +1,7 @@
 using UnityEngine.InputSystem;
 using UnityEngine;
 using App.Common.Initialize;
-using App.Common.Controller;
 using System;
-using System.Linq;
 
 namespace App.Common.Controller
 {

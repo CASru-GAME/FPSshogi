@@ -1,4 +1,3 @@
-using App.Common.Controller;
 using App.Common.Initialize;
 
 namespace App.Main.Controller
