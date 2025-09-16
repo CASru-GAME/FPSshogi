@@ -21,11 +21,10 @@ namespace App.Main.GameMaster
         PlayerType currentPlayer = PlayerType.PlayerOne;
         public int InitializationPriority => 100; // 優先度（低いほど先に初期化される）
         public System.Type[] Dependencies => new System.Type[] { typeof(GameStateHolder) }; // 依存関係
-        public void Initialize()
+        public void Initialize(ReferenceHolder referenceHolder)
         {
             // GameStateHolderの参照を取得
-            if (gameStateHolder == null)
-                gameStateHolder = FindFirstObjectByType<GameStateHolder>();
+            gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
 
             // 盤面の初期化
             InitiateBoard();
