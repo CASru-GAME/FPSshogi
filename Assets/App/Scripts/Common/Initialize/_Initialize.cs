@@ -4,6 +4,6 @@ namespace App.Common.Initialize
     {
         int InitializationPriority { get; } // 数値が小さいほど先に実行
         System.Type[] Dependencies { get; } // 依存するIInitializableの型
-        void Initialize();
+        void Initialize(ReferenceHolder referenceHolder);
     }
 }

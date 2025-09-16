@@ -8,7 +8,7 @@ namespace App.Title.ExitButton
         public GameObject confirmPanel; // 確認パネルを割り当て
         public int InitializationPriority => 0;
         public System.Type[] Dependencies => new System.Type[] { };
-        public void Initialize()
+        public void Initialize(ReferenceHolder referenceHolder)
         {
             if (confirmPanel != null)
             {
