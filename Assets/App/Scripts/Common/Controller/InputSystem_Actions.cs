@@ -460,6 +460,15 @@ namespace App.Common.Controller
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""HideUI"",
+                    ""type"": ""Button"",
+                    ""id"": ""1caf6fed-7923-4435-83cc-56937d45e4aa"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""SelectDown"",
                     ""type"": ""Button"",
                     ""id"": ""343c72b2-8a49-4a2f-bac5-96025f3bd6e5"",
@@ -508,6 +517,15 @@ namespace App.Common.Controller
                     ""name"": ""Cancel"",
                     ""type"": ""Button"",
                     ""id"": ""b6740620-e025-4a2b-9477-94b9ed783873"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShowUI"",
+                    ""type"": ""Button"",
+                    ""id"": ""95a2a3a6-9aab-4ae4-a6a7-cd1133487b62"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -589,6 +607,28 @@ namespace App.Common.Controller
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ac8c9a4b-1f93-4cec-a658-878c6bb9060f"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShowUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a084dc9f-4550-4b41-94a2-fd77b4dcead8"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HideUI"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -710,12 +750,14 @@ namespace App.Common.Controller
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_SelectUp = m_UI.FindAction("SelectUp", throwIfNotFound: true);
+            m_UI_HideUI = m_UI.FindAction("HideUI", throwIfNotFound: true);
             m_UI_SelectDown = m_UI.FindAction("SelectDown", throwIfNotFound: true);
             m_UI_SelectRight = m_UI.FindAction("SelectRight", throwIfNotFound: true);
             m_UI_SelectLeft = m_UI.FindAction("SelectLeft", throwIfNotFound: true);
             m_UI_Point = m_UI.FindAction("Point", throwIfNotFound: true);
             m_UI_Select = m_UI.FindAction("Select", throwIfNotFound: true);
             m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
+            m_UI_ShowUI = m_UI.FindAction("ShowUI", throwIfNotFound: true);
             // Debug
             m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
             m_Debug_Debug = m_Debug.FindAction("Debug", throwIfNotFound: true);
@@ -1160,12 +1202,14 @@ namespace App.Common.Controller
         private readonly InputActionMap m_UI;
         private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
         private readonly InputAction m_UI_SelectUp;
+        private readonly InputAction m_UI_HideUI;
         private readonly InputAction m_UI_SelectDown;
         private readonly InputAction m_UI_SelectRight;
         private readonly InputAction m_UI_SelectLeft;
         private readonly InputAction m_UI_Point;
         private readonly InputAction m_UI_Select;
         private readonly InputAction m_UI_Cancel;
+        private readonly InputAction m_UI_ShowUI;
         /// <summary>
         /// Provides access to input actions defined in input action map "UI".
         /// </summary>
@@ -1181,6 +1225,10 @@ namespace App.Common.Controller
             /// Provides access to the underlying input action "UI/SelectUp".
             /// </summary>
             public InputAction @SelectUp => m_Wrapper.m_UI_SelectUp;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/HideUI".
+            /// </summary>
+            public InputAction @HideUI => m_Wrapper.m_UI_HideUI;
             /// <summary>
             /// Provides access to the underlying input action "UI/SelectDown".
             /// </summary>
@@ -1205,6 +1253,10 @@ namespace App.Common.Controller
             /// Provides access to the underlying input action "UI/Cancel".
             /// </summary>
             public InputAction @Cancel => m_Wrapper.m_UI_Cancel;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/ShowUI".
+            /// </summary>
+            public InputAction @ShowUI => m_Wrapper.m_UI_ShowUI;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1234,6 +1286,9 @@ namespace App.Common.Controller
                 @SelectUp.started += instance.OnSelectUp;
                 @SelectUp.performed += instance.OnSelectUp;
                 @SelectUp.canceled += instance.OnSelectUp;
+                @HideUI.started += instance.OnHideUI;
+                @HideUI.performed += instance.OnHideUI;
+                @HideUI.canceled += instance.OnHideUI;
                 @SelectDown.started += instance.OnSelectDown;
                 @SelectDown.performed += instance.OnSelectDown;
                 @SelectDown.canceled += instance.OnSelectDown;
@@ -1252,6 +1307,9 @@ namespace App.Common.Controller
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
+                @ShowUI.started += instance.OnShowUI;
+                @ShowUI.performed += instance.OnShowUI;
+                @ShowUI.canceled += instance.OnShowUI;
             }
 
             /// <summary>
@@ -1266,6 +1324,9 @@ namespace App.Common.Controller
                 @SelectUp.started -= instance.OnSelectUp;
                 @SelectUp.performed -= instance.OnSelectUp;
                 @SelectUp.canceled -= instance.OnSelectUp;
+                @HideUI.started -= instance.OnHideUI;
+                @HideUI.performed -= instance.OnHideUI;
+                @HideUI.canceled -= instance.OnHideUI;
                 @SelectDown.started -= instance.OnSelectDown;
                 @SelectDown.performed -= instance.OnSelectDown;
                 @SelectDown.canceled -= instance.OnSelectDown;
@@ -1284,6 +1345,9 @@ namespace App.Common.Controller
                 @Cancel.started -= instance.OnCancel;
                 @Cancel.performed -= instance.OnCancel;
                 @Cancel.canceled -= instance.OnCancel;
+                @ShowUI.started -= instance.OnShowUI;
+                @ShowUI.performed -= instance.OnShowUI;
+                @ShowUI.canceled -= instance.OnShowUI;
             }
 
             /// <summary>
@@ -1628,6 +1692,13 @@ namespace App.Common.Controller
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnSelectUp(InputAction.CallbackContext context);
             /// <summary>
+            /// Method invoked when associated input action "HideUI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnHideUI(InputAction.CallbackContext context);
+            /// <summary>
             /// Method invoked when associated input action "SelectDown" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -1669,6 +1740,13 @@ namespace App.Common.Controller
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnCancel(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "ShowUI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnShowUI(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Debug" which allows adding and removing callbacks.

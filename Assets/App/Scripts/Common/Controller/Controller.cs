@@ -41,6 +41,8 @@ namespace App.Common.Controller
         private InputAction pointShogi;
         private InputAction selectShogi;
         private InputAction cancelShogi;
+        private InputAction showUI;
+        private InputAction hideUI;
         private InputAction selectUpUI;
         private InputAction selectDownUI;
         private InputAction selectLeftUI;
@@ -261,6 +263,30 @@ namespace App.Common.Controller
             cancelShogi.canceled -= callback;
         }
 
+        public void SubscribeToShowUI(Action<InputAction.CallbackContext> callback)
+        {
+            showUI.performed += callback;
+            showUI.canceled += callback;
+        }
+
+        public void UnsubscribeFromShowUI(Action<InputAction.CallbackContext> callback)
+        {
+            showUI.performed -= callback;
+            showUI.canceled -= callback;
+        }
+
+        public void SubscribeToHideUI(Action<InputAction.CallbackContext> callback)
+        {
+            hideUI.performed += callback;
+            hideUI.canceled += callback;
+        }
+
+        public void UnsubscribeFromHideUI(Action<InputAction.CallbackContext> callback)
+        {
+            hideUI.performed -= callback;
+            hideUI.canceled -= callback;
+        }
+
         public void SubscribeToSelectUpUI(Action<InputAction.CallbackContext> callback)
         {
             selectUpUI.performed += callback;
@@ -407,6 +433,8 @@ namespace App.Common.Controller
             pointShogi = inputActionAssets.Shogi.Point;
             selectShogi = inputActionAssets.Shogi.Select;
             cancelShogi = inputActionAssets.Shogi.Cancel;
+            showUI = inputActionAssets.UI.ShowUI;
+            hideUI = inputActionAssets.UI.HideUI;
             selectUpUI = inputActionAssets.UI.SelectUp;
             selectDownUI = inputActionAssets.UI.SelectDown;
             selectLeftUI = inputActionAssets.UI.SelectLeft;

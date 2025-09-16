@@ -372,6 +372,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "HideUI",
+                    "type": "Button",
+                    "id": "1caf6fed-7923-4435-83cc-56937d45e4aa",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "SelectDown",
                     "type": "Button",
                     "id": "343c72b2-8a49-4a2f-bac5-96025f3bd6e5",
@@ -420,6 +429,15 @@
                     "name": "Cancel",
                     "type": "Button",
                     "id": "b6740620-e025-4a2b-9477-94b9ed783873",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ShowUI",
+                    "type": "Button",
+                    "id": "95a2a3a6-9aab-4ae4-a6a7-cd1133487b62",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -501,6 +519,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ac8c9a4b-1f93-4cec-a658-878c6bb9060f",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ShowUI",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a084dc9f-4550-4b41-94a2-fd77b4dcead8",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HideUI",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
