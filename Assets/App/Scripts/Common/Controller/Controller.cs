@@ -2,6 +2,7 @@ using UnityEngine.InputSystem;
 using UnityEngine;
 using App.Common.Initialize;
 using System;
+using System.Collections.Generic;
 
 namespace App.Common.Controller
 {
@@ -332,7 +333,7 @@ namespace App.Common.Controller
             selectRightUI.performed -= callback;
             selectRightUI.canceled -= callback;
         }
-        
+
         public void SubscribeToPointUI(Action<InputAction.CallbackContext> callback)
         {
             pointUI.performed += callback;
@@ -489,7 +490,7 @@ namespace App.Common.Controller
             if (enableInputLogging)
                 Debug.Log("✅ UI入力を有効化");
         }
-        
+
         public void EnableDebugInput()
         {
             debugActionMap?.Enable();
