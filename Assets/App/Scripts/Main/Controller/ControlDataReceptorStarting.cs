@@ -2,7 +2,6 @@ using App.Common.Initialize;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using App.Main.GameMaster;
-using UnityEngine.iOS;
 
 namespace App.Main.Controller
 {
@@ -26,6 +25,10 @@ namespace App.Main.Controller
         {
             var device = ctx.control.device;
             SetDeviceId(device.deviceId.ToString());
+            if (deviceManager.GetDeviceIdCount() >= 2)
+            {
+                controller.DisableUIInput();
+            }
         }
 
         private void SetDeviceId(string deviceId)
