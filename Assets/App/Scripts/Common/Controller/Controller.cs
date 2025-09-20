@@ -1,9 +1,8 @@
 using UnityEngine.InputSystem;
 using UnityEngine;
 using App.Common.Initialize;
-using App.Common.Controller;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace App.Common.Controller
 {
@@ -25,10 +24,7 @@ namespace App.Common.Controller
         private InputActionMap uiActionMap;
         private InputActionMap debugActionMap;
         private InputAction Look;
-        private InputAction moveForward;
-        private InputAction moveBackward;
-        private InputAction moveLeft;
-        private InputAction moveRight;
+        private InputAction move;
         private InputAction weaponActionMain;
         private InputAction weaponActionSub;
         private InputAction abilityOne;
@@ -41,6 +37,8 @@ namespace App.Common.Controller
         private InputAction pointShogi;
         private InputAction selectShogi;
         private InputAction cancelShogi;
+        private InputAction showUI;
+        private InputAction hideUI;
         private InputAction selectUpUI;
         private InputAction selectDownUI;
         private InputAction selectLeftUI;
@@ -75,52 +73,16 @@ namespace App.Common.Controller
             Look.performed -= callback;
         }
 
-        public void SubscribeToMoveForward(Action<InputAction.CallbackContext> callback)
+        public void SubscribeToMove(Action<InputAction.CallbackContext> callback)
         {
-            moveForward.performed += callback;
-            moveForward.canceled += callback;
+            move.performed += callback;
+            move.canceled += callback;
         }
 
-        public void UnsubscribeFromMoveForward(Action<InputAction.CallbackContext> callback)
+        public void UnsubscribeFromMove(Action<InputAction.CallbackContext> callback)
         {
-            moveForward.performed -= callback;
-            moveForward.canceled -= callback;
-        }
-
-        public void SubscribeToMoveBackward(Action<InputAction.CallbackContext> callback)
-        {
-            moveBackward.performed += callback;
-            moveBackward.canceled += callback;
-        }
-
-        public void UnsubscribeFromMoveBackward(Action<InputAction.CallbackContext> callback)
-        {
-            moveBackward.performed -= callback;
-            moveBackward.canceled -= callback;
-        }
-
-        public void SubscribeToMoveLeft(Action<InputAction.CallbackContext> callback)
-        {
-            moveLeft.performed += callback;
-            moveLeft.canceled += callback;
-        }
-
-        public void UnsubscribeFromMoveLeft(Action<InputAction.CallbackContext> callback)
-        {
-            moveLeft.performed -= callback;
-            moveLeft.canceled -= callback;
-        }
-
-        public void SubscribeToMoveRight(Action<InputAction.CallbackContext> callback)
-        {
-            moveRight.performed += callback;
-            moveRight.canceled += callback;
-        }
-
-        public void UnsubscribeFromMoveRight(Action<InputAction.CallbackContext> callback)
-        {
-            moveRight.performed -= callback;
-            moveRight.canceled -= callback;
+            move.performed -= callback;
+            move.canceled -= callback;
         }
 
         public void SubscribeToWeaponActionMain(Action<InputAction.CallbackContext> callback)
@@ -261,6 +223,30 @@ namespace App.Common.Controller
             cancelShogi.canceled -= callback;
         }
 
+        public void SubscribeToShowUI(Action<InputAction.CallbackContext> callback)
+        {
+            showUI.performed += callback;
+            showUI.canceled += callback;
+        }
+
+        public void UnsubscribeFromShowUI(Action<InputAction.CallbackContext> callback)
+        {
+            showUI.performed -= callback;
+            showUI.canceled -= callback;
+        }
+
+        public void SubscribeToHideUI(Action<InputAction.CallbackContext> callback)
+        {
+            hideUI.performed += callback;
+            hideUI.canceled += callback;
+        }
+
+        public void UnsubscribeFromHideUI(Action<InputAction.CallbackContext> callback)
+        {
+            hideUI.performed -= callback;
+            hideUI.canceled -= callback;
+        }
+
         public void SubscribeToSelectUpUI(Action<InputAction.CallbackContext> callback)
         {
             selectUpUI.performed += callback;
@@ -308,7 +294,7 @@ namespace App.Common.Controller
             selectRightUI.performed -= callback;
             selectRightUI.canceled -= callback;
         }
-        
+
         public void SubscribeToPointUI(Action<InputAction.CallbackContext> callback)
         {
             pointUI.performed += callback;
@@ -391,10 +377,7 @@ namespace App.Common.Controller
         {
             // 各アクションの取得
             Look = inputActionAssets.Player.Look;
-            moveForward = inputActionAssets.Player.MoveForward;
-            moveBackward = inputActionAssets.Player.MoveBackward;
-            moveLeft = inputActionAssets.Player.MoveLeft;
-            moveRight = inputActionAssets.Player.MoveRight;
+            move = inputActionAssets.Player.Move;
             weaponActionMain = inputActionAssets.Player.WeaponActionMain;
             weaponActionSub = inputActionAssets.Player.WeaponActionSub;
             abilityOne = inputActionAssets.Player.AbilityOne;
@@ -407,6 +390,8 @@ namespace App.Common.Controller
             pointShogi = inputActionAssets.Shogi.Point;
             selectShogi = inputActionAssets.Shogi.Select;
             cancelShogi = inputActionAssets.Shogi.Cancel;
+            showUI = inputActionAssets.UI.ShowUI;
+            hideUI = inputActionAssets.UI.HideUI;
             selectUpUI = inputActionAssets.UI.SelectUp;
             selectDownUI = inputActionAssets.UI.SelectDown;
             selectLeftUI = inputActionAssets.UI.SelectLeft;
@@ -463,7 +448,7 @@ namespace App.Common.Controller
             if (enableInputLogging)
                 Debug.Log("✅ UI入力を有効化");
         }
-        
+
         public void EnableDebugInput()
         {
             debugActionMap?.Enable();
@@ -520,6 +505,9 @@ namespace App.Common.Controller
 
         void OnDestroy()
         {
+            DisableAllInput();
+            inputActionAssets.Dispose();
+
             if (enableInputLogging)
                 Debug.Log("Controller: 入力コールバックを登録解除");
         }
