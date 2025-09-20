@@ -8,12 +8,12 @@
             "actions": [
                 {
                     "name": "Look",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "135ef7cc-0b6e-4ec0-b0f4-20a93086aeee",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Move",
@@ -276,17 +276,6 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "73ebb6c8-cb7a-4bb7-bc77-ef1e72f1f26d",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SelectUp",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "0dfb373c-c059-41c1-ba7b-2c8cee49ac8f",
                     "path": "",
                     "interactions": "",
@@ -367,15 +356,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "HideUI",
-                    "type": "Button",
-                    "id": "1caf6fed-7923-4435-83cc-56937d45e4aa",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "SelectDown",
                     "type": "Button",
                     "id": "343c72b2-8a49-4a2f-bac5-96025f3bd6e5",
@@ -404,12 +384,12 @@
                 },
                 {
                     "name": "Point",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "fabbaebf-41a1-4fb4-b03b-b5530ceeb667",
-                    "expectedControlType": "",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Select",
@@ -433,6 +413,15 @@
                     "name": "ShowUI",
                     "type": "Button",
                     "id": "95a2a3a6-9aab-4ae4-a6a7-cd1133487b62",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HideUI",
+                    "type": "Button",
+                    "id": "1caf6fed-7923-4435-83cc-56937d45e4aa",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -487,7 +476,18 @@
                 {
                     "name": "",
                     "id": "9514b1c5-d880-46ec-8c2c-54b43d078acb",
-                    "path": "",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Point",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "76a334c7-6c76-47ec-b6b8-414c04ca062a",
+                    "path": "<Mouse>/position",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
