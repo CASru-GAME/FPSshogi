@@ -96,48 +96,21 @@ namespace App.Common.Controller
             ""actions"": [
                 {
                     ""name"": ""Look"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""135ef7cc-0b6e-4ec0-b0f4-20a93086aeee"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""MoveForward"",
-                    ""type"": ""Button"",
-                    ""id"": ""96fe6aa5-0a26-492f-bcc0-014794ac6c45"",
-                    ""expectedControlType"": """",
+                    ""name"": ""Move"",
+                    ""type"": ""Value"",
+                    ""id"": ""8510e397-61db-4f88-8011-090d33f518b9"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""MoveBackward"",
-                    ""type"": ""Button"",
-                    ""id"": ""5f73629e-5d0c-4661-824d-fa14a12b9cfc"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""MoveRight"",
-                    ""type"": ""Button"",
-                    ""id"": ""b5b6ba70-44d3-4fc0-85e8-730508439bc9"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""MoveLeft"",
-                    ""type"": ""Button"",
-                    ""id"": ""b4bbcbb8-4402-49a5-838b-47e93138998f"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""WeaponActionMain"",
@@ -199,50 +172,6 @@ namespace App.Common.Controller
                 },
                 {
                     ""name"": """",
-                    ""id"": ""2bcf3876-ee76-4006-87eb-43b7ee570d6e"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""MoveForward"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""100419a1-cca8-41f1-bceb-0be7c5c60668"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""MoveBackward"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""a89f0f9e-8e26-47ea-a21b-ec7e9f4c08cd"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""MoveRight"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""26ce9db7-5780-44c1-8c03-fb3962278c40"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""MoveLeft"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""fe827bb5-8a3a-4830-a3e4-6a0e421bbeba"",
                     ""path"": """",
                     ""interactions"": """",
@@ -295,6 +224,72 @@ namespace App.Common.Controller
                     ""action"": ""Climb"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a12bf175-d30e-46d7-9edc-67c6d99d1289"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""92017c5e-8e00-4ccf-8a65-50f9e330def9"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""2c8a09fb-fa11-4de1-b1ad-65c6d8ce1a8f"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""ffa9b767-2445-4031-8f45-776664ef2879"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""ab539938-dee5-4839-a178-442bd096f1c2"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""1df6f161-7a5b-47a6-a508-1effbef82af1"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -367,17 +362,6 @@ namespace App.Common.Controller
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""73ebb6c8-cb7a-4bb7-bc77-ef1e72f1f26d"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SelectUp"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
                 {
                     ""name"": """",
                     ""id"": ""0dfb373c-c059-41c1-ba7b-2c8cee49ac8f"",
@@ -488,12 +472,12 @@ namespace App.Common.Controller
                 },
                 {
                     ""name"": ""Point"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""fabbaebf-41a1-4fb4-b03b-b5530ceeb667"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""Select"",
@@ -508,6 +492,24 @@ namespace App.Common.Controller
                     ""name"": ""Cancel"",
                     ""type"": ""Button"",
                     ""id"": ""b6740620-e025-4a2b-9477-94b9ed783873"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShowUI"",
+                    ""type"": ""Button"",
+                    ""id"": ""95a2a3a6-9aab-4ae4-a6a7-cd1133487b62"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HideUI"",
+                    ""type"": ""Button"",
+                    ""id"": ""1caf6fed-7923-4435-83cc-56937d45e4aa"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -562,7 +564,18 @@ namespace App.Common.Controller
                 {
                     ""name"": """",
                     ""id"": ""9514b1c5-d880-46ec-8c2c-54b43d078acb"",
-                    ""path"": """",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Point"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""76a334c7-6c76-47ec-b6b8-414c04ca062a"",
+                    ""path"": ""<Mouse>/position"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -573,7 +586,7 @@ namespace App.Common.Controller
                 {
                     ""name"": """",
                     ""id"": ""f2076c9a-da5e-4e86-933e-b51cf3ce8c44"",
-                    ""path"": """",
+                    ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -589,6 +602,28 @@ namespace App.Common.Controller
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ac8c9a4b-1f93-4cec-a658-878c6bb9060f"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShowUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a084dc9f-4550-4b41-94a2-fd77b4dcead8"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HideUI"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -689,10 +724,7 @@ namespace App.Common.Controller
             // Player
             m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
             m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
-            m_Player_MoveForward = m_Player.FindAction("MoveForward", throwIfNotFound: true);
-            m_Player_MoveBackward = m_Player.FindAction("MoveBackward", throwIfNotFound: true);
-            m_Player_MoveRight = m_Player.FindAction("MoveRight", throwIfNotFound: true);
-            m_Player_MoveLeft = m_Player.FindAction("MoveLeft", throwIfNotFound: true);
+            m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
             m_Player_WeaponActionMain = m_Player.FindAction("WeaponActionMain", throwIfNotFound: true);
             m_Player_WeaponActionSub = m_Player.FindAction("WeaponActionSub", throwIfNotFound: true);
             m_Player_AbilityOne = m_Player.FindAction("AbilityOne", throwIfNotFound: true);
@@ -716,6 +748,8 @@ namespace App.Common.Controller
             m_UI_Point = m_UI.FindAction("Point", throwIfNotFound: true);
             m_UI_Select = m_UI.FindAction("Select", throwIfNotFound: true);
             m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
+            m_UI_ShowUI = m_UI.FindAction("ShowUI", throwIfNotFound: true);
+            m_UI_HideUI = m_UI.FindAction("HideUI", throwIfNotFound: true);
             // Debug
             m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
             m_Debug_Debug = m_Debug.FindAction("Debug", throwIfNotFound: true);
@@ -803,10 +837,7 @@ namespace App.Common.Controller
         private readonly InputActionMap m_Player;
         private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
         private readonly InputAction m_Player_Look;
-        private readonly InputAction m_Player_MoveForward;
-        private readonly InputAction m_Player_MoveBackward;
-        private readonly InputAction m_Player_MoveRight;
-        private readonly InputAction m_Player_MoveLeft;
+        private readonly InputAction m_Player_Move;
         private readonly InputAction m_Player_WeaponActionMain;
         private readonly InputAction m_Player_WeaponActionSub;
         private readonly InputAction m_Player_AbilityOne;
@@ -828,21 +859,9 @@ namespace App.Common.Controller
             /// </summary>
             public InputAction @Look => m_Wrapper.m_Player_Look;
             /// <summary>
-            /// Provides access to the underlying input action "Player/MoveForward".
+            /// Provides access to the underlying input action "Player/Move".
             /// </summary>
-            public InputAction @MoveForward => m_Wrapper.m_Player_MoveForward;
-            /// <summary>
-            /// Provides access to the underlying input action "Player/MoveBackward".
-            /// </summary>
-            public InputAction @MoveBackward => m_Wrapper.m_Player_MoveBackward;
-            /// <summary>
-            /// Provides access to the underlying input action "Player/MoveRight".
-            /// </summary>
-            public InputAction @MoveRight => m_Wrapper.m_Player_MoveRight;
-            /// <summary>
-            /// Provides access to the underlying input action "Player/MoveLeft".
-            /// </summary>
-            public InputAction @MoveLeft => m_Wrapper.m_Player_MoveLeft;
+            public InputAction @Move => m_Wrapper.m_Player_Move;
             /// <summary>
             /// Provides access to the underlying input action "Player/WeaponActionMain".
             /// </summary>
@@ -892,18 +911,9 @@ namespace App.Common.Controller
                 @Look.started += instance.OnLook;
                 @Look.performed += instance.OnLook;
                 @Look.canceled += instance.OnLook;
-                @MoveForward.started += instance.OnMoveForward;
-                @MoveForward.performed += instance.OnMoveForward;
-                @MoveForward.canceled += instance.OnMoveForward;
-                @MoveBackward.started += instance.OnMoveBackward;
-                @MoveBackward.performed += instance.OnMoveBackward;
-                @MoveBackward.canceled += instance.OnMoveBackward;
-                @MoveRight.started += instance.OnMoveRight;
-                @MoveRight.performed += instance.OnMoveRight;
-                @MoveRight.canceled += instance.OnMoveRight;
-                @MoveLeft.started += instance.OnMoveLeft;
-                @MoveLeft.performed += instance.OnMoveLeft;
-                @MoveLeft.canceled += instance.OnMoveLeft;
+                @Move.started += instance.OnMove;
+                @Move.performed += instance.OnMove;
+                @Move.canceled += instance.OnMove;
                 @WeaponActionMain.started += instance.OnWeaponActionMain;
                 @WeaponActionMain.performed += instance.OnWeaponActionMain;
                 @WeaponActionMain.canceled += instance.OnWeaponActionMain;
@@ -933,18 +943,9 @@ namespace App.Common.Controller
                 @Look.started -= instance.OnLook;
                 @Look.performed -= instance.OnLook;
                 @Look.canceled -= instance.OnLook;
-                @MoveForward.started -= instance.OnMoveForward;
-                @MoveForward.performed -= instance.OnMoveForward;
-                @MoveForward.canceled -= instance.OnMoveForward;
-                @MoveBackward.started -= instance.OnMoveBackward;
-                @MoveBackward.performed -= instance.OnMoveBackward;
-                @MoveBackward.canceled -= instance.OnMoveBackward;
-                @MoveRight.started -= instance.OnMoveRight;
-                @MoveRight.performed -= instance.OnMoveRight;
-                @MoveRight.canceled -= instance.OnMoveRight;
-                @MoveLeft.started -= instance.OnMoveLeft;
-                @MoveLeft.performed -= instance.OnMoveLeft;
-                @MoveLeft.canceled -= instance.OnMoveLeft;
+                @Move.started -= instance.OnMove;
+                @Move.performed -= instance.OnMove;
+                @Move.canceled -= instance.OnMove;
                 @WeaponActionMain.started -= instance.OnWeaponActionMain;
                 @WeaponActionMain.performed -= instance.OnWeaponActionMain;
                 @WeaponActionMain.canceled -= instance.OnWeaponActionMain;
@@ -1166,6 +1167,8 @@ namespace App.Common.Controller
         private readonly InputAction m_UI_Point;
         private readonly InputAction m_UI_Select;
         private readonly InputAction m_UI_Cancel;
+        private readonly InputAction m_UI_ShowUI;
+        private readonly InputAction m_UI_HideUI;
         /// <summary>
         /// Provides access to input actions defined in input action map "UI".
         /// </summary>
@@ -1205,6 +1208,14 @@ namespace App.Common.Controller
             /// Provides access to the underlying input action "UI/Cancel".
             /// </summary>
             public InputAction @Cancel => m_Wrapper.m_UI_Cancel;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/ShowUI".
+            /// </summary>
+            public InputAction @ShowUI => m_Wrapper.m_UI_ShowUI;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/HideUI".
+            /// </summary>
+            public InputAction @HideUI => m_Wrapper.m_UI_HideUI;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1252,6 +1263,12 @@ namespace App.Common.Controller
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
+                @ShowUI.started += instance.OnShowUI;
+                @ShowUI.performed += instance.OnShowUI;
+                @ShowUI.canceled += instance.OnShowUI;
+                @HideUI.started += instance.OnHideUI;
+                @HideUI.performed += instance.OnHideUI;
+                @HideUI.canceled += instance.OnHideUI;
             }
 
             /// <summary>
@@ -1284,6 +1301,12 @@ namespace App.Common.Controller
                 @Cancel.started -= instance.OnCancel;
                 @Cancel.performed -= instance.OnCancel;
                 @Cancel.canceled -= instance.OnCancel;
+                @ShowUI.started -= instance.OnShowUI;
+                @ShowUI.performed -= instance.OnShowUI;
+                @ShowUI.canceled -= instance.OnShowUI;
+                @HideUI.started -= instance.OnHideUI;
+                @HideUI.performed -= instance.OnHideUI;
+                @HideUI.canceled -= instance.OnHideUI;
             }
 
             /// <summary>
@@ -1493,33 +1516,12 @@ namespace App.Common.Controller
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnLook(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "MoveForward" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnMoveForward(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "MoveBackward" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnMoveBackward(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "MoveRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnMoveRight(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "MoveLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnMoveLeft(InputAction.CallbackContext context);
+            void OnMove(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "WeaponActionMain" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
@@ -1669,6 +1671,20 @@ namespace App.Common.Controller
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnCancel(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "ShowUI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnShowUI(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "HideUI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnHideUI(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Debug" which allows adding and removing callbacks.
