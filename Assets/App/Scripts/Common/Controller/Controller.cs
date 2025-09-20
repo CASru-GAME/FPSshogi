@@ -505,6 +505,9 @@ namespace App.Common.Controller
 
         void OnDestroy()
         {
+            DisableAllInput();
+            inputActionAssets.Dispose();
+
             if (enableInputLogging)
                 Debug.Log("Controller: 入力コールバックを登録解除");
         }
