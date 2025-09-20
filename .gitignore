@@ -77,5 +77,6 @@ crashlytics-build.properties
 *.fbx
 
 /Assets/App/Scripts/Examples
-/Assets/App/Textures/*
+/Assets/App/Textures/*.png
+/Assets/App/Textures/*.jpg
 !/Assets/App/Textures/.gitkeep
