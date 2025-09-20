@@ -14,14 +14,14 @@ namespace App.Main.Controller
             Debug.Log("DeviceManager initialized.");
         }
 
-        private List<string> deviceIds;
+        private string[] deviceIds;
         public void SetDeviceId(int playerIndex, string deviceId)
         {
             if (deviceIds == null)
             {
-                deviceIds = new List<string> { "", "" };
+                deviceIds = new string[2] { "", "" };
             }
-            if (playerIndex < 0 || playerIndex >= deviceIds.Count)
+            if (playerIndex < 0 || playerIndex >= deviceIds.Length)
             {
                 Debug.LogError($"Invalid playerIndex: {playerIndex}");
                 return;
@@ -29,25 +29,57 @@ namespace App.Main.Controller
             deviceIds[playerIndex] = deviceId;
             Debug.Log($"✅ Player {playerIndex + 1} の deviceId を設定: {deviceId}");
         }
-        public bool IsDeviceIdContains(string deviceId)
-        {
-            if (deviceIds == null)
-            {
-                return false;
-            }
-            return deviceIds.Contains(deviceId);
-        }
         public int GetDeviceIdCount()
         {
             if (deviceIds == null)
             {
                 return 0;
             }
-            return deviceIds.Count;
+            int count = 0;
+            foreach (var id in deviceIds)
+            {
+                if (!string.IsNullOrEmpty(id))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+        public bool IsDeviceIdContains(string deviceId)
+        {
+            bool answer = false;
+            if (deviceIds == null)
+            {
+                return false;
+            }
+            foreach (var id in deviceIds)
+            {
+                if (id == deviceId)
+                {
+                    answer = true;
+                    break;
+                }
+            }
+            return answer;
+        }
+        public bool IsDevicesRaedy()
+        {
+            if (deviceIds == null)
+            {
+                return false;
+            }
+            foreach (var id in deviceIds)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
         public string GetDeviceIdPlayerOne()
         {
-            if (deviceIds == null || deviceIds.Count < 1)
+            if (deviceIds == null || deviceIds.Length < 1)
             {
                 return "";
             }
@@ -55,7 +87,7 @@ namespace App.Main.Controller
         }
         public string GetDeviceIdPlayerTwo()
         {
-            if (deviceIds == null || deviceIds.Count < 2)
+            if (deviceIds == null || deviceIds.Length < 2)
             {
                 return "";
             }

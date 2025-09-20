@@ -2,6 +2,8 @@ using App.Common.Initialize;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using App.Main.GameMaster;
+using UnityEngine.iOS;
+using Unity.VisualScripting.Antlr3.Runtime;
 
 namespace App.Main.Controller
 {
@@ -23,18 +25,25 @@ namespace App.Main.Controller
 
         private void OnSelectUI(InputAction.CallbackContext ctx)
         {
-            var device = ctx.control.device;
-            SetDeviceId(device.deviceId.ToString());
-            if (deviceManager.GetDeviceIdCount() >= 2)
+            Debug.Log("OnSelectUI");
+            if (ctx.canceled)
             {
-                controller.DisableUIInput();
+                Debug.Log("Release SelectUIButton");
+                var device = ctx.control.device;
+                SetDeviceId(device.deviceId.ToString());
+                if (deviceManager.IsDevicesRaedy())
+                {
+                    Debug.Log($"deviceManager.GetDeviceIdPlayerOne(): {deviceManager.GetDeviceIdPlayerOne()}");
+                    Debug.Log($"deviceManager.GetDeviceIdPlayerTwo(): {deviceManager.GetDeviceIdPlayerTwo()}");
+                    controller.DisableUIInput();
+                }
             }
         }
 
         private void SetDeviceId(string deviceId)
         {
             if (deviceManager.IsDeviceIdContains(deviceId)) return;
-            if (deviceManager.GetDeviceIdCount() >= 2) return;
+            if (deviceManager.IsDevicesRaedy()) return;
             deviceManager.SetDeviceId(deviceManager.GetDeviceIdCount(), deviceId);
         }
     }
