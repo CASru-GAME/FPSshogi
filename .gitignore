@@ -78,3 +78,4 @@ crashlytics-build.properties
 
 /Assets/App/Scripts/Examples
 /Assets/App/Textures/*
+!/Assets/App/Textures/.gitkeep
