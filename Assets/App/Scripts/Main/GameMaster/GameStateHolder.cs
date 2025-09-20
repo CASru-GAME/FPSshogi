@@ -43,8 +43,10 @@ namespace App.Main.GameMaster
         // プロパティ
         public GameState CurrentState => currentState;
 
-        public void Initialize()
+        public void Initialize(ReferenceHolder referenceHolder)
         {
+            currentState = GameState.Starting;
+            // 初期状態の設定
             Debug.Log("GameStateHolder 初期化完了");
         }
 

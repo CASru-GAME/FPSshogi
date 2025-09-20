@@ -21,7 +21,7 @@ namespace App.Common.Controller
         private InputActionMap playerActionMap;
         private InputAction debugAction => playerActionMap?.FindAction("Debug");
 
-        public void Initialize()
+        public void Initialize(ReferenceHolder referenceHolder)
         {
             try
             {
