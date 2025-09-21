@@ -2,6 +2,7 @@ using UnityEngine;
 using App.Common.Initialize;
 using App.Main.GameMaster;
 using App.Main.ShogiThings;
+using System.Collections.Generic;
 
 namespace App.Main.Prefabs
 {
@@ -18,16 +19,16 @@ namespace App.Main.Prefabs
         public GameObject ou;
         public GameObject gyoku;
 
-        public GameObject board;
-
         public int InitializationPriority => 80; // 優先度（低いほど先に初期化される）
         public System.Type[] Dependencies => new System.Type[] { typeof(ShogiBoard) }; // 依存関係
         public void Initialize(ReferenceHolder referenceHolder)
         {
             // 初期化処理
-            InitiateBoard();
-
+            InitiateUI();
         }
+
+        private Dictionary<IPiece, GameObject> pieceOnBoard = new Dictionary<IPiece, GameObject>();
+        private IPiece[,] previousBoardState = new IPiece[9, 9];
 
 
         Vector3 GetBoardCellPosition(int x, int y)
@@ -40,14 +41,13 @@ namespace App.Main.Prefabs
             return new Vector3(originX - y * cellSize, originY , originZ + x * cellSize);
         }
 
-        private void InitiateBoard()
+        private void InitiateUI()
         {
-            // 盤面の初期化処理
-
             // ShogiBoardの参照を取得
-            ShogiBoard shogiBoard = FindObjectOfType<ShogiBoard>();
+            ShogiBoard shogiBoard = Object.FindFirstObjectByType<ShogiBoard>(); 
             IPiece[,] board = shogiBoard.GetBoard();
-            
+
+            // 盤面の初期化処理
 
                 for(int x = 0; x < 9; x++) 
                 { 
@@ -72,30 +72,104 @@ namespace App.Main.Prefabs
                         else if (piece is Fuhyo)
                             prefab = fuhyo;
                         else if (piece is King)
-                        {
-                            if (piece.Player == PlayerType.PlayerOne)
-                                prefab = ou;
-                            else
-                                prefab = gyoku;
-                        }
+                            prefab = (piece.Player == PlayerType.PlayerOne) ? ou : gyoku;
 
                         if (piece != null ) 
                         {
                             // 駒情報を使って処理
                             Vector3 position = GetBoardCellPosition(x, y);
-                            if(board[x,y].Player == PlayerType.PlayerOne)
-                            {
-                                Instantiate(prefab, position, Quaternion.Euler(-90,0,90));
-                            }
-                            else
-                            {
-                                Instantiate(prefab, position, Quaternion.Euler(-90,0,-90));
-                            }
+                            float rotationZ = (piece.Player == PlayerType.PlayerOne) ? 90f : -90f;
+
+                            GameObject pieceObject = Instantiate(prefab, position, Quaternion.Euler(-90, 0, rotationZ));
+                            pieceOnBoard[piece] = pieceObject;
 
                         }
                     }
                 }
             
         }
+
+
+       private void changeUI()
+        {
+            // ShogiBoardの参照を取得
+            ShogiBoard shogiBoard = Object.FindFirstObjectByType<ShogiBoard>(); 
+            IPiece[,] currentBoardState = shogiBoard.GetBoard();
+
+            for (int x = 0; x < 9; x++)
+            {
+                for (int y = 0; y < 9; y++)
+                {
+                    IPiece current = currentBoardState[x, y];
+                    IPiece previous = previousBoardState[x, y];
+
+                    if (current != previous)
+                    {
+                        // 駒が移動または変更された場合の処理
+                        if (previous != null && pieceOnBoard.ContainsKey(previous))
+                        {
+                            // 前の位置に駒があった場合、その駒を削除
+                            Destroy(pieceOnBoard[previous]);
+                            pieceOnBoard.Remove(previous);
+                        }
+
+                        if (current != null)
+                        {
+                            // 新しい位置に駒がある場合、その駒を生成
+                            GameObject prefab = null;
+                            if (current is Kyosya)
+                                prefab = kyosya;
+                            else if (current is Keima)
+                                prefab = keima;
+                            else if (current is Gin)
+                                prefab = gin;
+                            else if (current is Kin)
+                                prefab = kin;
+                            else if (current is Kakugyo)
+                                prefab = kakugyo;
+                            else if (current is Hisya)
+                                prefab = hisya;
+                            else if (current is Fuhyo)
+                                prefab = fuhyo;
+                            else if (current is King)
+                                prefab = (current.Player == PlayerType.PlayerOne) ? ou : gyoku;
+
+                            Vector3 position = GetBoardCellPosition(x, y);
+                            float rotationZ = (current.Player == PlayerType.PlayerOne) ? 90f : -90f;
+
+                            GameObject pieceObject = Instantiate(prefab, position, Quaternion.Euler(-90, 0, rotationZ));
+                            pieceOnBoard[current] = pieceObject;
+                        }
+                    }
+
+                    if(current != null && previous != null && current == previous)
+                    {
+                        if(!previous.IsPromoted && current.IsPromoted)
+                        {
+                            // 駒が成った場合、ひっくり返す
+                            Vector3 position = GetBoardCellPosition(x, y);
+                            float rotationZ = (current.Player == PlayerType.PlayerOne) ? 90f : -90f;
+
+                            GameObject pieceObject = Instantiate(prefab, position, Quaternion.Euler(-270, 0, rotationZ));
+                            pieceOnBoard[current] = pieceObject;
+                    }
+                }
+            }
+
+            // 現在の盤面状態を保存
+            for (int x = 0; x < 9; x++)
+            {
+                for (int y = 0; y < 9; y++)
+                {
+                    previousBoardState[x, y] = currentBoardState[x, y];
+                }
+            }
+        }
+
+        void Update()
+        {
+            moveUI();
+        }
+    
     }
 }
