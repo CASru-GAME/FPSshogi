@@ -147,11 +147,8 @@ namespace App.Main.Prefabs
                         if(!previous.IsPromoted && current.IsPromoted)
                         {
                             // 駒が成った場合、ひっくり返す
-                            Vector3 position = GetBoardCellPosition(x, y);
-                            float rotationZ = (current.Player == PlayerType.PlayerOne) ? 90f : -90f;
-
-                            GameObject pieceObject = Instantiate(prefab, position, Quaternion.Euler(-270, 0, rotationZ));
-                            pieceOnBoard[current] = pieceObject;
+                            pieceOnBoard[previous].transform.Rotate(180, 0, 0);
+                        }
                     }
                 }
             }
@@ -168,7 +165,7 @@ namespace App.Main.Prefabs
 
         void Update()
         {
-            moveUI();
+            changeUI();
         }
     
     }
