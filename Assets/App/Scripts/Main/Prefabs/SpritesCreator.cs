@@ -23,6 +23,8 @@ namespace App.Main.Prefabs
         public System.Type[] Dependencies => new System.Type[] { typeof(ShogiBoard) }; // 依存関係
         public void Initialize(ReferenceHolder referenceHolder)
         {
+            // ShogiBoardの参照を取得
+            ShogiBoard shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
             // 初期化処理
             InitiateUI();
         }
@@ -30,21 +32,16 @@ namespace App.Main.Prefabs
         private Dictionary<IPiece, GameObject> pieceOnBoard = new Dictionary<IPiece, GameObject>();
         private IPiece[,] previousBoardState = new IPiece[9, 9];
 
+        [SerializeField] private float cellSize = 5.225f;
+        [SerializeField] private Vector3 boardOrigin = new Vector3(20.9f, 0.8706f, -20.9f);
 
         Vector3 GetBoardCellPosition(int x, int y)
         {
-            float cellSize = 5.225f;      // 1マスの大きさ
-            float originX = 20.9f;     // board[0,0]のX座標
-            float originY = 0.8706f;      // board[0,0]のY座標
-            float originZ = -20.9f;        // board[0,0]のZ座標
-
-            return new Vector3(originX - y * cellSize, originY , originZ + x * cellSize);
+            return new Vector3(boardOrigin.x - y * cellSize, boardOrigin.y , boardOrigin + x * cellSize);
         }
 
         private void InitiateUI()
         {
-            // ShogiBoardの参照を取得
-            ShogiBoard shogiBoard = Object.FindFirstObjectByType<ShogiBoard>(); 
             IPiece[,] board = shogiBoard.GetBoard();
 
             // 盤面の初期化処理
@@ -60,7 +57,7 @@ namespace App.Main.Prefabs
                         if (piece is Kyosya)
                             prefab = kyosya;
                         else if (piece is Keima)
-                        prefab = keima;
+                            prefab = keima;
                         else if (piece is Gin)
                             prefab = gin;
                         else if (piece is Kin)
@@ -92,8 +89,6 @@ namespace App.Main.Prefabs
 
        private void changeUI()
         {
-            // ShogiBoardの参照を取得
-            ShogiBoard shogiBoard = Object.FindFirstObjectByType<ShogiBoard>(); 
             IPiece[,] currentBoardState = shogiBoard.GetBoard();
 
             for (int x = 0; x < 9; x++)
