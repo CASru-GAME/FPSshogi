@@ -75,6 +75,7 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 *.fbx
+*.jpg
 
 /Assets/App/Scripts/Examples
 /Assets/App/Textures/*.png
