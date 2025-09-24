@@ -21,10 +21,11 @@ namespace App.Main.Prefabs
 
         public int InitializationPriority => 80; // 優先度（低いほど先に初期化される）
         public System.Type[] Dependencies => new System.Type[] { typeof(ShogiBoard) }; // 依存関係
+        private ShogiBoard shogiBoard = null;
         public void Initialize(ReferenceHolder referenceHolder)
         {
             // ShogiBoardの参照を取得
-            ShogiBoard shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
+            shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
             // 初期化処理
             InitiateUI();
         }
@@ -37,7 +38,7 @@ namespace App.Main.Prefabs
 
         Vector3 GetBoardCellPosition(int x, int y)
         {
-            return new Vector3(boardOrigin.x - y * cellSize, boardOrigin.y , boardOrigin + x * cellSize);
+            return new Vector3(boardOrigin.x - y * cellSize, boardOrigin.y , boardOrigin.z + x * cellSize);
         }
 
         private void InitiateUI()
