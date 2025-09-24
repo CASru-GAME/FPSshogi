@@ -8,9 +8,8 @@ namespace App.Main.GameMaster
         private ShogiBoard shogiBoard = null;
         private GameStateHolder gameStateHolder = null;
         public int InitializationPriority => 0;
-        public System.Type[] Dependencies => new System.Type[] { };
-        [SerializeField] public GameObject PlayerOne;
-        [SerializeField] public GameObject PlayerTwo;
+        public System.Type[] Dependencies => new System.Type[] { typeof(ShogiBoard), typeof(GameStateHolder) };
+        [SerializeField] public GameObject PlayerPrefab;
         public void Initialize(ReferenceHolder referenceHolder)
         {
             Debug.Log("DuelManager initialized.");
@@ -23,6 +22,38 @@ namespace App.Main.GameMaster
         private void OnChangeToDuel()
         {
 
+        }
+
+        public void ChangeStateToPlayerOneWin()
+        {
+            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneWin);
+        }
+
+        public void ChangeStateToPlayerTwoWin()
+        {
+            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoWin);
+        }
+
+        private void CreatePlayer()
+        {
+            if (PlayerPrefab == null)
+            {
+                Debug.LogError("PlayerPrefab is not assigned in the inspector.");
+                return;
+            }
+            GameObject player = Instantiate(PlayerPrefab, Vector3.zero, Quaternion.identity);
+            if (player == null)
+            {
+                Debug.LogError("Failed to instantiate PlayerPrefab.");
+                return;
+            }
+            var playerScript = player.GetComponent<Player.Player>();
+            if (playerScript == null)
+            {
+                Debug.LogError("Player component not found on the instantiated prefab.");
+                return;
+            }
+            playerScript.Initialize();
         }
 
         public void OnDestroy()
