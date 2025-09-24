@@ -25,20 +25,20 @@ namespace App.Main.GameMaster
         [SerializeField] private GameState currentState = GameState.Starting;
 
         // イベント定義
-        public event Action<GameState, GameState> OnGameStateChanged;
-        public event Action<GameState> OnGameStateEnter;
-        public event Action<GameState> OnGameStateExit;
+        private event Action<GameState, GameState> OnGameStateChanged;
+        private event Action<GameState> OnGameStateEnter;
+        private event Action<GameState> OnGameStateExit;
 
         // 個別状態変化イベント
-        public event Action OnChangeToStarting;
-        public event Action OnChangeToPlayerOneTurn;
-        public event Action OnChangeToPlayerTwoTurn;
-        public event Action OnChangeToDuel;
-        public event Action OnChangeToDuelPlayerOneWin;
-        public event Action OnChangeToDuelPlayerTwoWin;
-        public event Action OnChangeToPaused;
-        public event Action OnChangeToPlayerOneWin;
-        public event Action OnChangeToPlayerTwoWin;
+        private event Action OnChangeToStarting;
+        private event Action OnChangeToPlayerOneTurn;
+        private event Action OnChangeToPlayerTwoTurn;
+        private event Action OnChangeToDuel;
+        private event Action OnChangeToDuelPlayerOneWin;
+        private event Action OnChangeToDuelPlayerTwoWin;
+        private event Action OnChangeToPaused;
+        private event Action OnChangeToPlayerOneWin;
+        private event Action OnChangeToPlayerTwoWin;
 
         // プロパティ
         public GameState CurrentState => currentState;
