@@ -18,8 +18,8 @@ namespace App.Main.Controller
         {
             controller = referenceHolder.GetInitializable<Common.Controller.Controller>();
             duelManager = referenceHolder.GetInitializable<DuelManager>();
-            //playerOne = duelManager.PlayerOne.GetComponent<Player.Player>();
-            //playerTwo = duelManager.PlayerTwo.GetComponent<Player.Player>();
+            playerOne = duelManager.PlayerOne.GetComponent<Player.Player>();
+            playerTwo = duelManager.PlayerTwo.GetComponent<Player.Player>();
             controller.EnablePlayerInput();
             controller.SubscribeToMove(OnMove);
         }
