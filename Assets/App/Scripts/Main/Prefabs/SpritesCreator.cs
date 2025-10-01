@@ -84,6 +84,16 @@ namespace App.Main.Prefabs
                         }
                     }
                 }
+
+            // 現在の盤面状態を保存
+            for (int x = 0; x < 9; x++)
+            {
+                for (int y = 0; y < 9; y++)
+                {
+                    previousBoardState[x, y] = board[x, y];
+                }
+            }
+
             
         }
 
