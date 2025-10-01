@@ -183,6 +183,8 @@ MonoBehaviour:
   hisya: {fileID: 6332414870992199840, guid: fcd20aefa3daa5c4fa45a637bad8a61b, type: 3}
   ou: {fileID: 5360927434741752890, guid: 663ed169d73a5994b8fc446921e9895c, type: 3}
   gyoku: {fileID: 3141036484956795666, guid: 1cf1ad41fd0abbd4a9555e162fe54ad9, type: 3}
+  cellSize: 5.225
+  boardOrigin: {x: 20.9, y: 0.8706, z: -20.9}
 --- !u!4 &738911067
 Transform:
   m_ObjectHideFlags: 0
@@ -259,7 +261,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -284,13 +286,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 996321982}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.04138449, y: 0.13030656, z: 0.03122418, w: 0.99011743}
-  m_LocalPosition: {x: -5.7, y: 33.6, z: -81.8}
+  m_LocalRotation: {x: 0.22636071, y: 0.33751196, z: 0.043436892, w: 0.9126663}
+  m_LocalPosition: {x: -43.2, y: 33.6, z: -81.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -5.169, y: 14.862, z: 2.938}
+  m_LocalEulerAnglesHint: {x: 22.573, y: 43.51, z: 14.557}
 --- !u!114 &996321986
 MonoBehaviour:
   m_ObjectHideFlags: 0
