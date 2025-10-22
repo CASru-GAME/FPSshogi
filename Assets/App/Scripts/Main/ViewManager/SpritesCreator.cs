@@ -4,7 +4,7 @@ using App.Main.GameMaster;
 using App.Main.ShogiThings;
 using System.Collections.Generic;
 
-namespace App.Main.Prefabs
+namespace App.Main.ViewManager
 {
 
     public class SpritesCreator : MonoBehaviour, IInitializable
