@@ -10,9 +10,12 @@ namespace App.Main.GameMaster
         public int InitializationPriority => 0;
         public System.Type[] Dependencies => new System.Type[] { typeof(ShogiBoard), typeof(GameStateHolder) };
         [SerializeField] public GameObject PlayerPrefab;
+        [SerializeField] public Vector3 PlayerOneSpawnPosition;
+        [SerializeField] public Vector3 PlayerTwoSpawnPosition;
+        public GameObject PlayerOne { get; private set; }
+        public GameObject PlayerTwo { get; private set; }
         public void Initialize(ReferenceHolder referenceHolder)
         {
-            Debug.Log("DuelManager initialized.");
             shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
             gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
 
@@ -21,7 +24,8 @@ namespace App.Main.GameMaster
 
         private void OnChangeToDuel()
         {
-
+            PlayerOne = CreatePlayer(PlayerOneSpawnPosition);
+            PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition);
         }
 
         public void ChangeStateToPlayerOneWin()
@@ -34,26 +38,27 @@ namespace App.Main.GameMaster
             gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoWin);
         }
 
-        private void CreatePlayer()
+        private GameObject CreatePlayer(Vector3 spawnPosition)
         {
             if (PlayerPrefab == null)
             {
                 Debug.LogError("PlayerPrefab is not assigned in the inspector.");
-                return;
+                return null;
             }
-            GameObject player = Instantiate(PlayerPrefab, Vector3.zero, Quaternion.identity);
+            GameObject player = Instantiate(PlayerPrefab, spawnPosition, Quaternion.identity);
             if (player == null)
             {
                 Debug.LogError("Failed to instantiate PlayerPrefab.");
-                return;
+                return null;
             }
             var playerScript = player.GetComponent<Player.Player>();
             if (playerScript == null)
             {
                 Debug.LogError("Player component not found on the instantiated prefab.");
-                return;
+                return null;
             }
             playerScript.Initialize();
+            return player;
         }
 
         public void OnDestroy()
