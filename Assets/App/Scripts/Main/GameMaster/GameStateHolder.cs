@@ -50,6 +50,46 @@ namespace App.Main.GameMaster
             Debug.Log("GameStateHolder 初期化完了");
         }
 
+        public void ChangeIntoPlayerOneTurn()
+        {
+            ChangeState(GameState.PlayerOneTurn);
+        }
+
+        public void ChangeIntoPlayerTwoTurn()
+        {
+            ChangeState(GameState.PlayerTwoTurn);
+        }
+
+        public void ChangeStateIntoDuelPlayerOneWin()
+        {
+            ChangeState(GameState.DuelPlayerOneWin);
+        }
+
+        public void ChangeStateIntoDuelPlayerTwoWin()
+        {
+            ChangeState(GameState.DuelPlayerTwoWin);
+        }
+
+        public void ChangeStateIntoPaused()
+        {
+            ChangeState(GameState.Paused);
+        }
+
+        public void ChangeStateIntoPlayerOneWin()
+        {
+            ChangeState(GameState.PlayerOneWin);
+        }
+
+        public void ChangeStateIntoPlayerTwoWin()
+        {
+            ChangeState(GameState.PlayerTwoWin);
+        }
+
+        public void ChangeStateIntoDuel()
+        {
+            ChangeState(GameState.Duel);
+        }
+
         /// <summary>
         /// ゲーム状態を変更する
         /// </summary>
@@ -108,10 +148,10 @@ namespace App.Main.GameMaster
                     return to == GameState.DuelPlayerOneWin || to == GameState.DuelPlayerTwoWin || to == GameState.Paused;
 
                 case GameState.DuelPlayerOneWin:
-                    return to == GameState.PlayerOneWin;
+                    return to == GameState.PlayerOneWin || to == GameState.PlayerOneTurn || to == GameState.PlayerTwoTurn;
 
                 case GameState.DuelPlayerTwoWin:
-                    return to == GameState.PlayerTwoWin;
+                    return to == GameState.PlayerTwoWin || to == GameState.PlayerOneTurn || to == GameState.PlayerTwoTurn;
 
                 case GameState.Paused:
                     // ポーズから元の状態に戻ることを許可（実装に応じて調整）
