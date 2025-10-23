@@ -15,12 +15,14 @@ namespace App.Main.Player
         public GameObject PlayerOne { get; private set; }
         public GameObject PlayerTwo { get; private set; }
 
+        private GameStateHolder gameStateHolder;
+
         [SerializeField] private Vector3 PlayerOneSpawnPosition = new Vector3(-5f, 0f, 0f);
         [SerializeField] private Vector3 PlayerTwoSpawnPosition = new Vector3(5f, 0f, 0f);
 
         public void Initialize(ReferenceHolder referenceHolder)
         {
-            var gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
+            gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
             PlayerOne = CreatePlayer(PlayerOneSpawnPosition);
             PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition);
             gameStateHolder.SubscribeToChangeToDuel(OnChangedToDuel);
@@ -86,6 +88,12 @@ namespace App.Main.Player
 
             PlayerOne.GetComponent<PlayerInput>().actions.Disable();
             PlayerTwo.GetComponent<PlayerInput>().actions.Disable();
+        }
+
+        public void OnDestroy()
+        {
+            // クリーンアップ処理をここに記述
+            gameStateHolder.UnsubscribeFromChangeToDuel(OnChangedToDuel);
         }
     }
 }
