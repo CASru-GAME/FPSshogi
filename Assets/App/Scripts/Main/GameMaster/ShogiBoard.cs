@@ -31,6 +31,9 @@ namespace App.Main.GameMaster
             // イベントの購読
             gameStateHolder.SubscribeToChangeToDuelPlayerOneWin(OnChangeToDuelPlayerOneWin);
             gameStateHolder.SubscribeToChangeToDuelPlayerTwoWin(OnChangeToDuelPlayerTwoWin);
+
+            Debug.Log(BoardToString());
+            Debug.Log(CapturedPiecesToString());
         }
 
         private void InitiateBoard()
@@ -121,6 +124,7 @@ namespace App.Main.GameMaster
                 // 移動後の盤面をログ出力
                 Debug.Log("[ShogiBoard] Move performed: " + fromX + "," + fromY + " -> " + toX + "," + toY);
                 Debug.Log(BoardToString());
+                Debug.Log(CapturedPiecesToString());
             }
         }
 
@@ -147,6 +151,39 @@ namespace App.Main.GameMaster
                         if (p.Player == PlayerType.PlayerOne) sb.Append(char.ToUpper(c)).Append(" ");
                         else sb.Append(char.ToLower(c)).Append(" ");
                     }
+                }
+                sb.AppendLine();
+            }
+            return sb.ToString();
+        }
+
+        private string CapturedPiecesToString()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("Captured Pieces:");
+            foreach (var kv in capturedPieces)
+            {
+                var player = kv.Key;
+                var list = kv.Value;
+                sb.Append(player == PlayerType.PlayerOne ? "PlayerOne: " : "PlayerTwo: ");
+                if (list.Count == 0)
+                {
+                    sb.AppendLine("None");
+                    continue;
+                }
+                // カウント集計
+                var counts = new Dictionary<PieceType, int>();
+                foreach (var p in list)
+                {
+                    if (counts.ContainsKey(p)) counts[p]++;
+                    else counts[p] = 1;
+                }
+                bool first = true;
+                foreach (var c in counts)
+                {
+                    if (!first) sb.Append(", ");
+                    sb.Append($"{c.Key}x{c.Value}");
+                    first = false;
                 }
                 sb.AppendLine();
             }
@@ -266,6 +303,7 @@ namespace App.Main.GameMaster
                 // 移動後の盤面をログ出力
                 Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
                 Debug.Log(BoardToString());
+                Debug.Log(CapturedPiecesToString());
             }
             else
             {
@@ -275,6 +313,7 @@ namespace App.Main.GameMaster
                 // 移動後の盤面をログ出力
                 Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
                 Debug.Log(BoardToString());
+                Debug.Log(CapturedPiecesToString());
             }
 
             if (capturedPieces[PlayerType.PlayerOne].Contains(PieceType.King))
@@ -302,6 +341,7 @@ namespace App.Main.GameMaster
                 // 移動後の盤面をログ出力
                 Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
                 Debug.Log(BoardToString());
+                Debug.Log(CapturedPiecesToString());
             }
             else
             {
@@ -311,6 +351,7 @@ namespace App.Main.GameMaster
                 // 移動後の盤面をログ出力
                 Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
                 Debug.Log(BoardToString());
+                Debug.Log(CapturedPiecesToString());
             }
 
             if (capturedPieces[PlayerType.PlayerTwo].Contains(PieceType.King))
