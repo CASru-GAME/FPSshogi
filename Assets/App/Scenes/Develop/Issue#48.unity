@@ -2057,6 +2057,7 @@ GameObject:
   - component: {fileID: 1132949749}
   - component: {fileID: 1132949752}
   - component: {fileID: 1132949753}
+  - component: {fileID: 1132949754}
   m_Layer: 0
   m_Name: GameMaster
   m_TagString: Untagged
@@ -2132,9 +2133,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da825a958e7f8b4d84d893bf266363d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 8245350473189949139, guid: c9b03d49ebbb44e449869a5f5e59fa64, type: 3}
-  PlayerOneSpawnPosition: {x: 0, y: 5.21, z: 30.5}
-  PlayerTwoSpawnPosition: {x: 0, y: 7.03, z: 0}
 --- !u!114 &1132949753
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2148,7 +2146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_NotificationBehavior: 0
-  m_MaxPlayerCount: -1
+  m_MaxPlayerCount: 2
   m_AllowJoining: 1
   m_JoinBehavior: 2
   m_PlayerJoinedEvent:
@@ -2179,6 +2177,22 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!114 &1132949754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132949747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5923910de1f8313459f745f5bbe6d889, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  PlayerPrefab: {fileID: 8245350473189949139, guid: c9b03d49ebbb44e449869a5f5e59fa64, type: 3}
+  PlayerOneSpawnPosition: {x: -5, y: 25.39, z: 0}
+  PlayerTwoSpawnPosition: {x: 5, y: 16.3, z: 0}
 --- !u!1 &1197553141
 GameObject:
   m_ObjectHideFlags: 0
