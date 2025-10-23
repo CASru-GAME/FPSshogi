@@ -125,6 +125,16 @@ namespace App.Main.GameMaster
                 Debug.Log("[ShogiBoard] Move performed: " + fromX + "," + fromY + " -> " + toX + "," + toY);
                 Debug.Log(BoardToString());
                 Debug.Log(CapturedPiecesToString());
+
+                // ターン交代
+                if (currentPlayer == PlayerType.PlayerOne)
+                {
+                    gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
+                }
+                else
+                {
+                    gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
+                }
             }
         }
 
