@@ -96,9 +96,9 @@ namespace App.Main.GameMaster
         }
 
         // その他の将棋盤操作メソッドをここに追加
-        public void MovePiece(int fromX, int fromY, int toX, int toY, PlayerType player)
+        public MoveResult MovePiece(int fromX, int fromY, int toX, int toY, PlayerType player)
         {
-            if (!IsValidMove(fromX, fromY, toX, toY, player)) return;
+            if (!IsValidMove(fromX, fromY, toX, toY, player)) return MoveResult.InvalidMove;
             currentPlayer = player;
 
             if (IsDuel(fromX, fromY, toX, toY))
@@ -108,7 +108,7 @@ namespace App.Main.GameMaster
                 savedToX = toX;
                 savedToY = toY;
                 gameStateHolder.ChangeState(GameStateHolder.GameState.Duel);
-                return;
+                return MoveResult.DuelMove;
             }
             else
             {
@@ -136,6 +136,14 @@ namespace App.Main.GameMaster
                     gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
                 }
             }
+            return MoveResult.NormalMove;
+        }
+
+        public enum MoveResult
+        {
+            InvalidMove = -1,
+            NormalMove = 1,
+            DuelMove = 0
         }
 
         // 盤面をデバッグ用文字列に変換して返すユーティリティ
@@ -269,27 +277,44 @@ namespace App.Main.GameMaster
 
         private bool IsValidMove(int fromX, int fromY, int toX, int toY, PlayerType player)
         {
-            // 駒の移動が有効かどうかを判定するロジックをここに実装
+            // 盤外チェック
             if (toX < 0 || toX >= 9 || toY < 0 || toY >= 9)
-                return false; // 盤外への移動は無効
-            if (board[fromX, fromY].Player != player)
-                return false; // 自分の駒でない場合は無効
-            if (board[toX, toY] != null && board[toX, toY].Player == board[fromX, fromY].Player)
-                return false; // 自分の駒がある場所への移動は無効
-            if (board[fromX, fromY] == null)
-                return false; // 駒が存在しない場合は無効
-            if (board[fromX, fromY].Movement == null || board[fromX, fromY].Movement.Length == 0)
-                return false; // 駒の移動パターンが定義されていない場合は無効
-            if (board[fromX, fromY].Movement.Length > 0)
+                return false;
+
+            // from位置の駒チェック（null を先に）
+            var piece = board[fromX, fromY];
+            if (piece == null)
+                return false;
+
+            // 所有者チェック
+            if (piece.Player != player)
+                return false;
+
+            // 目的地に自分の駒がある場合は不可
+            if (board[toX, toY] != null && board[toX, toY].Player == piece.Player)
+                return false;
+
+            if (piece.Movement == null || piece.Movement.Length == 0)
+                return false;
+
+            // Movement が PlayerOne 視点（y が前方向で定義）だと仮定。
+            // PlayerTwo の場合は y 成分を反転して判定する。
+            foreach (var move in piece.Movement)
             {
-                foreach (var move in board[fromX, fromY].Movement)
+                int dx = move[0];
+                int dy = move[1];
+
+                if (piece.Player == PlayerType.PlayerTwo)
                 {
-                    int newX = fromX + move[0];
-                    int newY = fromY + move[1];
-                    if (newX == toX && newY == toY)
-                        return true; // 有効な移動パターンに一致
+                    dy = -dy;
                 }
+
+                int newX = fromX + dx;
+                int newY = fromY + dy;
+                if (newX == toX && newY == toY)
+                    return true;
             }
+
             return false;
         }
 
