@@ -29,13 +29,13 @@ namespace App.Main.ViewManager
         {
             // ShogiBoardの参照を取得
             shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
-            
+
             CreateBoardCellPositions();
             // 初期化処理
             SetPieces();
         }
 
-        private Dictionary<IPiece, GameObject> pieceOnBoard = new Dictionary<IPiece, GameObject>();
+        private GameObject[,] pieceObjects = new GameObject[9, 9];
         private IPiece[,] previousBoardState = new IPiece[9, 9];
 
         private Vector3 GetBoardCellPosition(int x, int y)
@@ -85,27 +85,20 @@ namespace App.Main.ViewManager
                     else if (piece is King)
                         prefab = (piece.Player == PlayerType.PlayerOne) ? ou : gyoku;
 
-                    if (piece != null)
-                    {
-                        // 駒情報を使って処理
-                        Vector3 position = GetBoardCellPosition(x, y);
-                        float rotationZ = (piece.Player == PlayerType.PlayerOne) ? 0f : -180f;
+                    if (prefab == null) continue;
 
-                        GameObject pieceObject = Instantiate(prefab, position, Quaternion.Euler(-90, 0, rotationZ));
-                        pieceOnBoard[piece] = pieceObject;
+                    Vector3 position = GetBoardCellPosition(x, y);
+                    float rotationZ = (piece.Player == PlayerType.PlayerOne) ? 0f : -180f;
 
-                    }
+                    GameObject pieceObject = Instantiate(prefab, position, Quaternion.Euler(-90, 0, rotationZ));
+                    pieceObjects[x, y] = pieceObject;
                 }
             }
 
             // 現在の盤面状態を保存
             for (int x = 0; x < 9; x++)
-            {
                 for (int y = 0; y < 9; y++)
-                {
                     previousBoardState[x, y] = board[x, y];
-                }
-            }
         }
 
 
@@ -122,17 +115,16 @@ namespace App.Main.ViewManager
 
                     if (current != previous)
                     {
-                        // 駒が移動または変更された場合の処理
-                        if (previous != null && pieceOnBoard.ContainsKey(previous))
+                        // 以前の位置にオブジェクトがあれば削除
+                        if (pieceObjects[x, y] != null)
                         {
-                            // 前の位置に駒があった場合、その駒を削除
-                            Destroy(pieceOnBoard[previous]);
-                            pieceOnBoard.Remove(previous);
+                            Destroy(pieceObjects[x, y]);
+                            pieceObjects[x, y] = null;
                         }
 
                         if (current != null)
                         {
-                            // 新しい位置に駒がある場合、その駒を生成
+                            // 新しい位置に駒を生成
                             GameObject prefab = null;
                             if (current is Kyosya)
                                 prefab = kyosya;
@@ -152,19 +144,18 @@ namespace App.Main.ViewManager
                                 prefab = (current.Player == PlayerType.PlayerOne) ? ou : gyoku;
 
                             Vector3 position = GetBoardCellPosition(x, y);
-                            float rotationZ = (current.Player == PlayerType.PlayerOne) ? 90f : -90f;
+                            float rotationZ = (current.Player == PlayerType.PlayerOne) ? 0f : -180f;
 
                             GameObject pieceObject = Instantiate(prefab, position, Quaternion.Euler(-90, 0, rotationZ));
-                            pieceOnBoard[current] = pieceObject;
+                            pieceObjects[x, y] = pieceObject;
                         }
                     }
-
-                    if (current != null && previous != null && current == previous)
+                    else if (current != null && previous != null)
                     {
-                        if (!previous.IsPromoted && current.IsPromoted)
+                        // 成り判定：前は成っていなくて今成っているなら駒をひっくり返す
+                        if (!previous.IsPromoted && current.IsPromoted && pieceObjects[x, y] != null)
                         {
-                            // 駒が成った場合、ひっくり返す
-                            pieceOnBoard[previous].transform.Rotate(180, 0, 0);
+                            pieceObjects[x, y].transform.Rotate(180, 0, 0);
                         }
                     }
                 }
@@ -172,17 +163,13 @@ namespace App.Main.ViewManager
 
             // 現在の盤面状態を保存
             for (int x = 0; x < 9; x++)
-            {
                 for (int y = 0; y < 9; y++)
-                {
                     previousBoardState[x, y] = currentBoardState[x, y];
-                }
-            }
         }
 
         void Update()
         {
-            //changeUI();
+            changeUI();
         }
 
     }

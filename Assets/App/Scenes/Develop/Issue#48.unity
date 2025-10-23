@@ -3317,6 +3317,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1592249602}
     m_Modifications:
+    - target: {fileID: 154844726218770470, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -20.6
+      objectReference: {fileID: 0}
     - target: {fileID: 1184925724429591801, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
       propertyPath: 'position.Array.data[1]'
       value: 7
@@ -3327,7 +3331,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1278124734771299719, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.9
       objectReference: {fileID: 0}
     - target: {fileID: 1278124734771299719, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3365,9 +3369,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: boardSquarePostitionMarkers
       objectReference: {fileID: 0}
+    - target: {fileID: 2176793099375939570, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3420083958472589208, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3756338650247764937, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 18.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4038665745396500785, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 4800499708256291315, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
       propertyPath: 'position.Array.data[1]'
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5834418271322515667, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -15.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6819721423401333230, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 22.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7166149444198273683, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 22.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8729065384438587198, guid: ccde907c442faed43bc276e19cf8400d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -9.9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
