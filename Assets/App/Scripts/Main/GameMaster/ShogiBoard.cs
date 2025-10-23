@@ -31,6 +31,9 @@ namespace App.Main.GameMaster
             // イベントの購読
             gameStateHolder.SubscribeToChangeToDuelPlayerOneWin(OnChangeToDuelPlayerOneWin);
             gameStateHolder.SubscribeToChangeToDuelPlayerTwoWin(OnChangeToDuelPlayerTwoWin);
+
+            Debug.Log(BoardToString());
+            Debug.Log(CapturedPiecesToString());
         }
 
         private void InitiateBoard()
@@ -93,9 +96,9 @@ namespace App.Main.GameMaster
         }
 
         // その他の将棋盤操作メソッドをここに追加
-        public void MovePiece(int fromX, int fromY, int toX, int toY, PlayerType player)
+        public MoveResult MovePiece(int fromX, int fromY, int toX, int toY, PlayerType player)
         {
-            if (!IsValidMove(fromX, fromY, toX, toY, player)) return;
+            if (!IsValidMove(fromX, fromY, toX, toY, player)) return MoveResult.InvalidMove;
             currentPlayer = player;
 
             if (IsDuel(fromX, fromY, toX, toY))
@@ -105,7 +108,7 @@ namespace App.Main.GameMaster
                 savedToX = toX;
                 savedToY = toY;
                 gameStateHolder.ChangeState(GameStateHolder.GameState.Duel);
-                return;
+                return MoveResult.DuelMove;
             }
             else
             {
@@ -117,7 +120,92 @@ namespace App.Main.GameMaster
                 {
                     board[toX, toY].Promote();
                 }
+
+                // 移動後の盤面をログ出力
+                Debug.Log("[ShogiBoard] Move performed: " + fromX + "," + fromY + " -> " + toX + "," + toY);
+                Debug.Log(BoardToString());
+                Debug.Log(CapturedPiecesToString());
+
+                // ターン交代
+                if (currentPlayer == PlayerType.PlayerOne)
+                {
+                    gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
+                }
+                else
+                {
+                    gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
+                }
             }
+            return MoveResult.NormalMove;
+        }
+
+        public enum MoveResult
+        {
+            InvalidMove = -1,
+            NormalMove = 1,
+            DuelMove = 0
+        }
+
+        // 盤面をデバッグ用文字列に変換して返すユーティリティ
+        private string BoardToString()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("  0 1 2 3 4 5 6 7 8");
+            for (int y = 8; y >= 0; y--) // 上(8) -> 下(0) の順で表示
+            {
+                sb.Append(y).Append(" ");
+                for (int x = 0; x < 9; x++)
+                {
+                    var p = board[x, y];
+                    if (p == null)
+                    {
+                        sb.Append(". ");
+                    }
+                    else
+                    {
+                        // 表示ルール: 駒種類の先頭1文字を使用、PlayerOneは大文字、PlayerTwoは小文字
+                        string t = p.Type.ToString();
+                        char c = t.Length > 0 ? t[0] : '?';
+                        if (p.Player == PlayerType.PlayerOne) sb.Append(char.ToUpper(c)).Append(" ");
+                        else sb.Append(char.ToLower(c)).Append(" ");
+                    }
+                }
+                sb.AppendLine();
+            }
+            return sb.ToString();
+        }
+
+        private string CapturedPiecesToString()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("Captured Pieces:");
+            foreach (var kv in capturedPieces)
+            {
+                var player = kv.Key;
+                var list = kv.Value;
+                sb.Append(player == PlayerType.PlayerOne ? "PlayerOne: " : "PlayerTwo: ");
+                if (list.Count == 0)
+                {
+                    sb.AppendLine("None");
+                    continue;
+                }
+                // カウント集計
+                var counts = new Dictionary<PieceType, int>();
+                foreach (var p in list)
+                {
+                    if (counts.ContainsKey(p)) counts[p]++;
+                    else counts[p] = 1;
+                }
+                bool first = true;
+                foreach (var c in counts)
+                {
+                    if (!first) sb.Append(", ");
+                    sb.Append($"{c.Key}x{c.Value}");
+                    first = false;
+                }
+                sb.AppendLine();
+            }
+            return sb.ToString();
         }
 
         public void SetPiece(int x, int y, IPiece piece, PlayerType player)
@@ -189,27 +277,44 @@ namespace App.Main.GameMaster
 
         private bool IsValidMove(int fromX, int fromY, int toX, int toY, PlayerType player)
         {
-            // 駒の移動が有効かどうかを判定するロジックをここに実装
+            // 盤外チェック
             if (toX < 0 || toX >= 9 || toY < 0 || toY >= 9)
-                return false; // 盤外への移動は無効
-            if (board[fromX, fromY].Player != player)
-                return false; // 自分の駒でない場合は無効
-            if (board[toX, toY] != null && board[toX, toY].Player == board[fromX, fromY].Player)
-                return false; // 自分の駒がある場所への移動は無効
-            if (board[fromX, fromY] == null)
-                return false; // 駒が存在しない場合は無効
-            if (board[fromX, fromY].Movement == null || board[fromX, fromY].Movement.Length == 0)
-                return false; // 駒の移動パターンが定義されていない場合は無効
-            if (board[fromX, fromY].Movement.Length > 0)
+                return false;
+
+            // from位置の駒チェック（null を先に）
+            var piece = board[fromX, fromY];
+            if (piece == null)
+                return false;
+
+            // 所有者チェック
+            if (piece.Player != player)
+                return false;
+
+            // 目的地に自分の駒がある場合は不可
+            if (board[toX, toY] != null && board[toX, toY].Player == piece.Player)
+                return false;
+
+            if (piece.Movement == null || piece.Movement.Length == 0)
+                return false;
+
+            // Movement が PlayerOne 視点（y が前方向で定義）だと仮定。
+            // PlayerTwo の場合は y 成分を反転して判定する。
+            foreach (var move in piece.Movement)
             {
-                foreach (var move in board[fromX, fromY].Movement)
+                int dx = move[0];
+                int dy = move[1];
+
+                if (piece.Player == PlayerType.PlayerTwo)
                 {
-                    int newX = fromX + move[0];
-                    int newY = fromY + move[1];
-                    if (newX == toX && newY == toY)
-                        return true; // 有効な移動パターンに一致
+                    dy = -dy;
                 }
+
+                int newX = fromX + dx;
+                int newY = fromY + dy;
+                if (newX == toX && newY == toY)
+                    return true;
             }
+
             return false;
         }
 
@@ -229,11 +334,21 @@ namespace App.Main.GameMaster
                 {
                     board[savedToX, savedToY].Promote();
                 }
+
+                // 移動後の盤面をログ出力
+                Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
+                Debug.Log(BoardToString());
+                Debug.Log(CapturedPiecesToString());
             }
             else
             {
                 AddToCapturedPieces(PlayerType.PlayerOne, board[savedFromX, savedFromY].Type);
                 RemovePiece(savedFromX, savedFromY);
+
+                // 移動後の盤面をログ出力
+                Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
+                Debug.Log(BoardToString());
+                Debug.Log(CapturedPiecesToString());
             }
 
             if (capturedPieces[PlayerType.PlayerOne].Contains(PieceType.King))
@@ -257,11 +372,21 @@ namespace App.Main.GameMaster
                 {
                     board[savedToX, savedToY].Promote();
                 }
+
+                // 移動後の盤面をログ出力
+                Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
+                Debug.Log(BoardToString());
+                Debug.Log(CapturedPiecesToString());
             }
             else
             {
                 AddToCapturedPieces(PlayerType.PlayerTwo, board[savedFromX, savedFromY].Type);
                 RemovePiece(savedFromX, savedFromY);
+
+                // 移動後の盤面をログ出力
+                Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
+                Debug.Log(BoardToString());
+                Debug.Log(CapturedPiecesToString());
             }
 
             if (capturedPieces[PlayerType.PlayerTwo].Contains(PieceType.King))

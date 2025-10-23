@@ -20,6 +20,7 @@ namespace App.Main.Player
         {
             player = gameObject;
             rb = player.GetComponent<Rigidbody>();
+            player.GetComponent<PlayerInput>().onActionTriggered += SetMoveVelocity;
         }
 
         public void FixedUpdate()
@@ -30,6 +31,7 @@ namespace App.Main.Player
 
         public void SetMoveVelocity(InputAction.CallbackContext context)
         {
+            if (context.action.name != "Move") return;
             moveVelocity = context.ReadValue<Vector2>();
             Debug.Log("Move Velocity: " + moveVelocity);
         }
