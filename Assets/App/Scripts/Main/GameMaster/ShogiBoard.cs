@@ -117,7 +117,40 @@ namespace App.Main.GameMaster
                 {
                     board[toX, toY].Promote();
                 }
+
+                // 移動後の盤面をログ出力
+                Debug.Log("[ShogiBoard] Move performed: " + fromX + "," + fromY + " -> " + toX + "," + toY);
+                Debug.Log(BoardToString());
             }
+        }
+
+        // 盤面をデバッグ用文字列に変換して返すユーティリティ
+        private string BoardToString()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("  0 1 2 3 4 5 6 7 8");
+            for (int y = 8; y >= 0; y--) // 上(8) -> 下(0) の順で表示
+            {
+                sb.Append(y).Append(" ");
+                for (int x = 0; x < 9; x++)
+                {
+                    var p = board[x, y];
+                    if (p == null)
+                    {
+                        sb.Append(". ");
+                    }
+                    else
+                    {
+                        // 表示ルール: 駒種類の先頭1文字を使用、PlayerOneは大文字、PlayerTwoは小文字
+                        string t = p.Type.ToString();
+                        char c = t.Length > 0 ? t[0] : '?';
+                        if (p.Player == PlayerType.PlayerOne) sb.Append(char.ToUpper(c)).Append(" ");
+                        else sb.Append(char.ToLower(c)).Append(" ");
+                    }
+                }
+                sb.AppendLine();
+            }
+            return sb.ToString();
         }
 
         public void SetPiece(int x, int y, IPiece piece, PlayerType player)
@@ -229,11 +262,19 @@ namespace App.Main.GameMaster
                 {
                     board[savedToX, savedToY].Promote();
                 }
+
+                // 移動後の盤面をログ出力
+                Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
+                Debug.Log(BoardToString());
             }
             else
             {
                 AddToCapturedPieces(PlayerType.PlayerOne, board[savedFromX, savedFromY].Type);
                 RemovePiece(savedFromX, savedFromY);
+
+                // 移動後の盤面をログ出力
+                Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
+                Debug.Log(BoardToString());
             }
 
             if (capturedPieces[PlayerType.PlayerOne].Contains(PieceType.King))
@@ -257,11 +298,19 @@ namespace App.Main.GameMaster
                 {
                     board[savedToX, savedToY].Promote();
                 }
+
+                // 移動後の盤面をログ出力
+                Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
+                Debug.Log(BoardToString());
             }
             else
             {
                 AddToCapturedPieces(PlayerType.PlayerTwo, board[savedFromX, savedFromY].Type);
                 RemovePiece(savedFromX, savedFromY);
+
+                // 移動後の盤面をログ出力
+                Debug.Log("[ShogiBoard] Move performed: " + savedFromX + "," + savedFromY + " -> " + savedToX + "," + savedToY);
+                Debug.Log(BoardToString());
             }
 
             if (capturedPieces[PlayerType.PlayerTwo].Contains(PieceType.King))
