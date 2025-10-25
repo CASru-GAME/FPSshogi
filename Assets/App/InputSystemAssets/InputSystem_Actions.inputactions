@@ -140,7 +140,18 @@
                 {
                     "name": "",
                     "id": "9700b494-b416-4a3c-aaec-fffaec6a5a0b",
-                    "path": "",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Climb",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bd4997e5-9a10-4e86-b068-0759aa5b97be",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
