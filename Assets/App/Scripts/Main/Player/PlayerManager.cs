@@ -23,13 +23,15 @@ namespace App.Main.Player
         [SerializeField] GameObject PlayerTwoSpawnPositionMarker;
         private Vector3 PlayerOneSpawnPosition = new Vector3(-5f, 0f, 0f);
         private Vector3 PlayerTwoSpawnPosition = new Vector3(5f, 0f, 0f);
+        private Quaternion PlayerOneSpawnRotation = Quaternion.Euler(0f, 90f, 0f);
+        private Quaternion PlayerTwoSpawnRotation = Quaternion.Euler(0f, -90f, 0f);
 
         public void Initialize(ReferenceHolder referenceHolder)
         {
             gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
             SetSpawnPositions();
-            PlayerOne = CreatePlayer(PlayerOneSpawnPosition);
-            PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition);
+            PlayerOne = CreatePlayer(PlayerOneSpawnPosition, PlayerOneSpawnRotation);
+            PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition, PlayerTwoSpawnRotation);
             PlayerIndexPlayerOne = PlayerOne.GetComponent<PlayerInput>().playerIndex;
             PlayerIndexPlayerTwo = PlayerTwo.GetComponent<PlayerInput>().playerIndex;
             DisablePlayerCamera();
@@ -43,21 +45,25 @@ namespace App.Main.Player
             if (PlayerOneSpawnPositionMarker != null)
             {
                 PlayerOneSpawnPosition = PlayerOneSpawnPositionMarker.transform.position;
+                float y = PlayerOneSpawnPositionMarker.transform.eulerAngles.y;
+                PlayerOneSpawnRotation = Quaternion.Euler(0f, y, 0f);
             }
             if (PlayerTwoSpawnPositionMarker != null)
             {
                 PlayerTwoSpawnPosition = PlayerTwoSpawnPositionMarker.transform.position;
+                float y = PlayerTwoSpawnPositionMarker.transform.eulerAngles.y;
+                PlayerTwoSpawnRotation = Quaternion.Euler(0f, y, 0f);
             }
         }
 
-        private GameObject CreatePlayer(Vector3 spawnPosition)
+        private GameObject CreatePlayer(Vector3 spawnPosition, Quaternion spawnRotation)
         {
             if (PlayerPrefab == null)
             {
                 Debug.LogError("PlayerPrefab is not assigned in the inspector.");
                 return null;
             }
-            GameObject player = Instantiate(PlayerPrefab, spawnPosition, Quaternion.identity);
+            GameObject player = Instantiate(PlayerPrefab, spawnPosition, spawnRotation);
             if (player == null)
             {
                 Debug.LogError("Failed to instantiate PlayerPrefab.");
@@ -79,12 +85,14 @@ namespace App.Main.Player
         {
             EnableOnlyMap("Player");
             EnablePlayerCamera();
+            CursorDisable();
         }
 
         private void OnExitDuel()
         {
             EnableOnlyMap("Shogi");
             DisablePlayerCamera();
+            CursorEnable();
         }
 
         /// <summary>
@@ -107,6 +115,18 @@ namespace App.Main.Player
             // 各 PlayerInput 側の ActionMap を有効化（PlayerInput 経由で使っている場合）   
             PlayerOne.GetComponent<PlayerInput>().ActivateInput();
             PlayerTwo.GetComponent<PlayerInput>().ActivateInput();
+        }
+
+        private void CursorEnable()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
+        private void CursorDisable()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
         private void DisablePlayerCamera()
