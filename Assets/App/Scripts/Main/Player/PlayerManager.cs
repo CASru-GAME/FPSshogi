@@ -19,13 +19,15 @@ namespace App.Main.Player
         public int PlayerIndexPlayerTwo = 1;
 
         private GameStateHolder gameStateHolder;
-
-        [SerializeField] private Vector3 PlayerOneSpawnPosition = new Vector3(-5f, 0f, 0f);
-        [SerializeField] private Vector3 PlayerTwoSpawnPosition = new Vector3(5f, 0f, 0f);
+        [SerializeField] GameObject PlayerOneSpawnPositionMarker;
+        [SerializeField] GameObject PlayerTwoSpawnPositionMarker;
+        private Vector3 PlayerOneSpawnPosition = new Vector3(-5f, 0f, 0f);
+        private Vector3 PlayerTwoSpawnPosition = new Vector3(5f, 0f, 0f);
 
         public void Initialize(ReferenceHolder referenceHolder)
         {
             gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
+            SetSpawnPositions();
             PlayerOne = CreatePlayer(PlayerOneSpawnPosition);
             PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition);
             PlayerIndexPlayerOne = PlayerOne.GetComponent<PlayerInput>().playerIndex;
@@ -34,6 +36,18 @@ namespace App.Main.Player
             gameStateHolder.SubscribeToChangeToDuel(OnChangedToDuel);
             gameStateHolder.SubscribeToExitDuel(OnExitDuel);
             EnableOnlyMap("Shogi");
+        }
+
+        private void SetSpawnPositions()
+        {
+            if (PlayerOneSpawnPositionMarker != null)
+            {
+                PlayerOneSpawnPosition = PlayerOneSpawnPositionMarker.transform.position;
+            }
+            if (PlayerTwoSpawnPositionMarker != null)
+            {
+                PlayerTwoSpawnPosition = PlayerTwoSpawnPositionMarker.transform.position;
+            }
         }
 
         private GameObject CreatePlayer(Vector3 spawnPosition)
