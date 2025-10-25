@@ -25,6 +25,7 @@ namespace App.Main.Player
             gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
             PlayerOne = CreatePlayer(PlayerOneSpawnPosition);
             PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition);
+            DisablePlayerCamera();
             gameStateHolder.SubscribeToChangeToDuel(OnChangedToDuel);
             gameStateHolder.SubscribeToExitDuel(OnExitDuel);
             EnableOnlyMap("Shogi");
@@ -56,11 +57,13 @@ namespace App.Main.Player
         private void OnChangedToDuel()
         {
             EnableOnlyMap("Player");
+            EnablePlayerCamera();
         }
 
         private void OnExitDuel()
         {
             EnableOnlyMap("Shogi");
+            DisablePlayerCamera();
         }
 
         /// <summary>
@@ -84,6 +87,19 @@ namespace App.Main.Player
             PlayerOne.GetComponent<PlayerInput>().ActivateInput();
             PlayerTwo.GetComponent<PlayerInput>().ActivateInput();
         }
+
+        private void DisablePlayerCamera()
+        {
+            PlayerOne.GetComponentInChildren<Camera>().enabled = false;
+            PlayerTwo.GetComponentInChildren<Camera>().enabled = false;
+        }
+
+        private void EnablePlayerCamera()
+        {
+            PlayerOne.GetComponentInChildren<Camera>().enabled = true;
+            PlayerTwo.GetComponentInChildren<Camera>().enabled = true;
+        }
+
         private void DisableAllInput()
         {
             // アセット単位で全無効化（通常これで十分）
