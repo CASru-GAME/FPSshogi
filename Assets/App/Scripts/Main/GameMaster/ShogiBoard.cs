@@ -358,7 +358,10 @@ namespace App.Main.GameMaster
                 return;
             }
 
-            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
+            if (currentPlayer == PlayerType.PlayerOne)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
+            else
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
         }
 
         private void OnChangeToDuelPlayerTwoWin()
@@ -395,8 +398,10 @@ namespace App.Main.GameMaster
                 gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoWin);
                 return;
             }
-
-            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
+            if (currentPlayer == PlayerType.PlayerTwo)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
+            else
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
         }
 
         private void AddToCapturedPieces(PlayerType player, PieceType pieceType)
