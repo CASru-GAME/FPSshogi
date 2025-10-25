@@ -10,7 +10,7 @@ namespace App.Main.ShogiPointer
     public class ShogiPointer : MonoBehaviour, IInitializable
     {
         public int InitializationPriority => 0;
-        public System.Type[] Dependencies => new System.Type[] { typeof(PlayerManager), typeof(ShogiBoard),typeof(GameStateHolder)   };
+        public System.Type[] Dependencies => new System.Type[] { typeof(PlayerManager), typeof(ShogiBoard), typeof(GameStateHolder) };
 
         private PlayerManager playerManager;
         private ShogiBoard shogiBoard;
@@ -26,13 +26,23 @@ namespace App.Main.ShogiPointer
             pointerPosition = new int[] { 0, 0 };
             selectedPiecePosition = new int[] { -1, -1 };
 
-            playerManager.PlayerOne.GetComponent<PlayerInput>().onActionTriggered += OnActionTriggered;
-            playerManager.PlayerTwo.GetComponent<PlayerInput>().onActionTriggered += OnActionTriggered;
+            playerManager.PlayerOne.GetComponent<PlayerInput>().onActionTriggered += ctx => OnActionTriggered(ctx, playerManager.PlayerOne.GetComponent<PlayerInput>());
+            playerManager.PlayerTwo.GetComponent<PlayerInput>().onActionTriggered += ctx => OnActionTriggered(ctx, playerManager.PlayerTwo.GetComponent<PlayerInput>());
         }
 
-        private void OnActionTriggered(InputAction.CallbackContext context)
-        {            
+        private void OnActionTriggered(InputAction.CallbackContext context, PlayerInput sourcePlayerInput)
+        {
             if (context.phase != InputActionPhase.Started) return;
+
+            if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn && sourcePlayerInput.playerIndex != playerManager.PlayerIndexPlayerOne)
+            {
+                return;
+            }
+            if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn && sourcePlayerInput.playerIndex != playerManager.PlayerIndexPlayerTwo)
+            {
+                return;
+            }
+
 
             if (context.action.name == "SelectUp")
             {
@@ -83,9 +93,9 @@ namespace App.Main.ShogiPointer
 
         public void Select()
         {
-            if(gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn)
+            if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn)
             {
-                if(selectedPiecePosition[0] != -1 && selectedPiecePosition[1] != -1)
+                if (selectedPiecePosition[0] != -1 && selectedPiecePosition[1] != -1)
                 {
                     // すでに駒が選択されている場合、移動を試みる
                     ShogiBoard.MoveResult moveSuccessful = shogiBoard.MovePiece(selectedPiecePosition[0], selectedPiecePosition[1], pointerPosition[0], pointerPosition[1], PlayerType.PlayerOne);
@@ -110,7 +120,7 @@ namespace App.Main.ShogiPointer
                     }
                 }
             }
-            else if(gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn)
+            else if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn)
             {
                 if (selectedPiecePosition[0] != -1 && selectedPiecePosition[1] != -1)
                 {

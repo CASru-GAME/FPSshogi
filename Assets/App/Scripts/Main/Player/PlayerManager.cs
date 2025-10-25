@@ -15,6 +15,9 @@ namespace App.Main.Player
         public GameObject PlayerOne { get; private set; }
         public GameObject PlayerTwo { get; private set; }
 
+        public int PlayerIndexPlayerOne = 0;
+        public int PlayerIndexPlayerTwo = 1;
+
         private GameStateHolder gameStateHolder;
 
         [SerializeField] private Vector3 PlayerOneSpawnPosition = new Vector3(-5f, 0f, 0f);
@@ -25,6 +28,8 @@ namespace App.Main.Player
             gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
             PlayerOne = CreatePlayer(PlayerOneSpawnPosition);
             PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition);
+            PlayerIndexPlayerOne = PlayerOne.GetComponent<PlayerInput>().playerIndex;
+            PlayerIndexPlayerTwo = PlayerTwo.GetComponent<PlayerInput>().playerIndex;
             DisablePlayerCamera();
             gameStateHolder.SubscribeToChangeToDuel(OnChangedToDuel);
             gameStateHolder.SubscribeToExitDuel(OnExitDuel);
@@ -53,6 +58,8 @@ namespace App.Main.Player
             playerScript.Initialize();
             return player;
         }
+
+
 
         private void OnChangedToDuel()
         {
