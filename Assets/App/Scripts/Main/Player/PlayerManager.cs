@@ -26,6 +26,7 @@ namespace App.Main.Player
             PlayerOne = CreatePlayer(PlayerOneSpawnPosition);
             PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition);
             gameStateHolder.SubscribeToChangeToDuel(OnChangedToDuel);
+        
             EnableOnlyMap("Shogi");
         }
 
@@ -55,6 +56,11 @@ namespace App.Main.Player
         private void OnChangedToDuel()
         {
             EnableOnlyMap("Player");
+        }
+
+        private void OnExitDuel()
+        {
+            EnableOnlyMap("Shogi");
         }
 
         /// <summary>
