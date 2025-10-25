@@ -398,6 +398,7 @@ namespace App.Main.GameMaster
                 gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoWin);
                 return;
             }
+            
             if (currentPlayer == PlayerType.PlayerTwo)
                 gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
             else
