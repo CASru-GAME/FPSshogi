@@ -12,6 +12,11 @@ namespace App.Main.Player
         [SerializeField] private float minPitch = -80f;
         [SerializeField] private float maxPitch = 80f;
 
+        // Climb（単純実装）
+        [SerializeField] private float climbSpeed = 3f;    // 上方向に与える速度
+        [SerializeField] private float climbDetectDistance = 0.5f; // 足元から前方へ飛ばすレイの距離
+        private bool climbInput = false;
+
         private Rigidbody rb;
         private PlayerInput pi;
         private Vector2 moveInput = Vector2.zero;
@@ -29,6 +34,8 @@ namespace App.Main.Player
             rb = GetComponent<Rigidbody>();
             if (rb == null)
                 rb = gameObject.AddComponent<Rigidbody>();
+            rb.isKinematic = false;
+            rb.useGravity = true;
             rb.constraints = RigidbodyConstraints.FreezeRotation;
 
             if (cameraTransform == null && Camera.main != null)
@@ -76,6 +83,13 @@ namespace App.Main.Player
                     else if (context.phase == InputActionPhase.Canceled)
                         lookInput = Vector2.zero;
                     break;
+
+                case "Climb":
+                    if (context.phase == InputActionPhase.Performed || context.phase == InputActionPhase.Started)
+                        climbInput = true;
+                    else if (context.phase == InputActionPhase.Canceled)
+                        climbInput = false;
+                    break;
             }
         }
 
@@ -85,15 +99,43 @@ namespace App.Main.Player
 
             Vector3 forward = (cameraTransform != null) ? cameraTransform.forward : transform.forward;
             Vector3 right = (cameraTransform != null) ? cameraTransform.right : transform.right;
-
             forward.y = 0f; right.y = 0f;
             forward.Normalize(); right.Normalize();
 
             Vector3 desired = right * moveInput.x + forward * moveInput.y;
             Vector3 targetVel = desired * moveSpeed;
-            targetVel.y = rb.linearVelocity.y; // 重力を保持
 
-            rb.linearVelocity = targetVel;
+            // 足元の最も低い座標を取得（Collider があれば bounds.min を使用）
+            Vector3 bottom;
+            var col = GetComponent<Collider>();
+            if (col != null)
+                bottom = col.bounds.min;
+            else
+                bottom = transform.position;
+
+            // レイの発射位置は足元少し上（コライダー内部から出るのを防ぐ）
+            Vector3 rayOrigin = bottom + Vector3.up * 0.05f;
+            // レイ方向はプレイヤーの前方（カメラの向きの水平方向を使用）
+            Vector3 rayDir = forward;
+            rayDir.y = 0f;
+            rayDir.Normalize();
+
+            bool detect = Physics.Raycast(rayOrigin, rayDir, out RaycastHit hit, climbDetectDistance);
+
+            // 検出中かつ Climb アクションが押されている間だけ上方向に速度を与える
+            if (detect && climbInput)
+            {
+                // 現在の水平成分は保持して Y を上げる
+                Vector3 v = new Vector3(rb.linearVelocity.x, climbSpeed, rb.linearVelocity.z);
+                rb.linearVelocity = v;
+            }
+            else
+            {
+                // 通常移動：重力を有効にして Y 成分は現状を維持
+                Vector3 v = targetVel;
+                v.y = rb.linearVelocity.y;
+                rb.linearVelocity = v;
+            }
         }
 
         void Update()
