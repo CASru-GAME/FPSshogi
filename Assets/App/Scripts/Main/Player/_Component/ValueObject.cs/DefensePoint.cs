@@ -1,6 +1,6 @@
 namespace App.Main.Player
 {
-    class DefensePoint
+    public class DefensePoint
     {
         public int Current { get; private set; }
         public DefensePoint()
@@ -11,10 +11,6 @@ namespace App.Main.Player
         public void Add(int amount)
         {
             Current += amount;
-            if (Current > Max)
-            {
-                Current = Max;
-            }
         }
 
         public void Reset()

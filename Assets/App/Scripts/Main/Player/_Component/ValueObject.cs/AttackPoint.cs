@@ -2,14 +2,14 @@ using System.Runtime.CompilerServices;
 
 namespace App.Main.Player
 {
-    class AttackPoint
+    public class AttackPoint
     {
         public int Current { get; private set; }
         public int Default { get; private set; }
         public AttackPoint(int Default)
         {
             Current = Default;
-            Default = Default;
+            this.Default = Default;
         }
 
         public void Add(int amount)

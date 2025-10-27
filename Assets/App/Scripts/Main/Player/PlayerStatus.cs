@@ -2,13 +2,13 @@ using App.Main.Player;
 
 namespace App.Main.Player
 {
-    class PlayerStatus
+    public class PlayerStatus
     {
         public Hp Hp { get; private set; }
         public AttackPoint AttackPoint { get; private set; }
         public DefensePoint DefensePoint { get; private set; }
         public MoveSpeed MoveSpeed { get; private set; }
-        public EffectList EffectList { get; private set; } = new EffectList();
+        public EffectList EffectList { get; private set; }
 
         public PlayerStatus(int hpMax, int attackPointDefault, float moveSpeedDefault)
         {

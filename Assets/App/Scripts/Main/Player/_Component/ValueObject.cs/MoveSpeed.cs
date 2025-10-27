@@ -1,6 +1,6 @@
 namespace App.Main.Player
 {
-    class MoveSpeed
+    public class MoveSpeed
     {
         public float Current { get; private set; }
         public float Default { get; private set; }

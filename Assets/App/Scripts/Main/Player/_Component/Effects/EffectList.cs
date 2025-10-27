@@ -1,8 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
+
+
 namespace App.Main.Player
 {
-    class EffectList
+    public class EffectList
     {
-        private List<T> effects = new List<T>();
+        private List<IEffect> effects = new List<IEffect>();
         private PlayerStatus playerStatus;
 
         public EffectList(PlayerStatus playerStatus)
@@ -10,21 +14,20 @@ namespace App.Main.Player
             this.playerStatus = playerStatus;
         }
 
-        public void AddEffect(T effect) where T : IEffect
+        public void AddEffect(IEffect effect)
         {
             if (effects.Any(e => e.GetType() == effect.GetType()))
             {
                 return;
             }
-            effect.Effect(playerStatus, OnEffectComplete);
+            effect.Effect(playerStatus, () => OnEffectComplete(effect.GetType()));
             effects.Add(effect);
         }
 
-        public void UpdateEffects(T effect) where T : IEffect
+        public void UpdateEffects(System.Type effectType)
         {
-            effects.OfType<T>().FirstOrDefault()?.UpdateEffect();
+            effects.Where(e => e.GetType() == effectType).ToList().ForEach(e => e.UpdateEffect());
         }
-
         private void OnEffectComplete(System.Type effectType)
         {
             effects.RemoveAll(e => e.GetType() == effectType);

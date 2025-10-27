@@ -1,6 +1,6 @@
 namespace App.Main.Player
 {
-    class Hp
+    public class Hp
     {
         public int Current { get; private set; }
         public int Max { get; private set; }

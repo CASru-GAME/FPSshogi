@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace App.Main.Player
 {
-    class StatusParameter
+    public class StatusParameter
     {
         [SerializeField] public PieceType pieceType;
         [SerializeField] public int hpMax;

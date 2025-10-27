@@ -2,10 +2,11 @@ using App.Common.Initialize;
 using UnityEngine;
 using App.Main.GameMaster;
 using UnityEngine.InputSystem;
+using App.Main.ShogiThings;
 
 namespace App.Main.Player
 {
-    class PlayerManager : MonoBehaviour, IInitializable
+    public class PlayerManager : MonoBehaviour, IInitializable
     {
         public int InitializationPriority => 0;
         public System.Type[] Dependencies => new System.Type[] { typeof(GameStateHolder), typeof(ShogiBoard) };
@@ -32,7 +33,7 @@ namespace App.Main.Player
         [SerializeField] private StatusParameter ginStatusParameter;
         [SerializeField] private StatusParameter kinStatusParameter;
         [SerializeField] private StatusParameter kakugyoStatusParameter;
-        [SerializeField] private StatusParameter hishaStatusParameter;
+        [SerializeField] private StatusParameter hisyaStatusParameter;
         [SerializeField] private StatusParameter kingStatusParameter;
 
         public void Initialize(ReferenceHolder referenceHolder)
@@ -109,58 +110,58 @@ namespace App.Main.Player
             IPiece pieceTypePlayerOne = shogiBoard.GetDuelPiece()[PlayerType.PlayerOne];
             IPiece pieceTypePlayerTwo = shogiBoard.GetDuelPiece()[PlayerType.PlayerTwo];
 
-            switch (pieceTypePlayerOne.GetPieceType())
+            switch (pieceTypePlayerOne.Type)
             {
                 case PieceType.Fuhyo:
-                    PlayerOne.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
                     break;
                 case PieceType.Kyosya:
-                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
                     break;
                 case PieceType.Keima:
-                    PlayerOne.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
                     break;
                 case PieceType.Gin:
-                    PlayerOne.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
                     break;
                 case PieceType.Kin:
-                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
                     break;
                 case PieceType.Kakugyo:
-                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
                     break;
-                case PieceType.Hisha:
-                    PlayerOne.GetComponent<Player>().SetPlayerStatus(hishaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                case PieceType.Hisya:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
                     break;
-                case PieceType.Ou:
-                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                case PieceType.King:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
                     break;
             }
-            switch (pieceTypePlayerTwo.GetPieceType())
+            switch (pieceTypePlayerTwo.Type)
             {
                 case PieceType.Fuhyo:
-                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
                     break;
                 case PieceType.Kyosya:
-                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
                     break;
                 case PieceType.Keima:
-                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
                     break;
                 case PieceType.Gin:
-                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
                     break;
                 case PieceType.Kin:
-                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
                     break;
                 case PieceType.Kakugyo:
-                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
                     break;
-                case PieceType.Hisha:
-                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(hishaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                case PieceType.Hisya:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
                     break;
-                case PieceType.Ou:
-                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                case PieceType.King:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
                     break;
             }
         }
