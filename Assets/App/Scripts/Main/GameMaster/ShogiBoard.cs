@@ -74,6 +74,13 @@ namespace App.Main.GameMaster
         {
             return board[x, y];
         }
+        public Dictionary<PlayerType, IPiece> GetDuelPiece()
+        {
+            Dictionary<PlayerType, IPiece> duelPieces = new Dictionary<PlayerType, IPiece>();
+            duelPieces[board[savedFromX, savedFromY].Player] = board[savedFromX, savedFromY];
+            duelPieces[board[savedToX, savedToY].Player] = board[savedToX, savedToY];
+            return duelPieces;
+        }
         public IPiece[,] GetBoard()
         {
             return board;

@@ -24,10 +24,7 @@ namespace App.Main.Player
         private float yaw = 0f;
         private float pitch = 0f;
 
-        void Start()
-        {
-            Initialize();
-        }
+        private PlayerStatus playerStatus;
 
         public void Initialize()
         {
@@ -51,9 +48,15 @@ namespace App.Main.Player
                 pitch = cameraTransform.localEulerAngles.x;
                 if (pitch > 180f) pitch -= 360f;
             }
+            playerStatus = new PlayerStatus(hpMax: 100, attackPointDefault: 10, moveSpeedDefault: moveSpeed);
         }
 
-        private void OnDestroy()
+        public void SetPlayerStatus(PlayerStatus status)
+        {
+            playerStatus = status;
+        }
+
+        public void OnDestroy()
         {
             if (pi != null)
                 pi.onActionTriggered -= OnActionTriggered;

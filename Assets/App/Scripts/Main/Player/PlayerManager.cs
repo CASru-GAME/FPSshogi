@@ -8,7 +8,7 @@ namespace App.Main.Player
     class PlayerManager : MonoBehaviour, IInitializable
     {
         public int InitializationPriority => 0;
-        public System.Type[] Dependencies => new System.Type[] { typeof(GameStateHolder) };
+        public System.Type[] Dependencies => new System.Type[] { typeof(GameStateHolder), typeof(ShogiBoard) };
         [SerializeField] private InputActionAsset inputActions;
 
         [SerializeField] private GameObject PlayerPrefab;
@@ -19,16 +19,26 @@ namespace App.Main.Player
         public int PlayerIndexPlayerTwo = 1;
 
         private GameStateHolder gameStateHolder;
+        private ShogiBoard shogiBoard;
         [SerializeField] GameObject PlayerOneSpawnPositionMarker;
         [SerializeField] GameObject PlayerTwoSpawnPositionMarker;
         private Vector3 PlayerOneSpawnPosition = new Vector3(-5f, 0f, 0f);
         private Vector3 PlayerTwoSpawnPosition = new Vector3(5f, 0f, 0f);
         private Quaternion PlayerOneSpawnRotation = Quaternion.Euler(0f, 90f, 0f);
         private Quaternion PlayerTwoSpawnRotation = Quaternion.Euler(0f, -90f, 0f);
+        [SerializeField] private StatusParameter fuhyoStatusParameter;
+        [SerializeField] private StatusParameter kyosyaStatusParameter;
+        [SerializeField] private StatusParameter keimaStatusParameter;
+        [SerializeField] private StatusParameter ginStatusParameter;
+        [SerializeField] private StatusParameter kinStatusParameter;
+        [SerializeField] private StatusParameter kakugyoStatusParameter;
+        [SerializeField] private StatusParameter hishaStatusParameter;
+        [SerializeField] private StatusParameter kingStatusParameter;
 
         public void Initialize(ReferenceHolder referenceHolder)
         {
             gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
+            shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
             SetSpawnPositions();
             PlayerOne = CreatePlayer(PlayerOneSpawnPosition, PlayerOneSpawnRotation);
             PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition, PlayerTwoSpawnRotation);
@@ -79,13 +89,12 @@ namespace App.Main.Player
             return player;
         }
 
-
-
         private void OnChangedToDuel()
         {
             EnableOnlyMap("Player");
             EnablePlayerCamera();
             CursorDisable();
+            SetPlayerCondition();
         }
 
         private void OnExitDuel()
@@ -93,6 +102,67 @@ namespace App.Main.Player
             EnableOnlyMap("Shogi");
             DisablePlayerCamera();
             CursorEnable();
+        }
+
+        private void SetPlayerCondition()
+        {
+            IPiece pieceTypePlayerOne = shogiBoard.GetDuelPiece()[PlayerType.PlayerOne];
+            IPiece pieceTypePlayerTwo = shogiBoard.GetDuelPiece()[PlayerType.PlayerTwo];
+
+            switch (pieceTypePlayerOne.GetPieceType())
+            {
+                case PieceType.Fuhyo:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    break;
+                case PieceType.Kyosya:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    break;
+                case PieceType.Keima:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    break;
+                case PieceType.Gin:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    break;
+                case PieceType.Kin:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    break;
+                case PieceType.Kakugyo:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    break;
+                case PieceType.Hisha:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(hishaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    break;
+                case PieceType.Ou:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted()));
+                    break;
+            }
+            switch (pieceTypePlayerTwo.GetPieceType())
+            {
+                case PieceType.Fuhyo:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    break;
+                case PieceType.Kyosya:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    break;
+                case PieceType.Keima:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    break;
+                case PieceType.Gin:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    break;
+                case PieceType.Kin:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    break;
+                case PieceType.Kakugyo:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    break;
+                case PieceType.Hisha:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(hishaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    break;
+                case PieceType.Ou:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted()));
+                    break;
+            }
         }
 
         /// <summary>
