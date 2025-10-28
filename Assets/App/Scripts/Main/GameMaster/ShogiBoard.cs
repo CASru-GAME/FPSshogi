@@ -215,11 +215,52 @@ namespace App.Main.GameMaster
             return sb.ToString();
         }
 
-        public void SetPiece(int x, int y, IPiece piece, PlayerType player)
+        public MoveResult SetPiece(int x, int y, PieceType piece, PlayerType player)
         {
-            if (!IsCaptured(player, piece.Type)) return; // 持ち駒にない場合は置けない
-            if (!IsSettable(x, y, piece, player)) return;
-            board[x, y] = piece;
+            currentPlayer = player;
+            IPiece pieceInstance = FindPieceFromPieceType(piece, player);
+            Debug.Log("[ShogiBoard] Attempting to set piece: " + piece + " at " + x + "," + y + " for " + player);
+            if (pieceInstance == null) return MoveResult.InvalidMove;
+            Debug.Log("[ShogiBoard] Found piece: " + pieceInstance.Type + " for " + player);
+            if (!IsCaptured(player, pieceInstance.Type)) return MoveResult.InvalidMove; // 持ち駒にない場合は置けない
+            Debug.Log("[ShogiBoard] Setting piece: " + pieceInstance.Type + " at " + x + "," + y + " for " + player);
+            if (!IsSettable(x, y, pieceInstance, player)) return MoveResult.InvalidMove;
+            Debug.Log("[ShogiBoard] Settable confirmed.");
+            board[x, y] = pieceInstance;
+            if (currentPlayer == PlayerType.PlayerOne)
+            {
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
+            }
+            else
+            {
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
+            }
+            return MoveResult.NormalMove;
+        }
+
+        private IPiece FindPieceFromPieceType(PieceType pieceType, PlayerType player)
+        {
+            switch (pieceType)
+            {
+                case PieceType.King:
+                    return new King(player);
+                case PieceType.Kin:
+                    return new Kin(player);
+                case PieceType.Gin:
+                    return new Gin(player);
+                case PieceType.Kyosya:
+                    return new Kyosya(player);
+                case PieceType.Keima:
+                    return new Keima(player);
+                case PieceType.Fuhyo:
+                    return new Fuhyo(player);
+                case PieceType.Hisya:
+                    return new Hisya(player);
+                case PieceType.Kakugyo:
+                    return new Kakugyo(player);
+                default:
+                    return null;
+            }
         }
 
         private bool IsPromotableMove(int fromY, int toY, IPiece piece)
@@ -243,8 +284,11 @@ namespace App.Main.GameMaster
 
         private bool IsSettable(int x, int y, IPiece piece, PlayerType player)
         {
+            Debug.Log("[ShogiBoard] Checking if settable at " + x + "," + y + " for piece " + piece.Type + " by " + player);
             if (board[x, y] != null) return false; // 既に駒がある場合は置けない
+            Debug.Log("[ShogiBoard] No piece at target position.");
             if (IsNifu(x, player)) return false; // 二歩の判定
+            Debug.Log("[ShogiBoard] Nifu check passed.");
             if (IsDeadEndPiece(x, y, piece)) return false; // 駒が詰む場合は置けない
             return true;
         }
@@ -405,7 +449,7 @@ namespace App.Main.GameMaster
                 gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoWin);
                 return;
             }
-            
+
             if (currentPlayer == PlayerType.PlayerTwo)
                 gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
             else

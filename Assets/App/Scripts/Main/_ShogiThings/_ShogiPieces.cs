@@ -424,14 +424,14 @@ namespace App.Main.ShogiThings
 
     public enum PieceType
     {
-        King,
-        Hisya,
-        Kakugyo,
-        Kin,
-        Gin,
-        Keima,
-        Kyosya,
-        Fuhyo
+        King = 0,
+        Hisya = 1,
+        Kakugyo = 2,
+        Kin = 3,
+        Gin = 4,
+        Keima = 5,
+        Kyosya = 6,
+        Fuhyo = 7
     }
     public enum PlayerType
     {
