@@ -278,6 +278,18 @@ namespace App.Main.GameMaster
             OnChangeToStarting -= onChangeToStarting;
         }
 
+        public void SubscribeToExitStarting(Action onExitStarting)
+        {
+            OnChangeToDuel += onExitStarting;
+            OnChangeToPaused += onExitStarting;
+        }
+
+        public void UnsubscribeFromExitStarting(Action onExitStarting)
+        {
+            OnChangeToDuel -= onExitStarting;
+            OnChangeToPaused -= onExitStarting;
+        }
+
         /// <summary>
         /// PlayerOneTurn状態への変化イベントを購読する
         /// </summary>
@@ -294,6 +306,20 @@ namespace App.Main.GameMaster
         public void UnsubscribeFromChangeToPlayerOneTurn(Action onChangeToPlayerOneTurn)
         {
             OnChangeToPlayerOneTurn -= onChangeToPlayerOneTurn;
+        }
+
+        public void SubscribeToExitPlayerOneTurn(Action onExitPlayerOneTurn)
+        {
+            OnChangeToPlayerTwoTurn += onExitPlayerOneTurn;
+            OnChangeToDuel += onExitPlayerOneTurn;
+            OnChangeToPaused += onExitPlayerOneTurn;
+        }
+
+        public void UnsubscribeFromExitPlayerOneTurn(Action onExitPlayerOneTurn)
+        {
+            OnChangeToPlayerTwoTurn -= onExitPlayerOneTurn;
+            OnChangeToDuel -= onExitPlayerOneTurn;
+            OnChangeToPaused -= onExitPlayerOneTurn;
         }
 
         /// <summary>
@@ -314,6 +340,20 @@ namespace App.Main.GameMaster
             OnChangeToPlayerTwoTurn -= onChangeToPlayerTwoTurn;
         }
 
+        public void SubscribeToExitPlayerTwoTurn(Action onExitPlayerTwoTurn)
+        {
+            OnChangeToPlayerOneTurn += onExitPlayerTwoTurn;
+            OnChangeToDuel += onExitPlayerTwoTurn;
+            OnChangeToPaused += onExitPlayerTwoTurn;
+        }
+
+        public void UnsubscribeFromExitPlayerTwoTurn(Action onExitPlayerTwoTurn)
+        {
+            OnChangeToPlayerOneTurn -= onExitPlayerTwoTurn;
+            OnChangeToDuel -= onExitPlayerTwoTurn;
+            OnChangeToPaused -= onExitPlayerTwoTurn;
+        }
+
         /// <summary>
         /// Duel状態への変化イベントを購読する
         /// </summary>
@@ -332,6 +372,20 @@ namespace App.Main.GameMaster
             OnChangeToDuel -= onChangeToDuel;
         }
 
+        public void SubscribeToExitDuel(Action onExitDuel)
+        {
+            OnChangeToDuelPlayerOneWin += onExitDuel;
+            OnChangeToDuelPlayerTwoWin += onExitDuel;
+            OnChangeToPaused += onExitDuel;
+        }
+
+        public void UnsubscribeFromExitDuel(Action onExitDuel)
+        {
+            OnChangeToDuelPlayerOneWin -= onExitDuel;
+            OnChangeToDuelPlayerTwoWin -= onExitDuel;
+            OnChangeToPaused -= onExitDuel;
+        }
+
         /// <summary>
         /// Paused状態への変化イベントを購読する
         /// </summary>
@@ -348,6 +402,20 @@ namespace App.Main.GameMaster
         public void UnsubscribeFromChangeToPaused(Action onChangeToPaused)
         {
             OnChangeToPaused -= onChangeToPaused;
+        }
+
+        public void SubscribeToExitPaused(Action onExitPaused)
+        {
+            OnChangeToPlayerOneTurn += onExitPaused;
+            OnChangeToPlayerTwoTurn += onExitPaused;
+            OnChangeToDuel += onExitPaused;
+        }
+
+        public void UnsubscribeFromExitPaused(Action onExitPaused)
+        {
+            OnChangeToPlayerOneTurn -= onExitPaused;
+            OnChangeToPlayerTwoTurn -= onExitPaused;
+            OnChangeToDuel -= onExitPaused;
         }
 
         /// <summary>

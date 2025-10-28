@@ -2,41 +2,113 @@ using App.Common.Initialize;
 using UnityEngine;
 using App.Main.GameMaster;
 using UnityEngine.InputSystem;
+using App.Main.ShogiThings;
 
 namespace App.Main.Player
 {
-    class PlayerManager : MonoBehaviour, IInitializable
+    public class PlayerManager : MonoBehaviour, IInitializable
     {
         public int InitializationPriority => 0;
-        public System.Type[] Dependencies => new System.Type[] { typeof(GameStateHolder) };
+        public System.Type[] Dependencies => new System.Type[] { typeof(GameStateHolder), typeof(ShogiBoard) };
         [SerializeField] private InputActionAsset inputActions;
 
         [SerializeField] private GameObject PlayerPrefab;
+        [SerializeField] private GameObject PlayerOnePieceObject;
+        [SerializeField] private GameObject PlayerTwoPieceObject;
         public GameObject PlayerOne { get; private set; }
         public GameObject PlayerTwo { get; private set; }
 
-        private GameStateHolder gameStateHolder;
+        public int PlayerIndexPlayerOne = 0;
+        public int PlayerIndexPlayerTwo = 1;
 
-        [SerializeField] private Vector3 PlayerOneSpawnPosition = new Vector3(-5f, 0f, 0f);
-        [SerializeField] private Vector3 PlayerTwoSpawnPosition = new Vector3(5f, 0f, 0f);
+        private GameStateHolder gameStateHolder;
+        private ShogiBoard shogiBoard;
+        [SerializeField] GameObject PlayerOneSpawnPositionMarker;
+        [SerializeField] GameObject PlayerTwoSpawnPositionMarker;
+        private Vector3 PlayerOneSpawnPosition = new Vector3(-5f, 0f, 0f);
+        private Vector3 PlayerTwoSpawnPosition = new Vector3(5f, 0f, 0f);
+        private Quaternion PlayerOneSpawnRotation = Quaternion.Euler(0f, 90f, 0f);
+        private Quaternion PlayerTwoSpawnRotation = Quaternion.Euler(0f, -90f, 0f);
+        [SerializeField] private StatusParameter fuhyoStatusParameter;
+        [SerializeField] private StatusParameter kyosyaStatusParameter;
+        [SerializeField] private StatusParameter keimaStatusParameter;
+        [SerializeField] private StatusParameter ginStatusParameter;
+        [SerializeField] private StatusParameter kinStatusParameter;
+        [SerializeField] private StatusParameter kakugyoStatusParameter;
+        [SerializeField] private StatusParameter hisyaStatusParameter;
+        [SerializeField] private StatusParameter kingStatusParameter;
+        [SerializeField] private GameObject fuhyoPieceObject;
+        [SerializeField] private GameObject kyosyaPieceObject;
+        [SerializeField] private GameObject keimaPieceObject;
+        [SerializeField] private GameObject ginPieceObject;
+        [SerializeField] private GameObject kinPieceObject;
+        [SerializeField] private GameObject kakugyoPieceObject;
+        [SerializeField] private GameObject hisyaPieceObject;
+        [SerializeField] private GameObject kingPieceObject;
+        private ISkill fuhyoSkill;
+        private ISkill kyosyaSkill;
+        private ISkill keimaSkill;
+        private ISkill ginSkill;
+        private ISkill kinSkill;
+        private ISkill kakugyoSkill;
+        private ISkill hisyaSkill;
+        private ISkill kingSkill;
+        private IPrimaryAction fuhyoPrimaryAction;
+        private IPrimaryAction kyosyaPrimaryAction;
+        private IPrimaryAction keimaPrimaryAction;
+        private IPrimaryAction ginPrimaryAction;
+        private IPrimaryAction kinPrimaryAction;
+        private IPrimaryAction kakugyoPrimaryAction;
+        private IPrimaryAction hisyaPrimaryAction;
+        private IPrimaryAction kingPrimaryAction;
+        private ISecondaryAction fuhyoSecondaryAction;
+        private ISecondaryAction kyosyaSecondaryAction;
+        private ISecondaryAction keimaSecondaryAction;
+        private ISecondaryAction ginSecondaryAction;
+        private ISecondaryAction kinSecondaryAction;
+        private ISecondaryAction kakugyoSecondaryAction;
+        private ISecondaryAction hisyaSecondaryAction;
+        private ISecondaryAction kingSecondaryAction;
 
         public void Initialize(ReferenceHolder referenceHolder)
         {
             gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
-            PlayerOne = CreatePlayer(PlayerOneSpawnPosition);
-            PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition);
+            shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
+            SetSpawnPositions();
+            PlayerOne = CreatePlayer(PlayerOneSpawnPosition, PlayerOneSpawnRotation);
+            PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition, PlayerTwoSpawnRotation);
+            PlayerIndexPlayerOne = PlayerOne.GetComponent<PlayerInput>().playerIndex;
+            PlayerIndexPlayerTwo = PlayerTwo.GetComponent<PlayerInput>().playerIndex;
+            DisablePlayerCamera();
             gameStateHolder.SubscribeToChangeToDuel(OnChangedToDuel);
+            gameStateHolder.SubscribeToExitDuel(OnExitDuel);
             EnableOnlyMap("Shogi");
         }
 
-        private GameObject CreatePlayer(Vector3 spawnPosition)
+        private void SetSpawnPositions()
+        {
+            if (PlayerOneSpawnPositionMarker != null)
+            {
+                PlayerOneSpawnPosition = PlayerOneSpawnPositionMarker.transform.position;
+                float y = PlayerOneSpawnPositionMarker.transform.eulerAngles.y;
+                PlayerOneSpawnRotation = Quaternion.Euler(0f, y, 0f);
+            }
+            if (PlayerTwoSpawnPositionMarker != null)
+            {
+                PlayerTwoSpawnPosition = PlayerTwoSpawnPositionMarker.transform.position;
+                float y = PlayerTwoSpawnPositionMarker.transform.eulerAngles.y;
+                PlayerTwoSpawnRotation = Quaternion.Euler(0f, y, 0f);
+            }
+        }
+
+        private GameObject CreatePlayer(Vector3 spawnPosition, Quaternion spawnRotation)
         {
             if (PlayerPrefab == null)
             {
                 Debug.LogError("PlayerPrefab is not assigned in the inspector.");
                 return null;
             }
-            GameObject player = Instantiate(PlayerPrefab, spawnPosition, Quaternion.identity);
+            GameObject player = Instantiate(PlayerPrefab, spawnPosition, spawnRotation);
             if (player == null)
             {
                 Debug.LogError("Failed to instantiate PlayerPrefab.");
@@ -55,6 +127,155 @@ namespace App.Main.Player
         private void OnChangedToDuel()
         {
             EnableOnlyMap("Player");
+            EnablePlayerCamera();
+            CursorDisable();
+            SetPlayerCondition();
+        }
+
+        private void SetPlayerModel(GameObject player, GameObject pieceObject, bool isPromoted, bool isPlayerOne)
+        {
+            GameObject go = Instantiate(pieceObject);
+            go.transform.SetParent(player.transform);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            if (isPromoted)
+            {
+                // 成り後のモデル調整処理
+                go.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            }
+            if (isPlayerOne)
+            {
+                PlayerOnePieceObject = go;
+            }
+            else
+            {
+                // プレイヤー2用の向き調整
+                PlayerTwoPieceObject = go;
+            }
+        }
+
+        private void OnExitDuel()
+        {
+            EnableOnlyMap("Shogi");
+            DisablePlayerCamera();
+            CursorEnable();
+            Destroy(PlayerOnePieceObject);
+            Destroy(PlayerTwoPieceObject);
+        }
+
+        private void SetPlayerCondition()
+        {
+            IPiece pieceTypePlayerOne = shogiBoard.GetDuelPiece()[PlayerType.PlayerOne];
+            IPiece pieceTypePlayerTwo = shogiBoard.GetDuelPiece()[PlayerType.PlayerTwo];
+
+            switch (pieceTypePlayerOne.Type)
+            {
+                case PieceType.Fuhyo:
+                    SetPlayerModel(PlayerOne, fuhyoPieceObject, pieceTypePlayerOne.IsPromoted, true);
+                    /*
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
+                    PlayerOne.GetComponent<Player>().SetSecondaryAction(fuhyoSecondaryAction);
+                    PlayerOne.GetComponent<Player>().SetSkill(fuhyoSkill);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(fuhyoPrimaryAction);
+                    */
+                    break;
+                case PieceType.Kyosya:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
+                    PlayerOne.GetComponent<Player>().SetSecondaryAction(kyosyaSecondaryAction);
+                    PlayerOne.GetComponent<Player>().SetSkill(kyosyaSkill);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(kyosyaPrimaryAction);
+                    break;
+                case PieceType.Keima:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
+                    PlayerOne.GetComponent<Player>().SetSecondaryAction(keimaSecondaryAction);
+                    PlayerOne.GetComponent<Player>().SetSkill(keimaSkill);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(keimaPrimaryAction);
+                    break;
+                case PieceType.Gin:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
+                    PlayerOne.GetComponent<Player>().SetSecondaryAction(ginSecondaryAction);
+                    PlayerOne.GetComponent<Player>().SetSkill(ginSkill);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction);
+                    break;
+                case PieceType.Kin:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
+                    PlayerOne.GetComponent<Player>().SetSecondaryAction(kinSecondaryAction);
+                    PlayerOne.GetComponent<Player>().SetSkill(kinSkill);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(kinPrimaryAction);
+                    break;
+                case PieceType.Kakugyo:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
+                    PlayerOne.GetComponent<Player>().SetSecondaryAction(kakugyoSecondaryAction);
+                    PlayerOne.GetComponent<Player>().SetSkill(kakugyoSkill);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(kakugyoPrimaryAction);
+                    break;
+                case PieceType.Hisya:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
+                    PlayerOne.GetComponent<Player>().SetSecondaryAction(hisyaSecondaryAction);
+                    PlayerOne.GetComponent<Player>().SetSkill(hisyaSkill);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(hisyaPrimaryAction);
+                    break;
+                case PieceType.King:
+                    PlayerOne.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
+                    PlayerOne.GetComponent<Player>().SetSecondaryAction(kingSecondaryAction);
+                    PlayerOne.GetComponent<Player>().SetSkill(kingSkill);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(kingPrimaryAction);
+                    break;
+            }
+            switch (pieceTypePlayerTwo.Type)
+            {
+                case PieceType.Fuhyo:
+                    SetPlayerModel(PlayerTwo, fuhyoPieceObject, pieceTypePlayerTwo.IsPromoted, false);
+                    /*
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
+                    PlayerTwo.GetComponent<Player>().SetSecondaryAction(fuhyoSecondaryAction);
+                    PlayerTwo.GetComponent<Player>().SetSkill(fuhyoSkill);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(fuhyoPrimaryAction);
+                    */
+                    break;
+                case PieceType.Kyosya:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
+                    PlayerTwo.GetComponent<Player>().SetSecondaryAction(kyosyaSecondaryAction);
+                    PlayerTwo.GetComponent<Player>().SetSkill(kyosyaSkill);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(kyosyaPrimaryAction);
+                    break;
+                case PieceType.Keima:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
+                    PlayerTwo.GetComponent<Player>().SetSecondaryAction(keimaSecondaryAction);
+                    PlayerTwo.GetComponent<Player>().SetSkill(keimaSkill);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(keimaPrimaryAction);
+                    break;
+                case PieceType.Gin:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
+                    PlayerTwo.GetComponent<Player>().SetSecondaryAction(ginSecondaryAction);
+                    PlayerTwo.GetComponent<Player>().SetSkill(ginSkill);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction);
+                    break;
+                case PieceType.Kin:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
+                    PlayerTwo.GetComponent<Player>().SetSecondaryAction(kinSecondaryAction);
+                    PlayerTwo.GetComponent<Player>().SetSkill(kinSkill);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(kinPrimaryAction);
+                    break;
+                case PieceType.Kakugyo:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
+                    PlayerTwo.GetComponent<Player>().SetSecondaryAction(kakugyoSecondaryAction);
+                    PlayerTwo.GetComponent<Player>().SetSkill(kakugyoSkill);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(kakugyoPrimaryAction);
+                    break;
+                case PieceType.Hisya:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
+                    PlayerTwo.GetComponent<Player>().SetSecondaryAction(hisyaSecondaryAction);
+                    PlayerTwo.GetComponent<Player>().SetSkill(hisyaSkill);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(hisyaPrimaryAction);
+                    break;
+                case PieceType.King:
+                    PlayerTwo.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
+                    PlayerTwo.GetComponent<Player>().SetSecondaryAction(kingSecondaryAction);
+                    PlayerTwo.GetComponent<Player>().SetSkill(kingSkill);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(kingPrimaryAction);
+                    break;
+            }
         }
 
         /// <summary>
@@ -78,6 +299,31 @@ namespace App.Main.Player
             PlayerOne.GetComponent<PlayerInput>().ActivateInput();
             PlayerTwo.GetComponent<PlayerInput>().ActivateInput();
         }
+
+        private void CursorEnable()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
+        private void CursorDisable()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        private void DisablePlayerCamera()
+        {
+            PlayerOne.GetComponentInChildren<Camera>().enabled = false;
+            PlayerTwo.GetComponentInChildren<Camera>().enabled = false;
+        }
+
+        private void EnablePlayerCamera()
+        {
+            PlayerOne.GetComponentInChildren<Camera>().enabled = true;
+            PlayerTwo.GetComponentInChildren<Camera>().enabled = true;
+        }
+
         private void DisableAllInput()
         {
             // アセット単位で全無効化（通常これで十分）

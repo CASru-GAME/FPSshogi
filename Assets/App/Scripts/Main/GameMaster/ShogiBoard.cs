@@ -74,6 +74,13 @@ namespace App.Main.GameMaster
         {
             return board[x, y];
         }
+        public Dictionary<PlayerType, IPiece> GetDuelPiece()
+        {
+            Dictionary<PlayerType, IPiece> duelPieces = new Dictionary<PlayerType, IPiece>();
+            duelPieces[board[savedFromX, savedFromY].Player] = board[savedFromX, savedFromY];
+            duelPieces[board[savedToX, savedToY].Player] = board[savedToX, savedToY];
+            return duelPieces;
+        }
         public IPiece[,] GetBoard()
         {
             return board;
@@ -358,7 +365,10 @@ namespace App.Main.GameMaster
                 return;
             }
 
-            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
+            if (currentPlayer == PlayerType.PlayerOne)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
+            else
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
         }
 
         private void OnChangeToDuelPlayerTwoWin()
@@ -395,8 +405,11 @@ namespace App.Main.GameMaster
                 gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoWin);
                 return;
             }
-
-            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
+            
+            if (currentPlayer == PlayerType.PlayerTwo)
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneTurn);
+            else
+                gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
         }
 
         private void AddToCapturedPieces(PlayerType player, PieceType pieceType)

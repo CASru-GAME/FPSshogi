@@ -150,13 +150,12 @@ namespace App.Main.ViewManager
                             pieceObjects[x, y] = pieceObject;
                         }
                     }
-                    else if (current != null && previous != null)
+                    if (current != null && current.IsPromoted && pieceObjects[x, y] != null)
                     {
-                        // 成り判定：前は成っていなくて今成っているなら駒をひっくり返す
-                        if (!previous.IsPromoted && current.IsPromoted && pieceObjects[x, y] != null)
-                        {
-                            pieceObjects[x, y].transform.Rotate(180, 0, 0);
-                        }
+                        if (current.Player == PlayerType.PlayerOne)
+                            pieceObjects[x, y].transform.rotation = Quaternion.Euler(90, -90, 90);
+                        else
+                            pieceObjects[x, y].transform.rotation = Quaternion.Euler(90, -90, -90);
                     }
                 }
             }
