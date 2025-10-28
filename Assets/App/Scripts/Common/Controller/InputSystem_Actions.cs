@@ -385,6 +385,15 @@ namespace App.Common.Controller
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseCaptured"",
+                    ""type"": ""Button"",
+                    ""id"": ""ff6711ba-529c-4d06-9421-376fcbfdaec1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -561,6 +570,28 @@ namespace App.Common.Controller
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SelectUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""10056164-8a63-4768-968f-d0cadee7731b"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseCaptured"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""564c02c1-01a4-4ba3-b19b-755f6a9e8e70"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseCaptured"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -842,6 +873,7 @@ namespace App.Common.Controller
             m_Shogi_SelectLeft = m_Shogi.FindAction("SelectLeft", throwIfNotFound: true);
             m_Shogi_Select = m_Shogi.FindAction("Select", throwIfNotFound: true);
             m_Shogi_Cancel = m_Shogi.FindAction("Cancel", throwIfNotFound: true);
+            m_Shogi_UseCaptured = m_Shogi.FindAction("UseCaptured", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_SelectUp = m_UI.FindAction("SelectUp", throwIfNotFound: true);
@@ -1095,6 +1127,7 @@ namespace App.Common.Controller
         private readonly InputAction m_Shogi_SelectLeft;
         private readonly InputAction m_Shogi_Select;
         private readonly InputAction m_Shogi_Cancel;
+        private readonly InputAction m_Shogi_UseCaptured;
         /// <summary>
         /// Provides access to input actions defined in input action map "Shogi".
         /// </summary>
@@ -1130,6 +1163,10 @@ namespace App.Common.Controller
             /// Provides access to the underlying input action "Shogi/Cancel".
             /// </summary>
             public InputAction @Cancel => m_Wrapper.m_Shogi_Cancel;
+            /// <summary>
+            /// Provides access to the underlying input action "Shogi/UseCaptured".
+            /// </summary>
+            public InputAction @UseCaptured => m_Wrapper.m_Shogi_UseCaptured;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1174,6 +1211,9 @@ namespace App.Common.Controller
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
+                @UseCaptured.started += instance.OnUseCaptured;
+                @UseCaptured.performed += instance.OnUseCaptured;
+                @UseCaptured.canceled += instance.OnUseCaptured;
             }
 
             /// <summary>
@@ -1203,6 +1243,9 @@ namespace App.Common.Controller
                 @Cancel.started -= instance.OnCancel;
                 @Cancel.performed -= instance.OnCancel;
                 @Cancel.canceled -= instance.OnCancel;
+                @UseCaptured.started -= instance.OnUseCaptured;
+                @UseCaptured.performed -= instance.OnUseCaptured;
+                @UseCaptured.canceled -= instance.OnUseCaptured;
             }
 
             /// <summary>
@@ -1669,6 +1712,13 @@ namespace App.Common.Controller
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnCancel(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "UseCaptured" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnUseCaptured(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

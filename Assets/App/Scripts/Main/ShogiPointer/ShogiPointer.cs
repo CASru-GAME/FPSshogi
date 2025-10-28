@@ -4,6 +4,9 @@ using App.Main.Player;
 using UnityEngine.InputSystem;
 using App.Main.GameMaster;
 using App.Main.ShogiThings;
+using System.Collections.Generic;
+using UnityEngine.UI;
+using UnityEditor.Experimental.GraphView;
 
 namespace App.Main.ShogiPointer
 {
@@ -15,6 +18,12 @@ namespace App.Main.ShogiPointer
         private PlayerManager playerManager;
         private ShogiBoard shogiBoard;
         private GameStateHolder gameStateHolder;
+        bool isOpenCapturedPiecesPanel = false;
+        bool isCapturedPiecesSelected = false;
+        Dictionary<PieceType, int> playerOneCapturedPieces = new Dictionary<PieceType, int>();
+        Dictionary<PieceType, int> playerTwoCapturedPieces = new Dictionary<PieceType, int>();
+        CapturedPiecesPanelIndex capturedPiecesPanelIndex = new CapturedPiecesPanelIndex();
+
         private int[] pointerPosition = new int[2];
         private int[] selectedPiecePosition = new int[2];
         public void Initialize(ReferenceHolder referenceHolder)
@@ -28,6 +37,20 @@ namespace App.Main.ShogiPointer
 
             playerManager.PlayerOne.GetComponent<PlayerInput>().onActionTriggered += ctx => OnActionTriggered(ctx, playerManager.PlayerOne.GetComponent<PlayerInput>());
             playerManager.PlayerTwo.GetComponent<PlayerInput>().onActionTriggered += ctx => OnActionTriggered(ctx, playerManager.PlayerTwo.GetComponent<PlayerInput>());
+            gameStateHolder.SubscribeToChangeToPlayerOneTurn(OnPlayerOneTurn);
+            gameStateHolder.SubscribeToChangeToPlayerTwoTurn(OnPlayerTwoTurn);
+        }
+
+        private void OnPlayerOneTurn()
+        {
+            pointerPosition = new int[] { 0, 0 };
+            selectedPiecePosition = new int[] { -1, -1 };
+        }
+
+        private void OnPlayerTwoTurn()
+        {
+            pointerPosition = new int[] { 8, 8 };
+            selectedPiecePosition = new int[] { -1, -1 };
         }
 
         private void OnActionTriggered(InputAction.CallbackContext context, PlayerInput sourcePlayerInput)
@@ -43,30 +66,60 @@ namespace App.Main.ShogiPointer
                 return;
             }
 
-
-            if (context.action.name == "SelectUp")
+            else if (context.action.name == "SelectUp")
             {
-                SelectPositionUp();
+                if (isOpenCapturedPiecesPanel) return;
+                else SelectPositionUp();
             }
             else if (context.action.name == "SelectDown")
             {
-                SelectPositionDown();
+                if (isOpenCapturedPiecesPanel) return;
+                else SelectPositionDown();
             }
             else if (context.action.name == "SelectLeft")
             {
-                SelectPositionLeft();
+                if (isOpenCapturedPiecesPanel)
+                {
+                    capturedPiecesPanelIndex.DecrementIndex();
+                    Debug.Log("Captured Pieces Panel Index: " + capturedPiecesPanelIndex.GetCapturedPiecesType());
+                }
+
+                else SelectPositionLeft();
             }
             else if (context.action.name == "SelectRight")
             {
-                SelectPositionRight();
+                if (isOpenCapturedPiecesPanel)
+                {
+                    capturedPiecesPanelIndex.IncrementIndex();
+                    Debug.Log("Captured Pieces Panel Index: " + capturedPiecesPanelIndex.GetCapturedPiecesType());
+                }
+
+                else SelectPositionRight();
             }
             else if (context.action.name == "Select")
             {
-                Select();
+                if (isCapturedPiecesSelected) SetCapturedPieceOnBoard();
+                else if (isOpenCapturedPiecesPanel)
+                {
+                    isCapturedPiecesSelected = true;
+                    ToggleCapturedPiecesPanel();
+                    Debug.Log("Selected Captured Piece: " + capturedPiecesPanelIndex.GetCapturedPiecesType());
+                }
+                else Select();
             }
             else if (context.action.name == "Cancel")
             {
-                Deselect();
+                if (isCapturedPiecesSelected)
+                {
+                    isCapturedPiecesSelected = false;
+                    Debug.Log("Cancelled Captured Piece Selection");
+                }
+                else if (isOpenCapturedPiecesPanel) ToggleCapturedPiecesPanel();
+                else Deselect();
+            }
+            else if (context.action.name == "UseCaptured")
+            {
+                ToggleCapturedPiecesPanel();
             }
         }
 
@@ -89,6 +142,32 @@ namespace App.Main.ShogiPointer
         {
             if (pointerPosition[0] < 8) pointerPosition[0]++;
             Debug.Log("Selected Position: (" + pointerPosition[0] + ", " + pointerPosition[1] + ")");
+        }
+
+        public void SetCapturedPieceOnBoard()
+        {
+            if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn)
+            {
+                PieceType pieceType = capturedPiecesPanelIndex.GetCapturedPiecesType();
+                ShogiBoard.MoveResult moveResult = shogiBoard.SetPiece(pointerPosition[0], pointerPosition[1], pieceType, PlayerType.PlayerOne);
+                Debug.Log("Attempted to Place Captured Piece: " + pieceType + " at (" + pointerPosition[0] + ", " + pointerPosition[1] + ") Result: " + moveResult);
+                if (moveResult == ShogiBoard.MoveResult.NormalMove)
+                {
+                    isCapturedPiecesSelected = false;
+                    Debug.Log("Placed Captured Piece: " + pieceType + " at (" + pointerPosition[0] + ", " + pointerPosition[1] + ")");
+                }
+            }
+            else if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn)
+            {
+                PieceType pieceType = capturedPiecesPanelIndex.GetCapturedPiecesType();
+                ShogiBoard.MoveResult moveResult = shogiBoard.SetPiece(pointerPosition[0], pointerPosition[1], pieceType, PlayerType.PlayerTwo);
+                Debug.Log("Attempted to Place Captured Piece: " + pieceType + " at (" + pointerPosition[0] + ", " + pointerPosition[1] + ") Result: " + moveResult);
+                if (moveResult == ShogiBoard.MoveResult.NormalMove)
+                {
+                    isCapturedPiecesSelected = false;
+                    Debug.Log("Placed Captured Piece: " + pieceType + " at (" + pointerPosition[0] + ", " + pointerPosition[1] + ")");
+                }
+            }
         }
 
         public void Select()
@@ -146,6 +225,16 @@ namespace App.Main.ShogiPointer
                     }
                 }
             }
+        }
+
+        public void ToggleCapturedPiecesPanel()
+        {
+            isOpenCapturedPiecesPanel = !isOpenCapturedPiecesPanel;
+            if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn)
+                playerOneCapturedPieces = shogiBoard.GetCapturedPieces(PlayerType.PlayerOne);
+            else if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn)
+                playerTwoCapturedPieces = shogiBoard.GetCapturedPieces(PlayerType.PlayerTwo);
+            Debug.Log("Captured Pieces Panel is now " + (isOpenCapturedPiecesPanel ? "Open" : "Closed"));
         }
 
         public void Deselect()

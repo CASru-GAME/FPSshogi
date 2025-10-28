@@ -128,7 +128,7 @@ namespace App.Main.Player
         {
             EnableOnlyMap("Player");
             EnablePlayerCamera();
-            CursorDisable();
+            //CursorDisable();
             SetPlayerCondition();
         }
 
@@ -158,7 +158,7 @@ namespace App.Main.Player
         {
             EnableOnlyMap("Shogi");
             DisablePlayerCamera();
-            CursorEnable();
+            //CursorEnable();
             Destroy(PlayerOnePieceObject);
             Destroy(PlayerTwoPieceObject);
         }

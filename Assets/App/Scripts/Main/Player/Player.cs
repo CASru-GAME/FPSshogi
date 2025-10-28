@@ -1,3 +1,4 @@
+using App.Main.GameMaster;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -114,6 +115,7 @@ namespace App.Main.Player
                 case "Skill":
                     if (context.phase == InputActionPhase.Performed && currentSkill != null)
                     {
+                        
                         currentSkill.UseSkill(playerStatus);
                     }
                     break;
