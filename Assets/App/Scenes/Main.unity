@@ -403,7 +403,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6962739376193937448, guid: 193ab4c29e0cb414fb8fecc3515534f9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 30.42
+      value: 33.81
       objectReference: {fileID: 0}
     - target: {fileID: 6962739376193937448, guid: 193ab4c29e0cb414fb8fecc3515534f9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2297,10 +2297,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   PlayerPrefab: {fileID: 8245350473189949139, guid: c9b03d49ebbb44e449869a5f5e59fa64, type: 3}
+  PlayerOnePieceObject: {fileID: 0}
+  PlayerTwoPieceObject: {fileID: 0}
   PlayerIndexPlayerOne: 0
   PlayerIndexPlayerTwo: 1
   PlayerOneSpawnPositionMarker: {fileID: 1008422127}
   PlayerTwoSpawnPositionMarker: {fileID: 1746302705}
+  fuhyoPieceObject: {fileID: 919132149155446097, guid: 3b71d20eaaa09bc41876d4d596cb6ce8, type: 3}
+  kyosyaPieceObject: {fileID: 0}
+  keimaPieceObject: {fileID: 0}
+  ginPieceObject: {fileID: 0}
+  kinPieceObject: {fileID: 0}
+  kakugyoPieceObject: {fileID: 0}
+  hisyaPieceObject: {fileID: 0}
+  kingPieceObject: {fileID: 0}
 --- !u!1 &1197553141
 GameObject:
   m_ObjectHideFlags: 0
@@ -3258,7 +3268,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6962739376193937448, guid: 193ab4c29e0cb414fb8fecc3515534f9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 30.42
+      value: 33.18
       objectReference: {fileID: 0}
     - target: {fileID: 6962739376193937448, guid: 193ab4c29e0cb414fb8fecc3515534f9, type: 3}
       propertyPath: m_LocalPosition.z

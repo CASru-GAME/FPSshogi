@@ -13,6 +13,8 @@ namespace App.Main.Player
         [SerializeField] private InputActionAsset inputActions;
 
         [SerializeField] private GameObject PlayerPrefab;
+        [SerializeField] private GameObject PlayerOnePieceObject;
+        [SerializeField] private GameObject PlayerTwoPieceObject;
         public GameObject PlayerOne { get; private set; }
         public GameObject PlayerTwo { get; private set; }
 
@@ -130,11 +132,35 @@ namespace App.Main.Player
             SetPlayerCondition();
         }
 
+        private void SetPlayerModel(GameObject player, GameObject pieceObject, bool isPromoted, bool isPlayerOne)
+        {
+            GameObject go = Instantiate(pieceObject);
+            go.transform.SetParent(player.transform);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            if (isPromoted)
+            {
+                // 成り後のモデル調整処理
+                go.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            }
+            if (isPlayerOne)
+            {
+                PlayerOnePieceObject = go;
+            }
+            else
+            {
+                // プレイヤー2用の向き調整
+                PlayerTwoPieceObject = go;
+            }
+        }
+
         private void OnExitDuel()
         {
             EnableOnlyMap("Shogi");
             DisablePlayerCamera();
             CursorEnable();
+            Destroy(PlayerOnePieceObject);
+            Destroy(PlayerTwoPieceObject);
         }
 
         private void SetPlayerCondition()
@@ -145,10 +171,13 @@ namespace App.Main.Player
             switch (pieceTypePlayerOne.Type)
             {
                 case PieceType.Fuhyo:
+                    SetPlayerModel(PlayerOne, fuhyoPieceObject, pieceTypePlayerOne.IsPromoted, true);
+                    /*
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
                     PlayerOne.GetComponent<Player>().SetSecondaryAction(fuhyoSecondaryAction);
                     PlayerOne.GetComponent<Player>().SetSkill(fuhyoSkill);
                     PlayerOne.GetComponent<Player>().SetPrimaryAction(fuhyoPrimaryAction);
+                    */
                     break;
                 case PieceType.Kyosya:
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted));
@@ -196,10 +225,13 @@ namespace App.Main.Player
             switch (pieceTypePlayerTwo.Type)
             {
                 case PieceType.Fuhyo:
+                    SetPlayerModel(PlayerTwo, fuhyoPieceObject, pieceTypePlayerTwo.IsPromoted, false);
+                    /*
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(fuhyoSecondaryAction);
                     PlayerTwo.GetComponent<Player>().SetSkill(fuhyoSkill);
                     PlayerTwo.GetComponent<Player>().SetPrimaryAction(fuhyoPrimaryAction);
+                    */
                     break;
                 case PieceType.Kyosya:
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted));
