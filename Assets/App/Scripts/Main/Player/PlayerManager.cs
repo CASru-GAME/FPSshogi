@@ -59,6 +59,14 @@ namespace App.Main.Player
         [SerializeField] private ISecondaryAction kakugyoSecondaryAction;
         [SerializeField] private ISecondaryAction hisyaSecondaryAction;
         [SerializeField] private ISecondaryAction kingSecondaryAction;
+        [SerializeField] private GameObject fuhyoPieceObject;
+        [SerializeField] private GameObject kyosyaPieceObject;
+        [SerializeField] private GameObject keimaPieceObject;
+        [SerializeField] private GameObject ginPieceObject;
+        [SerializeField] private GameObject kinPieceObject;
+        [SerializeField] private GameObject kakugyoPieceObject;
+        [SerializeField] private GameObject hisyaPieceObject;
+        [SerializeField] private GameObject kingPieceObject;
 
         public void Initialize(ReferenceHolder referenceHolder)
         {
