@@ -30,6 +30,18 @@ namespace App.Main.GameMaster
             gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoWin);
         }
 
+        public void Update()
+        {
+            if (playerManager.PlayerOne.GetComponent<Player.Player>().playerStatus.Hp.Current <= 0)
+            {
+                ChangeStateToPlayerTwoWin();
+            }
+            else if (playerManager.PlayerTwo.GetComponent<Player.Player>().playerStatus.Hp.Current <= 0)
+            {
+                ChangeStateToPlayerOneWin();
+            }
+        }
+
         public void OnDestroy()
         {
         }

@@ -131,18 +131,9 @@ namespace App.Common.Controller
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""AbilityOne"",
+                    ""name"": ""Skill"",
                     ""type"": ""Button"",
                     ""id"": ""b8a602d0-2b32-4457-8f07-44a4e17ff953"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""AbilityTwo"",
-                    ""type"": ""Button"",
-                    ""id"": ""5dba10e8-e792-4e63-8286-9ab368cdacc9"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -184,7 +175,18 @@ namespace App.Common.Controller
                 {
                     ""name"": """",
                     ""id"": ""fe827bb5-8a3a-4830-a3e4-6a0e421bbeba"",
-                    ""path"": """",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""WeaponActionMain"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ea883501-6e05-4584-8ab8-a0196cc464be"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -195,7 +197,18 @@ namespace App.Common.Controller
                 {
                     ""name"": """",
                     ""id"": ""b7255441-2933-4de7-8ddd-3720ef336b71"",
-                    ""path"": """",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""WeaponActionSub"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dc9a74aa-1186-4ea4-b2ed-19fbeb3617ef"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -206,22 +219,22 @@ namespace App.Common.Controller
                 {
                     ""name"": """",
                     ""id"": ""705a9d51-91b1-4e9d-8c0a-ce5966c3e006"",
-                    ""path"": """",
+                    ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""AbilityOne"",
+                    ""action"": ""Skill"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""b60e004a-5005-4575-bf83-ba5754fe9db8"",
-                    ""path"": """",
+                    ""id"": ""2488182e-675f-4871-a61a-68255f5a071f"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""AbilityTwo"",
+                    ""action"": ""Skill"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -356,15 +369,6 @@ namespace App.Common.Controller
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Point"",
-                    ""type"": ""Button"",
-                    ""id"": ""07a6ae74-a411-4b19-9ab9-550c3afdafc6"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Select"",
                     ""type"": ""Button"",
                     ""id"": ""4a0f4418-b5b6-4838-b062-4ba3adb750fa"",
@@ -480,17 +484,6 @@ namespace App.Common.Controller
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SelectLeft"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""51425f43-37fe-40c7-a851-ce9cceb951e7"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Point"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -614,15 +607,6 @@ namespace App.Common.Controller
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Point"",
-                    ""type"": ""Value"",
-                    ""id"": ""fabbaebf-41a1-4fb4-b03b-b5530ceeb667"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
                     ""name"": ""Select"",
                     ""type"": ""Button"",
                     ""id"": ""c8e71ff6-62bd-4569-bda2-2c60d7808e9c"",
@@ -701,28 +685,6 @@ namespace App.Common.Controller
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SelectLeft"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9514b1c5-d880-46ec-8c2c-54b43d078acb"",
-                    ""path"": ""<Gamepad>/leftStick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Point"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""76a334c7-6c76-47ec-b6b8-414c04ca062a"",
-                    ""path"": ""<Mouse>/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Point"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -870,8 +832,7 @@ namespace App.Common.Controller
             m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
             m_Player_WeaponActionMain = m_Player.FindAction("WeaponActionMain", throwIfNotFound: true);
             m_Player_WeaponActionSub = m_Player.FindAction("WeaponActionSub", throwIfNotFound: true);
-            m_Player_AbilityOne = m_Player.FindAction("AbilityOne", throwIfNotFound: true);
-            m_Player_AbilityTwo = m_Player.FindAction("AbilityTwo", throwIfNotFound: true);
+            m_Player_Skill = m_Player.FindAction("Skill", throwIfNotFound: true);
             m_Player_Climb = m_Player.FindAction("Climb", throwIfNotFound: true);
             // Shogi
             m_Shogi = asset.FindActionMap("Shogi", throwIfNotFound: true);
@@ -879,7 +840,6 @@ namespace App.Common.Controller
             m_Shogi_SelectDown = m_Shogi.FindAction("SelectDown", throwIfNotFound: true);
             m_Shogi_SelectRight = m_Shogi.FindAction("SelectRight", throwIfNotFound: true);
             m_Shogi_SelectLeft = m_Shogi.FindAction("SelectLeft", throwIfNotFound: true);
-            m_Shogi_Point = m_Shogi.FindAction("Point", throwIfNotFound: true);
             m_Shogi_Select = m_Shogi.FindAction("Select", throwIfNotFound: true);
             m_Shogi_Cancel = m_Shogi.FindAction("Cancel", throwIfNotFound: true);
             // UI
@@ -888,7 +848,6 @@ namespace App.Common.Controller
             m_UI_SelectDown = m_UI.FindAction("SelectDown", throwIfNotFound: true);
             m_UI_SelectRight = m_UI.FindAction("SelectRight", throwIfNotFound: true);
             m_UI_SelectLeft = m_UI.FindAction("SelectLeft", throwIfNotFound: true);
-            m_UI_Point = m_UI.FindAction("Point", throwIfNotFound: true);
             m_UI_Select = m_UI.FindAction("Select", throwIfNotFound: true);
             m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
             m_UI_ShowUI = m_UI.FindAction("ShowUI", throwIfNotFound: true);
@@ -983,8 +942,7 @@ namespace App.Common.Controller
         private readonly InputAction m_Player_Move;
         private readonly InputAction m_Player_WeaponActionMain;
         private readonly InputAction m_Player_WeaponActionSub;
-        private readonly InputAction m_Player_AbilityOne;
-        private readonly InputAction m_Player_AbilityTwo;
+        private readonly InputAction m_Player_Skill;
         private readonly InputAction m_Player_Climb;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player".
@@ -1014,13 +972,9 @@ namespace App.Common.Controller
             /// </summary>
             public InputAction @WeaponActionSub => m_Wrapper.m_Player_WeaponActionSub;
             /// <summary>
-            /// Provides access to the underlying input action "Player/AbilityOne".
+            /// Provides access to the underlying input action "Player/Skill".
             /// </summary>
-            public InputAction @AbilityOne => m_Wrapper.m_Player_AbilityOne;
-            /// <summary>
-            /// Provides access to the underlying input action "Player/AbilityTwo".
-            /// </summary>
-            public InputAction @AbilityTwo => m_Wrapper.m_Player_AbilityTwo;
+            public InputAction @Skill => m_Wrapper.m_Player_Skill;
             /// <summary>
             /// Provides access to the underlying input action "Player/Climb".
             /// </summary>
@@ -1063,12 +1017,9 @@ namespace App.Common.Controller
                 @WeaponActionSub.started += instance.OnWeaponActionSub;
                 @WeaponActionSub.performed += instance.OnWeaponActionSub;
                 @WeaponActionSub.canceled += instance.OnWeaponActionSub;
-                @AbilityOne.started += instance.OnAbilityOne;
-                @AbilityOne.performed += instance.OnAbilityOne;
-                @AbilityOne.canceled += instance.OnAbilityOne;
-                @AbilityTwo.started += instance.OnAbilityTwo;
-                @AbilityTwo.performed += instance.OnAbilityTwo;
-                @AbilityTwo.canceled += instance.OnAbilityTwo;
+                @Skill.started += instance.OnSkill;
+                @Skill.performed += instance.OnSkill;
+                @Skill.canceled += instance.OnSkill;
                 @Climb.started += instance.OnClimb;
                 @Climb.performed += instance.OnClimb;
                 @Climb.canceled += instance.OnClimb;
@@ -1095,12 +1046,9 @@ namespace App.Common.Controller
                 @WeaponActionSub.started -= instance.OnWeaponActionSub;
                 @WeaponActionSub.performed -= instance.OnWeaponActionSub;
                 @WeaponActionSub.canceled -= instance.OnWeaponActionSub;
-                @AbilityOne.started -= instance.OnAbilityOne;
-                @AbilityOne.performed -= instance.OnAbilityOne;
-                @AbilityOne.canceled -= instance.OnAbilityOne;
-                @AbilityTwo.started -= instance.OnAbilityTwo;
-                @AbilityTwo.performed -= instance.OnAbilityTwo;
-                @AbilityTwo.canceled -= instance.OnAbilityTwo;
+                @Skill.started -= instance.OnSkill;
+                @Skill.performed -= instance.OnSkill;
+                @Skill.canceled -= instance.OnSkill;
                 @Climb.started -= instance.OnClimb;
                 @Climb.performed -= instance.OnClimb;
                 @Climb.canceled -= instance.OnClimb;
@@ -1145,7 +1093,6 @@ namespace App.Common.Controller
         private readonly InputAction m_Shogi_SelectDown;
         private readonly InputAction m_Shogi_SelectRight;
         private readonly InputAction m_Shogi_SelectLeft;
-        private readonly InputAction m_Shogi_Point;
         private readonly InputAction m_Shogi_Select;
         private readonly InputAction m_Shogi_Cancel;
         /// <summary>
@@ -1175,10 +1122,6 @@ namespace App.Common.Controller
             /// Provides access to the underlying input action "Shogi/SelectLeft".
             /// </summary>
             public InputAction @SelectLeft => m_Wrapper.m_Shogi_SelectLeft;
-            /// <summary>
-            /// Provides access to the underlying input action "Shogi/Point".
-            /// </summary>
-            public InputAction @Point => m_Wrapper.m_Shogi_Point;
             /// <summary>
             /// Provides access to the underlying input action "Shogi/Select".
             /// </summary>
@@ -1225,9 +1168,6 @@ namespace App.Common.Controller
                 @SelectLeft.started += instance.OnSelectLeft;
                 @SelectLeft.performed += instance.OnSelectLeft;
                 @SelectLeft.canceled += instance.OnSelectLeft;
-                @Point.started += instance.OnPoint;
-                @Point.performed += instance.OnPoint;
-                @Point.canceled += instance.OnPoint;
                 @Select.started += instance.OnSelect;
                 @Select.performed += instance.OnSelect;
                 @Select.canceled += instance.OnSelect;
@@ -1257,9 +1197,6 @@ namespace App.Common.Controller
                 @SelectLeft.started -= instance.OnSelectLeft;
                 @SelectLeft.performed -= instance.OnSelectLeft;
                 @SelectLeft.canceled -= instance.OnSelectLeft;
-                @Point.started -= instance.OnPoint;
-                @Point.performed -= instance.OnPoint;
-                @Point.canceled -= instance.OnPoint;
                 @Select.started -= instance.OnSelect;
                 @Select.performed -= instance.OnSelect;
                 @Select.canceled -= instance.OnSelect;
@@ -1307,7 +1244,6 @@ namespace App.Common.Controller
         private readonly InputAction m_UI_SelectDown;
         private readonly InputAction m_UI_SelectRight;
         private readonly InputAction m_UI_SelectLeft;
-        private readonly InputAction m_UI_Point;
         private readonly InputAction m_UI_Select;
         private readonly InputAction m_UI_Cancel;
         private readonly InputAction m_UI_ShowUI;
@@ -1339,10 +1275,6 @@ namespace App.Common.Controller
             /// Provides access to the underlying input action "UI/SelectLeft".
             /// </summary>
             public InputAction @SelectLeft => m_Wrapper.m_UI_SelectLeft;
-            /// <summary>
-            /// Provides access to the underlying input action "UI/Point".
-            /// </summary>
-            public InputAction @Point => m_Wrapper.m_UI_Point;
             /// <summary>
             /// Provides access to the underlying input action "UI/Select".
             /// </summary>
@@ -1397,9 +1329,6 @@ namespace App.Common.Controller
                 @SelectLeft.started += instance.OnSelectLeft;
                 @SelectLeft.performed += instance.OnSelectLeft;
                 @SelectLeft.canceled += instance.OnSelectLeft;
-                @Point.started += instance.OnPoint;
-                @Point.performed += instance.OnPoint;
-                @Point.canceled += instance.OnPoint;
                 @Select.started += instance.OnSelect;
                 @Select.performed += instance.OnSelect;
                 @Select.canceled += instance.OnSelect;
@@ -1435,9 +1364,6 @@ namespace App.Common.Controller
                 @SelectLeft.started -= instance.OnSelectLeft;
                 @SelectLeft.performed -= instance.OnSelectLeft;
                 @SelectLeft.canceled -= instance.OnSelectLeft;
-                @Point.started -= instance.OnPoint;
-                @Point.performed -= instance.OnPoint;
-                @Point.canceled -= instance.OnPoint;
                 @Select.started -= instance.OnSelect;
                 @Select.performed -= instance.OnSelect;
                 @Select.canceled -= instance.OnSelect;
@@ -1680,19 +1606,12 @@ namespace App.Common.Controller
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnWeaponActionSub(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "AbilityOne" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "Skill" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnAbilityOne(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "AbilityTwo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnAbilityTwo(InputAction.CallbackContext context);
+            void OnSkill(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Climb" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
@@ -1736,13 +1655,6 @@ namespace App.Common.Controller
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnSelectLeft(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "Point" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnPoint(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Select" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
@@ -1793,13 +1705,6 @@ namespace App.Common.Controller
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnSelectLeft(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "Point" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnPoint(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Select" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>

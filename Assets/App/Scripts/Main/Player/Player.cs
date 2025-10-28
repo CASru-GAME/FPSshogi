@@ -24,7 +24,10 @@ namespace App.Main.Player
         private float yaw = 0f;
         private float pitch = 0f;
 
-        private PlayerStatus playerStatus;
+        public PlayerStatus playerStatus;
+        private ISkill currentSkill;
+        private IPrimaryAction currentPrimaryAction;
+        private ISecondaryAction currentSecondaryAction;
 
         public void Initialize()
         {
@@ -54,6 +57,21 @@ namespace App.Main.Player
         public void SetPlayerStatus(PlayerStatus status)
         {
             playerStatus = status;
+        }
+
+        public void SetSkill(ISkill skill)
+        {
+            currentSkill = skill;
+        }
+
+        public void SetPrimaryAction(IPrimaryAction action)
+        {
+            currentPrimaryAction = action;
+        }
+
+        public void SetSecondaryAction(ISecondaryAction action)
+        {
+            currentSecondaryAction = action;
         }
 
         public void OnDestroy()
@@ -92,6 +110,24 @@ namespace App.Main.Player
                         climbInput = true;
                     else if (context.phase == InputActionPhase.Canceled)
                         climbInput = false;
+                    break;
+                case "Skill":
+                    if (context.phase == InputActionPhase.Performed && currentSkill != null)
+                    {
+                        currentSkill.UseSkill(playerStatus);
+                    }
+                    break;
+                case "WeaponActionMain":
+                    if (context.phase == InputActionPhase.Performed && currentPrimaryAction != null)
+                    {
+                        currentPrimaryAction.PrimaryAction(playerStatus);
+                    }
+                    break;
+                case "WeaponActionSub":
+                    if (context.phase == InputActionPhase.Performed && currentSecondaryAction != null)
+                    {
+                        currentSecondaryAction.SecondaryAction(playerStatus);
+                    }
                     break;
             }
         }

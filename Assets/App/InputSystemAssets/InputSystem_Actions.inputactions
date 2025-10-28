@@ -43,18 +43,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "AbilityOne",
+                    "name": "Skill",
                     "type": "Button",
                     "id": "b8a602d0-2b32-4457-8f07-44a4e17ff953",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "AbilityTwo",
-                    "type": "Button",
-                    "id": "5dba10e8-e792-4e63-8286-9ab368cdacc9",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -96,7 +87,18 @@
                 {
                     "name": "",
                     "id": "fe827bb5-8a3a-4830-a3e4-6a0e421bbeba",
-                    "path": "",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WeaponActionMain",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ea883501-6e05-4584-8ab8-a0196cc464be",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -107,7 +109,18 @@
                 {
                     "name": "",
                     "id": "b7255441-2933-4de7-8ddd-3720ef336b71",
-                    "path": "",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WeaponActionSub",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dc9a74aa-1186-4ea4-b2ed-19fbeb3617ef",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -118,22 +131,22 @@
                 {
                     "name": "",
                     "id": "705a9d51-91b1-4e9d-8c0a-ce5966c3e006",
-                    "path": "",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "AbilityOne",
+                    "action": "Skill",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "b60e004a-5005-4575-bf83-ba5754fe9db8",
-                    "path": "",
+                    "id": "2488182e-675f-4871-a61a-68255f5a071f",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "AbilityTwo",
+                    "action": "Skill",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -268,15 +281,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Point",
-                    "type": "Button",
-                    "id": "07a6ae74-a411-4b19-9ab9-550c3afdafc6",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Select",
                     "type": "Button",
                     "id": "4a0f4418-b5b6-4838-b062-4ba3adb750fa",
@@ -392,17 +396,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "SelectLeft",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "51425f43-37fe-40c7-a851-ce9cceb951e7",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Point",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -526,15 +519,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Point",
-                    "type": "Value",
-                    "id": "fabbaebf-41a1-4fb4-b03b-b5530ceeb667",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "Select",
                     "type": "Button",
                     "id": "c8e71ff6-62bd-4569-bda2-2c60d7808e9c",
@@ -613,28 +597,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "SelectLeft",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "9514b1c5-d880-46ec-8c2c-54b43d078acb",
-                    "path": "<Gamepad>/leftStick",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Point",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "76a334c7-6c76-47ec-b6b8-414c04ca062a",
-                    "path": "<Mouse>/position",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Point",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

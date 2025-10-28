@@ -1,5 +1,3 @@
-using App.Main.Player;
-
 namespace App.Main.Player
 {
     public class PlayerStatus
