@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace App.Main.Player
 {
     public class AttackPoint
