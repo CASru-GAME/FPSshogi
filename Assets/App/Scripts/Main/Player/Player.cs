@@ -33,6 +33,12 @@ namespace App.Main.Player
         private Vector3 movementOverrideVelocity = Vector3.zero;
         private float movementOverrideRemaining = 0f;
         private bool movementOverridePreserveY = true;
+
+        // Y-only 上書き（滞空中に水平入力を許可するため）
+        private bool movementYOverrideActive = false;
+        private float movementYOverrideVelocity = 0f;
+        private float movementYOverrideRemaining = 0f;
+
         public GameObject WeaponObject { get; private set; }
         public GameObject SubWeaponObject { get; private set; }
 
@@ -162,8 +168,22 @@ namespace App.Main.Player
             Vector3 desired = right * moveInput.x + forward * moveInput.y;
             Vector3 targetVel = desired * playerStatus.MoveSpeed.Current;
 
-            // ここで移動上書きがあるかチェックする
-            if (movementOverrideActive)
+            // 優先度: Y-only 上書き > フル上書き > 通常移動
+            if (movementYOverrideActive)
+            {
+                // 水平方向は通常移動（入力）で決め、Yだけ上書きする
+                Vector3 v = targetVel;
+                v.y = movementYOverrideVelocity;
+                rb.linearVelocity = v;
+
+                // タイマー減算
+                movementYOverrideRemaining -= Time.fixedDeltaTime;
+                if (movementYOverrideRemaining <= 0f)
+                {
+                    movementYOverrideActive = false;
+                }
+            }
+            else if (movementOverrideActive)
             {
                 // 上書き速度適用（必要に応じて Y 成分を保持）
                 Vector3 v = movementOverrideVelocity;
@@ -197,10 +217,20 @@ namespace App.Main.Player
             movementOverrideActive = movementOverrideRemaining > 0f;
         }
 
+        // Yのみ上書きを設定（滞空中に水平操作を許可したい場合に使う）
+        public void SetMovementYOverride(float yVelocity, float durationSeconds)
+        {
+            movementYOverrideVelocity = yVelocity;
+            movementYOverrideRemaining = Mathf.Max(0f, durationSeconds);
+            movementYOverrideActive = movementYOverrideRemaining > 0f;
+        }
+
         public void ClearMovementOverride()
         {
             movementOverrideActive = false;
             movementOverrideRemaining = 0f;
+            movementYOverrideActive = false;
+            movementYOverrideRemaining = 0f;
         }
 
         void Update()
