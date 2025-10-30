@@ -5,8 +5,6 @@ using UnityEngine.InputSystem;
 using App.Main.GameMaster;
 using App.Main.ShogiThings;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEditor.Experimental.GraphView;
 
 namespace App.Main.ShogiPointer
 {
@@ -20,8 +18,8 @@ namespace App.Main.ShogiPointer
         private GameStateHolder gameStateHolder;
         bool isOpenCapturedPiecesPanel = false;
         bool isCapturedPiecesSelected = false;
-        Dictionary<PieceType, int> playerOneCapturedPieces = new Dictionary<PieceType, int>();
-        Dictionary<PieceType, int> playerTwoCapturedPieces = new Dictionary<PieceType, int>();
+        public Dictionary<PieceType, int> playerOneCapturedPieces = new Dictionary<PieceType, int>();
+        public Dictionary<PieceType, int> playerTwoCapturedPieces = new Dictionary<PieceType, int>();
         CapturedPiecesPanelIndex capturedPiecesPanelIndex = new CapturedPiecesPanelIndex();
 
         private int[] pointerPosition = new int[2];
