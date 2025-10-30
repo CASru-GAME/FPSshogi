@@ -201,9 +201,9 @@ namespace App.Main.Player
                 case PieceType.Gin:
                     SetPlayerModel(PlayerOne, ginPieceObject, pieceTypePlayerOne.IsPromoted, true);
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted, PlayerOne.GetComponent<Player>()));
-                    /* PlayerOne.GetComponent<Player>().SetSecondaryAction(ginSecondaryAction);
-                    PlayerOne.GetComponent<Player>().SetSkill(ginSkill);
-                    PlayerOne.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction); */
+                    //PlayerOne.GetComponent<Player>().SetSecondaryAction(ginSecondaryAction);
+                    PlayerOne.GetComponent<Player>().SetSkill(new GinSkill());
+                    //PlayerOne.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction);
                     break;
                 case PieceType.Kin:
                     SetPlayerModel(PlayerOne, kinPieceObject, pieceTypePlayerOne.IsPromoted, true);
@@ -260,9 +260,9 @@ namespace App.Main.Player
                 case PieceType.Gin:
                     SetPlayerModel(PlayerTwo, ginPieceObject, pieceTypePlayerTwo.IsPromoted, false);
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
-                    /* PlayerTwo.GetComponent<Player>().SetSecondaryAction(ginSecondaryAction);
-                    PlayerTwo.GetComponent<Player>().SetSkill(ginSkill);
-                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction); */
+                    //PlayerTwo.GetComponent<Player>().SetSecondaryAction(ginSecondaryAction);
+                    PlayerTwo.GetComponent<Player>().SetSkill(new GinSkill());
+                    //PlayerTwo.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction);
                     break;
                 case PieceType.Kin:
                     SetPlayerModel(PlayerTwo, kinPieceObject, pieceTypePlayerTwo.IsPromoted, false);
@@ -324,7 +324,7 @@ namespace App.Main.Player
             PlayerTwo.GetComponent<Player>().SetSubWeaponObject(bomb);
             //PlayerTwo.GetComponent<Player>().SetPrimaryAction(kyosyaPrimaryAction);
         }
-        
+
         public void SetPlayerForDebugKeima()
         {
             SetPlayerModel(PlayerOne, keimaPieceObject, false, true);
@@ -337,6 +337,20 @@ namespace App.Main.Player
             // PlayerTwo.GetComponent<Player>().SetSecondaryAction(keimaSecondaryAction);
             PlayerTwo.GetComponent<Player>().SetSkill(new KeimaSkill());
             // PlayerTwo.GetComponent<Player>().SetPrimaryAction(keimaPrimaryAction);
+        }
+        
+        public void SetPlayerForDebugGin()
+        {
+            SetPlayerModel(PlayerOne, ginPieceObject, false, true);
+            PlayerOne.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(false, PlayerOne.GetComponent<Player>()));
+            //PlayerOne.GetComponent<Player>().SetSecondaryAction(ginSecondaryAction);
+            PlayerOne.GetComponent<Player>().SetSkill(new GinSkill());
+            //PlayerOne.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction);
+            SetPlayerModel(PlayerTwo, ginPieceObject, false, false);
+            PlayerTwo.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(false, PlayerTwo.GetComponent<Player>()));
+            //PlayerTwo.GetComponent<Player>().SetSecondaryAction(ginSecondaryAction);
+            PlayerTwo.GetComponent<Player>().SetSkill(new GinSkill());
+            //PlayerTwo.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction);
         }
 
         /// <summary>
