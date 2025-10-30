@@ -224,9 +224,10 @@ namespace App.Main.GameMaster
             Debug.Log("[ShogiBoard] Found piece: " + pieceInstance.Type + " for " + player);
             if (!IsCaptured(player, pieceInstance.Type)) return MoveResult.InvalidMove; // 持ち駒にない場合は置けない
             Debug.Log("[ShogiBoard] Setting piece: " + pieceInstance.Type + " at " + x + "," + y + " for " + player);
-            if (!IsSettable(x, y, pieceInstance, player)) return MoveResult.InvalidMove;
+            //if (!IsSettable(x, y, pieceInstance, player)) return MoveResult.InvalidMove;
             Debug.Log("[ShogiBoard] Settable confirmed.");
             board[x, y] = pieceInstance;
+            capturedPieces[player].Remove(pieceInstance.Type);
             if (currentPlayer == PlayerType.PlayerOne)
             {
                 gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);

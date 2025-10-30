@@ -3,6 +3,7 @@ using App.Common.Initialize;
 using App.Main.GameMaster;
 using App.Main.ShogiThings;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace App.Main.ViewManager
 {
@@ -17,6 +18,8 @@ namespace App.Main.ViewManager
         [SerializeField] private GameObject playerTwoCapturedPiecePositionMarkers;
         private Dictionary<PieceType, int> playerOneCapturedPieces = new Dictionary<PieceType, int>();
         private Dictionary<PieceType, int> playerTwoCapturedPieces = new Dictionary<PieceType, int>();
+        private Dictionary<PieceType, GameObject> playerOneCapturedPieceObjects = new Dictionary<PieceType, GameObject>();
+        private Dictionary<PieceType, GameObject> playerTwoCapturedPieceObjects = new Dictionary<PieceType, GameObject>();
         private Vector3[] playerOneCapturedPiecePosition;
         private Vector3[] playerTwoCapturedPiecePosition;
         public void Initialize(ReferenceHolder referenceHolder)
@@ -41,7 +44,9 @@ namespace App.Main.ViewManager
             {
                 Debug.Log($"Player Two - PieceType: {kvp.Key}, Count: {kvp.Value}");
             }
+            UpdateCapturedPieceCounts();
             ShowCapturedPieces();
+            HideUsedCapturedPieces();
         }
         private Vector3 GetCapturedPiecePosition(int pieceTypeIndex, PlayerType playerType)
         {
@@ -97,26 +102,30 @@ namespace App.Main.ViewManager
             }
         }
 
-        private void UpadateCapturedPieceCounts()
+        private void UpdateCapturedPieceCounts()
         {
             // 駒の捕獲数を更新するロジックをここに実装
             // 例: playerOneCapturedPieces[PieceType.Fuhyo] = 2;
             playerOneCapturedPieces = shogiBoard.GetCapturedPieces(PlayerType.PlayerOne);
             playerTwoCapturedPieces = shogiBoard.GetCapturedPieces(PlayerType.PlayerTwo);
+            Debug.Log("playerOneCapturedPieces count: " + playerOneCapturedPieces.Count);
+            Debug.Log("playerTwoCapturedPieces count: " + playerTwoCapturedPieces.Count);
         }
 
         private void ShowCapturedPieces()
         {
-            UpadateCapturedPieceCounts();
             foreach (PieceType pieceType in playerOneCapturedPieces.Keys)
             {
                 int count = playerOneCapturedPieces[pieceType];
                 for (int j = 0; j < count; j++)
                 {
+                    if (playerOneCapturedPieceObjects.ContainsKey(pieceType)) continue;
                     Vector3 position = GetCapturedPiecePosition((int)pieceType, PlayerType.PlayerOne);
                     GameObject pieceObject = Instantiate(GetPieceGameObject(pieceType, PlayerType.PlayerOne), position, Quaternion.identity);
                     // 駒の向きを調整
-                    pieceObject.transform.rotation = Quaternion.Euler(90, 0, 0);
+                    pieceObject.transform.rotation = Quaternion.Euler(-90, -90, 0);
+                    playerOneCapturedPieceObjects[pieceType] = pieceObject;
+                    Debug.Log("playerOneCapturedPieceObjects: " + playerOneCapturedPieceObjects.Count);
                 }
             }
             foreach (PieceType pieceType in playerTwoCapturedPieces.Keys)
@@ -124,10 +133,42 @@ namespace App.Main.ViewManager
                 int count = playerTwoCapturedPieces[pieceType];
                 for (int j = 0; j < count; j++)
                 {
+                    if (playerTwoCapturedPieceObjects.ContainsKey(pieceType)) continue;
                     Vector3 position = GetCapturedPiecePosition((int)pieceType, PlayerType.PlayerTwo);
                     GameObject pieceObject = Instantiate(GetPieceGameObject(pieceType, PlayerType.PlayerTwo), position, Quaternion.identity);
                     // 駒の向きを調整
-                    pieceObject.transform.rotation = Quaternion.Euler(90, 0, 180);
+                    pieceObject.transform.rotation = Quaternion.Euler(-90, -90, 0);
+                    playerTwoCapturedPieceObjects[pieceType] = pieceObject;
+                    Debug.Log("playerTwoCapturedPieceObjects: " + playerTwoCapturedPieceObjects.Count);
+                }
+            }
+        }
+
+        private void HideUsedCapturedPieces()
+        {
+            Debug.Log("Hiding used captured pieces...");
+            // 辞書の値を順に破棄する（安全）
+            foreach (PieceType pieceType in playerOneCapturedPieceObjects.Keys.ToList())
+            {
+                Debug.Log("Checking captured piece: " + pieceType);
+                Debug.Log("Count in capturedPieces: " + (playerOneCapturedPieces.ContainsKey(pieceType) ? playerOneCapturedPieces[pieceType].ToString() : "0"));
+                if (!playerOneCapturedPieces.ContainsKey(pieceType)|| playerOneCapturedPieces[pieceType] == 0)
+                {
+                    Debug.Log("Destroying captured piece: " + pieceType);
+                    var pieceObject = playerOneCapturedPieceObjects[pieceType];
+                    if (pieceObject != null) Destroy(pieceObject);
+                    playerOneCapturedPieceObjects.Remove(pieceType);
+                }
+            }
+            foreach (PieceType pieceType in playerTwoCapturedPieces.Keys.ToList())
+            {
+                Debug.Log("Checking captured piece: " + pieceType);
+                if (!playerTwoCapturedPieces.ContainsKey(pieceType)|| playerTwoCapturedPieces[pieceType] == 0)
+                {
+                    Debug.Log("Destroying captured piece: " + pieceType);
+                    var pieceObject = playerTwoCapturedPieceObjects[pieceType];
+                    if (pieceObject != null) Destroy(pieceObject);
+                    playerTwoCapturedPieceObjects.Remove(pieceType);
                 }
             }
         }
