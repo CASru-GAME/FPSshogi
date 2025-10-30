@@ -224,7 +224,7 @@ namespace App.Main.GameMaster
             Debug.Log("[ShogiBoard] Found piece: " + pieceInstance.Type + " for " + player);
             if (!IsCaptured(player, pieceInstance.Type)) return MoveResult.InvalidMove; // 持ち駒にない場合は置けない
             Debug.Log("[ShogiBoard] Setting piece: " + pieceInstance.Type + " at " + x + "," + y + " for " + player);
-            //if (!IsSettable(x, y, pieceInstance, player)) return MoveResult.InvalidMove;
+            if (!IsSettable(x, y, pieceInstance, player)) return MoveResult.InvalidMove;
             Debug.Log("[ShogiBoard] Settable confirmed.");
             board[x, y] = pieceInstance;
             capturedPieces[player].Remove(pieceInstance.Type);
@@ -291,6 +291,7 @@ namespace App.Main.GameMaster
             if (IsNifu(x, player)) return false; // 二歩の判定
             Debug.Log("[ShogiBoard] Nifu check passed.");
             if (IsDeadEndPiece(x, y, piece)) return false; // 駒が詰む場合は置けない
+            Debug.Log("[ShogiBoard] Dead end piece check passed.");
             return true;
         }
 
@@ -305,6 +306,34 @@ namespace App.Main.GameMaster
                 }
             }
             return false;
+        }
+
+        private bool IsPathClear(int fromX, int fromY, int toX, int toY)
+        {
+            int dx = toX - fromX;
+            int dy = toY - fromY;
+
+            // 水平・垂直・斜め以外の移動（跳び越す系）は経路チェック対象外
+            if (!(dx == 0 || dy == 0 || Mathf.Abs(dx) == Mathf.Abs(dy)))
+            {
+                return true;
+            }
+
+            int steps = System.Math.Max(System.Math.Abs(dx), System.Math.Abs(dy));
+            if (steps <= 1) return true;
+
+            int stepX = dx == 0 ? 0 : (dx / System.Math.Abs(dx)); // -1,0,1
+            int stepY = dy == 0 ? 0 : (dy / System.Math.Abs(dy)); // -1,0,1
+
+            int cx = fromX + stepX;
+            int cy = fromY + stepY;
+            while (cx != toX || cy != toY)
+            {
+                if (board[cx, cy] != null) return false;
+                cx += stepX;
+                cy += stepY;
+            }
+            return true;
         }
 
         private bool IsDeadEndPiece(int x, int y, IPiece piece)
@@ -364,7 +393,21 @@ namespace App.Main.GameMaster
                 int newX = fromX + dx;
                 int newY = fromY + dy;
                 if (newX == toX && newY == toY)
+                {
+                    // 長距離移動（複数マス移動）の場合は経路の遮蔽をチェックする
+                    // ただし桂馬は飛び越す駒なのでチェックしない
+                    if (piece.Type != PieceType.Keima)
+                    {
+                        // 直線（縦・横・斜め）の長距離移動のみ経路チェック
+                        if (Mathf.Abs(dx) > 1 || Mathf.Abs(dy) > 1)
+                        {
+                            if (!IsPathClear(fromX, fromY, newX, newY))
+                                return false;
+                        }
+                    }
+
                     return true;
+                }
             }
 
             return false;
