@@ -421,6 +421,7 @@ namespace App.Main.ShogiThings
 
     public enum PieceType
     {
+        None = -1,
         King = 0,
         Hisya = 1,
         Kakugyo = 2,

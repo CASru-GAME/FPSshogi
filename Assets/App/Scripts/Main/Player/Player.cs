@@ -5,7 +5,6 @@ namespace App.Main.Player
 {
     public class Player : MonoBehaviour
     {
-        [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private Transform cameraTransform; // InspectorでMainCameraを割り当てる
         [SerializeField] private float lookSensitivity = 2.0f;
         [SerializeField] private float gamepadLookMultiplier = 150f;
@@ -51,7 +50,7 @@ namespace App.Main.Player
                 pitch = cameraTransform.localEulerAngles.x;
                 if (pitch > 180f) pitch -= 360f;
             }
-            playerStatus = new PlayerStatus(hpMax: 100, attackPointDefault: 10, moveSpeedDefault: moveSpeed);
+            playerStatus = new PlayerStatus(hpMax: 100, attackPointDefault: 10, moveSpeedDefault: 5f);
         }
 
         public void SetPlayerStatus(PlayerStatus status)
@@ -143,7 +142,7 @@ namespace App.Main.Player
             forward.Normalize(); right.Normalize();
 
             Vector3 desired = right * moveInput.x + forward * moveInput.y;
-            Vector3 targetVel = desired * moveSpeed;
+            Vector3 targetVel = desired * playerStatus.MoveSpeed.Current;
 
             // 足元の最も低い座標を取得（Collider があれば bounds.min を使用）
             Vector3 bottom;
