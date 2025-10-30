@@ -1,5 +1,6 @@
 using App.Main.ShogiThings;
 using UnityEngine;
+using System;
 
 namespace App.Main.Player
 {
@@ -16,15 +17,15 @@ namespace App.Main.Player
         [SerializeField] public int defensePointDefaultUra;
         [SerializeField] public float moveSpeedDefaultUra;
 
-        public PlayerStatus CreatePlayerStatus(bool isUra)
+        public PlayerStatus CreatePlayerStatus(bool isUra, Player player)
         {
             if (isUra)
             {
-                return new PlayerStatus(hpMaxUra, attackPointDefaultUra, moveSpeedDefaultUra);
+                return new PlayerStatus(hpMaxUra, attackPointDefaultUra, moveSpeedDefaultUra, player);
             }
             else
             {
-                return new PlayerStatus(hpMax, attackPointDefault, moveSpeedDefault);
+                return new PlayerStatus(hpMax, attackPointDefault, moveSpeedDefault, player);
             }
         }
 

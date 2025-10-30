@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -50,7 +51,7 @@ namespace App.Main.Player
                 pitch = cameraTransform.localEulerAngles.x;
                 if (pitch > 180f) pitch -= 360f;
             }
-            playerStatus = new PlayerStatus(hpMax: 100, attackPointDefault: 10, moveSpeedDefault: 5f);
+            playerStatus = new PlayerStatus(hpMax: 100, attackPointDefault: 10, moveSpeedDefault: 5f, this);
         }
 
         public void SetPlayerStatus(PlayerStatus status)
@@ -113,7 +114,7 @@ namespace App.Main.Player
                 case "Skill":
                     if (context.phase == InputActionPhase.Performed && currentSkill != null)
                     {
-                        
+
                         currentSkill.UseSkill(playerStatus);
                     }
                     break;
@@ -179,6 +180,7 @@ namespace App.Main.Player
 
         void Update()
         {
+            playerStatus.EffectList.UpdateEffects();
             float deltaX = lookInput.x * lookSensitivity * Time.deltaTime;
             float deltaY = lookInput.y * lookSensitivity * Time.deltaTime;
 

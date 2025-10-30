@@ -8,7 +8,12 @@ namespace App.Main.Player
         public string effectName { get; }
         public float duration { get; }
         public float lastTime { get; }
-        public void Effect(PlayerStatus playerStatus, Action onEffectComplete);
+        public bool isActive { get; }
+        Action onEffectComplete { get; }
+        PlayerStatus playerStatus { get; }
+        Player player { get; }
+        public void Effect(Player player, PlayerStatus playerStatus, Action onEffectComplete);
+        public void EndEffect();
         public void UpdateEffect();
     }
 }

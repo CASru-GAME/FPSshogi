@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,10 +9,14 @@ namespace App.Main.Player
     {
         private List<IEffect> effects = new List<IEffect>();
         private PlayerStatus playerStatus;
+        private Player player;
+        private Action OnUpdate;
 
-        public EffectList(PlayerStatus playerStatus)
+        public EffectList(Player player, PlayerStatus playerStatus, Action onUpdate = null)
         {
+            this.player = player;
             this.playerStatus = playerStatus;
+            OnUpdate = onUpdate;
         }
 
         public void AddEffect(IEffect effect)
@@ -20,13 +25,17 @@ namespace App.Main.Player
             {
                 return;
             }
-            effect.Effect(playerStatus, () => OnEffectComplete(effect.GetType()));
+            effect.Effect(player,playerStatus, () => OnEffectComplete(effect.GetType()));
             effects.Add(effect);
         }
 
-        public void UpdateEffects(System.Type effectType)
+        public void UpdateEffects()
         {
-            effects.Where(e => e.GetType() == effectType).ToList().ForEach(e => e.UpdateEffect());
+            if (effects.Count == 0) return;
+            foreach (var effect in effects.ToList())
+            {
+                effect.UpdateEffect();
+            }
         }
         private void OnEffectComplete(System.Type effectType)
         {
