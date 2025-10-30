@@ -4,7 +4,11 @@ namespace App.Main.Player
     {
         public string skillName { get; }
         public float cooldownTime { get; }
+        public float cooldownTimer { get; }
         public bool isOnCooldown { get; }
-        public void UseSkill(PlayerStatus playerStatus);
+        PlayerStatus playerStatus { get; }
+        Player player { get; }
+        public void UseSkill(Player player, PlayerStatus playerStatus);
+        public void UpdateSkill();
     }
 }

@@ -525,9 +525,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1592249601}
-        m_TargetAssemblyTypeName: App.Main.ViewManager.ViewPiece, Assembly-CSharp
-        m_MethodName: CreateBoardCellPositions
+      - m_Target: {fileID: 1132949754}
+        m_TargetAssemblyTypeName: App.Main.Player.PlayerManager, Assembly-CSharp
+        m_MethodName: SetPlayerForDebugFuhyo
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2322,13 +2322,14 @@ MonoBehaviour:
   hisyaStatusParameter: {fileID: 11400000, guid: bc742e67911af6c44bb66a813da66721, type: 2}
   kingStatusParameter: {fileID: 11400000, guid: 2f0292a7426b87a4da0a5ee3ac297548, type: 2}
   fuhyoPieceObject: {fileID: 919132149155446097, guid: 3b71d20eaaa09bc41876d4d596cb6ce8, type: 3}
-  kyosyaPieceObject: {fileID: 0}
-  keimaPieceObject: {fileID: 0}
-  ginPieceObject: {fileID: 0}
-  kinPieceObject: {fileID: 0}
-  kakugyoPieceObject: {fileID: 0}
-  hisyaPieceObject: {fileID: 0}
-  kingPieceObject: {fileID: 0}
+  kyosyaPieceObject: {fileID: 919132149155446097, guid: 09a92db425947724fac2f84ccbc8662f, type: 3}
+  keimaPieceObject: {fileID: 919132149155446097, guid: 2ab499eb09278a647b9fe8f31f6fbc55, type: 3}
+  ginPieceObject: {fileID: 919132149155446097, guid: 6af87f4a0c5dea64e99f08686bb7c5e6, type: 3}
+  kinPieceObject: {fileID: 919132149155446097, guid: 944d5aa9d7a72de4f8ff4bf5918b10ae, type: 3}
+  kakugyoPieceObject: {fileID: 919132149155446097, guid: 576494dd7ed51834b82c7f47040a3d9e, type: 3}
+  hisyaPieceObject: {fileID: 919132149155446097, guid: 76e0c4439b21563468a3d23af0972fe8, type: 3}
+  gyokuPieceObject: {fileID: 919132149155446097, guid: dcc5b2c7dcaac1549bfb3cf9635374c2, type: 3}
+  ouPieceObject: {fileID: 919132149155446097, guid: 06a7ea1a8493d004485605ab104f7e8d, type: 3}
 --- !u!1 &1197553141
 GameObject:
   m_ObjectHideFlags: 0

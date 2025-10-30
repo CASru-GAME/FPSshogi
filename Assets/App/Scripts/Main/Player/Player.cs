@@ -28,6 +28,10 @@ namespace App.Main.Player
         private ISkill currentSkill;
         private IPrimaryAction currentPrimaryAction;
         private ISecondaryAction currentSecondaryAction;
+        private bool movementOverrideActive = false;
+        private Vector3 movementOverrideVelocity = Vector3.zero;
+        private float movementOverrideRemaining = 0f;
+        private bool movementOverridePreserveY = true;
 
         public void Initialize()
         {
@@ -114,8 +118,7 @@ namespace App.Main.Player
                 case "Skill":
                     if (context.phase == InputActionPhase.Performed && currentSkill != null)
                     {
-
-                        currentSkill.UseSkill(playerStatus);
+                        currentSkill.UseSkill(this, playerStatus);
                     }
                     break;
                 case "WeaponActionMain":
@@ -137,6 +140,7 @@ namespace App.Main.Player
         {
             if (rb == null) return;
 
+            // カメラ基準の前右ベクトル等（既存コード）
             Vector3 forward = (cameraTransform != null) ? cameraTransform.forward : transform.forward;
             Vector3 right = (cameraTransform != null) ? cameraTransform.right : transform.right;
             forward.y = 0f; right.y = 0f;
@@ -145,37 +149,45 @@ namespace App.Main.Player
             Vector3 desired = right * moveInput.x + forward * moveInput.y;
             Vector3 targetVel = desired * playerStatus.MoveSpeed.Current;
 
-            // 足元の最も低い座標を取得（Collider があれば bounds.min を使用）
-            Vector3 bottom;
-            var col = GetComponent<Collider>();
-            if (col != null)
-                bottom = col.bounds.min;
-            else
-                bottom = transform.position;
-
-            // レイの発射位置は足元少し上（コライダー内部から出るのを防ぐ）
-            Vector3 rayOrigin = bottom + Vector3.up * 0.05f;
-            // レイ方向はプレイヤーの前方（カメラの向きの水平方向を使用）
-            Vector3 rayDir = forward;
-            rayDir.y = 0f;
-            rayDir.Normalize();
-
-            bool detect = Physics.Raycast(rayOrigin, rayDir, out RaycastHit hit, climbDetectDistance);
-
-            // 検出中かつ Climb アクションが押されている間だけ上方向に速度を与える
-            if (detect && climbInput)
+            // ここで移動上書きがあるかチェックする
+            if (movementOverrideActive)
             {
-                // 現在の水平成分は保持して Y を上げる
-                Vector3 v = new Vector3(rb.linearVelocity.x, climbSpeed, rb.linearVelocity.z);
+                // 上書き速度適用（必要に応じて Y 成分を保持）
+                Vector3 v = movementOverrideVelocity;
+                if (movementOverridePreserveY)
+                    v.y = rb.linearVelocity.y;
                 rb.linearVelocity = v;
+
+                // タイマー減算（FixedUpdate のため fixedDeltaTime を使う）
+                movementOverrideRemaining -= Time.fixedDeltaTime;
+                if (movementOverrideRemaining <= 0f)
+                {
+                    ClearMovementOverride();
+                }
             }
             else
             {
-                // 通常移動：重力を有効にして Y 成分は現状を維持
+                // 既存の通常移動処理（Y は現状維持）
                 Vector3 v = targetVel;
                 v.y = rb.linearVelocity.y;
                 rb.linearVelocity = v;
             }
+
+            currentSkill?.UpdateSkill();
+        }
+
+        public void SetMovementOverride(Vector3 velocity, float durationSeconds, bool preserveY = true)
+        {
+            movementOverrideVelocity = velocity;
+            movementOverrideRemaining = Mathf.Max(0f, durationSeconds);
+            movementOverridePreserveY = preserveY;
+            movementOverrideActive = movementOverrideRemaining > 0f;
+        }
+
+        public void ClearMovementOverride()
+        {
+            movementOverrideActive = false;
+            movementOverrideRemaining = 0f;
         }
 
         void Update()
