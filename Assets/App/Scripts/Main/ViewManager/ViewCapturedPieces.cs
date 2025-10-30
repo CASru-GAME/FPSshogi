@@ -108,25 +108,23 @@ namespace App.Main.ViewManager
         private void ShowCapturedPieces()
         {
             UpadateCapturedPieceCounts();
-            for (int i = 0; i < playerOneCapturedPieces.Count; i++)
+            foreach (PieceType pieceType in playerOneCapturedPieces.Keys)
             {
-                PieceType pieceType = (PieceType)i;
                 int count = playerOneCapturedPieces[pieceType];
                 for (int j = 0; j < count; j++)
                 {
-                    Vector3 position = GetCapturedPiecePosition(i, PlayerType.PlayerOne);
+                    Vector3 position = GetCapturedPiecePosition((int)pieceType, PlayerType.PlayerOne);
                     GameObject pieceObject = Instantiate(GetPieceGameObject(pieceType, PlayerType.PlayerOne), position, Quaternion.identity);
                     // 駒の向きを調整
                     pieceObject.transform.rotation = Quaternion.Euler(90, 0, 0);
                 }
             }
-            for (int i = 0; i < playerTwoCapturedPieces.Count; i++)
+            foreach (PieceType pieceType in playerTwoCapturedPieces.Keys)
             {
-                PieceType pieceType = (PieceType)i;
                 int count = playerTwoCapturedPieces[pieceType];
                 for (int j = 0; j < count; j++)
                 {
-                    Vector3 position = GetCapturedPiecePosition(i, PlayerType.PlayerTwo);
+                    Vector3 position = GetCapturedPiecePosition((int)pieceType, PlayerType.PlayerTwo);
                     GameObject pieceObject = Instantiate(GetPieceGameObject(pieceType, PlayerType.PlayerTwo), position, Quaternion.identity);
                     // 駒の向きを調整
                     pieceObject.transform.rotation = Quaternion.Euler(90, 0, 180);
