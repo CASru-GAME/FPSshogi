@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -32,6 +33,8 @@ namespace App.Main.Player
         private Vector3 movementOverrideVelocity = Vector3.zero;
         private float movementOverrideRemaining = 0f;
         private bool movementOverridePreserveY = true;
+        public GameObject WeaponObject { get; private set; }
+        public GameObject SubWeaponObject { get; private set; }
 
         public void Initialize()
         {
@@ -56,6 +59,16 @@ namespace App.Main.Player
                 if (pitch > 180f) pitch -= 360f;
             }
             playerStatus = new PlayerStatus(hpMax: 100, attackPointDefault: 10, moveSpeedDefault: 5f, this);
+        }
+
+        public void SetWeaponObject(GameObject weapon)
+        {
+            WeaponObject = weapon;
+        }
+
+        public void SetSubWeaponObject(GameObject subWeapon)
+        {
+            SubWeaponObject = subWeapon;
         }
 
         public void SetPlayerStatus(PlayerStatus status)
