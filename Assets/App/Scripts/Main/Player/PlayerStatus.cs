@@ -1,4 +1,4 @@
-using System;
+using UnityEngine;
 
 namespace App.Main.Player
 {
@@ -27,6 +27,7 @@ namespace App.Main.Player
                 effectiveDamage = 0;
             }
             Hp.Subtract(effectiveDamage);
+            Debug.Log($"Player took {effectiveDamage} damage, HP is now {Hp.Current}/{Hp.Max}");
         }
 
         public void DumpStatus()

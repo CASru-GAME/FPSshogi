@@ -19,14 +19,21 @@ namespace App.Main.Player
             OnUpdate = onUpdate;
         }
 
-        public void AddEffect(IEffect effect)
+        // 戻り値: true = 新規追加, false = 既存の効果を再適用した（追加しなかった）
+        public bool AddEffect(IEffect effect)
         {
-            if (effects.Any(e => e.GetType() == effect.GetType()))
+            var existing = effects.FirstOrDefault(e => e.GetType() == effect.GetType());
+            if (existing != null)
             {
-                return;
+                // 既に同種の効果がある -> それを再適用（時間リセットなどは Effect 側で処理）
+                existing.Effect(player, playerStatus, () => OnEffectComplete(existing.GetType()));
+                return false;
             }
-            effect.Effect(player,playerStatus, () => OnEffectComplete(effect.GetType()));
+
+            // 新規追加
+            effect.Effect(player, playerStatus, () => OnEffectComplete(effect.GetType()));
             effects.Add(effect);
+            return true;
         }
 
         public void UpdateEffects()

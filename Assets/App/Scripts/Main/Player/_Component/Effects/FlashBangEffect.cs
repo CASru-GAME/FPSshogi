@@ -18,6 +18,9 @@ namespace App.Main.Player
         private GameObject overlayRoot;
         private Image overlayImage;
 
+        // 追加: この効果が属するカメラ（分割画面対策）
+        private Camera targetCamera;
+
         public void Effect(Player player, PlayerStatus playerStatus, Action onEffectComplete)
         {
             if (playerStatus == null || player == null) { /* still set local refs below */ }
@@ -28,16 +31,20 @@ namespace App.Main.Player
             this.playerStatus = playerStatus;
             this.player = player;
 
+            // カメラを特定（プレイヤーの子カメラ優先、なければ Camera.main）
+            targetCamera = player.GetComponentInChildren<Camera>();
+            if (targetCamera == null) targetCamera = Camera.main;
+
             // 移動を止める（既存実装に合わせる）
             playerStatus.MoveSpeed.Multiply(0.2f);
 
-            // オーバーレイ生成（Canvas + Image）
+            // オーバーレイ生成（プレイヤーカメラに紐づける）
             CreateOverlay();
         }
 
         private void CreateOverlay()
         {
-            // 安全性: 既にあるなら破棄してから作り直す
+            // 既にあるなら破棄してから作り直す
             if (overlayRoot != null)
             {
                 UnityEngine.Object.Destroy(overlayRoot);
@@ -45,25 +52,49 @@ namespace App.Main.Player
                 overlayImage = null;
             }
 
-            // Canvas を ScreenSpaceOverlay で作る（最前面に表示）
             overlayRoot = new GameObject("FlashbangOverlay");
+            // Canvas コンポーネントを追加
             var canvas = overlayRoot.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+            if (targetCamera != null)
+            {
+                // カメラ単位で表示させる（分割画面対応）
+                canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                canvas.worldCamera = targetCamera;
+                // Canvas がカメラに対して表示される距離（必要に応じて調整）
+                canvas.planeDistance = 1f;
+            }
+            else
+            {
+                // 最低限のフォールバック（全画面）
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            }
+
+            // sortingOrder を高くして上に表示（他のUIより前に）
             canvas.sortingOrder = 10000;
 
-            overlayRoot.AddComponent<CanvasScaler>();
+            // CanvasScaler と GraphicRaycaster を追加
+            var scaler = overlayRoot.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
             overlayRoot.AddComponent<GraphicRaycaster>();
 
             // Image を作成して全面に広げる
             var imgGO = new GameObject("FlashImage");
             imgGO.transform.SetParent(overlayRoot.transform, false);
             overlayImage = imgGO.AddComponent<Image>();
-            overlayImage.color = Color.white; // 最初は不透明（フラッシュ）
+            // 最初は不透明（フラッシュ）
+            overlayImage.color = new Color(1f, 1f, 1f, 1f);
+
             var rt = overlayImage.rectTransform;
             rt.anchorMin = Vector2.zero;
             rt.anchorMax = Vector2.one;
             rt.offsetMin = Vector2.zero;
             rt.offsetMax = Vector2.zero;
+
+            // 重要: Canvas をカメラの表示領域（Viewport）に合わせるため、
+            // overlayRoot をカメラに紐づけた場合は Canvas の transform をカメラの子にしない。
+            // ScreenSpaceCamera で worldCamera を設定すればそのカメラのビューポートに表示されます。
         }
 
         public void UpdateEffect()
@@ -116,6 +147,7 @@ namespace App.Main.Player
             onEffectComplete = null;
             playerStatus = null;
             player = null;
+            targetCamera = null;
         }
     }
 }
