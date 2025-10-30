@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &1584432257579459074
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.85853
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 29.84127
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 5.86315
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7521605219085934025, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 89.984634
+      objectReference: {fileID: 0}
+    - target: {fileID: -7521605219085934025, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 4.931718
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_Name
+      value: Gun_short
+      objectReference: {fileID: 0}
+    - target: {fileID: 5914221058880884878, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90.00001
+      objectReference: {fileID: 0}
+    - target: {fileID: 5914221058880884878, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 90
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1585100367702202050}
+  m_SourcePrefab: {fileID: 100100000, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+--- !u!1 &1818435482136911699 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 5bcc1374f7aa9884382be0cd2571fa2e, type: 3}
+  m_PrefabInstance: {fileID: 1584432257579459074}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1585100367702202050
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818435482136911699}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 085c57ed8fc4e824986b6aeccc331074, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

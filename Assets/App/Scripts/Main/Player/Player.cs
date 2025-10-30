@@ -70,6 +70,22 @@ namespace App.Main.Player
         public void SetWeaponObject(GameObject weapon)
         {
             WeaponObject = weapon;
+            if (WeaponObject != null)
+            {
+                //インスタンス化する
+                WeaponObject = Instantiate(WeaponObject);
+                WeaponObject.transform.SetParent(this.transform);
+                WeaponObject.transform.localPosition = Vector3.zero;
+                WeaponObject.transform.localRotation = Quaternion.identity;
+
+                // ローカルで90度回転させる
+                WeaponObject.transform.Rotate(0, 90, 0);
+                // ローカルでplayerの少し前に出させる
+                WeaponObject.transform.localPosition = new Vector3(1.0f, -0.5f, 1.6f);
+
+                //サイズを大きくする
+                WeaponObject.transform.localScale = new Vector3(2f, 2f, 2f);
+            }
         }
 
         public void SetSubWeaponObject(GameObject subWeapon)
@@ -143,13 +159,13 @@ namespace App.Main.Player
                 case "WeaponActionMain":
                     if (context.phase == InputActionPhase.Performed && currentPrimaryAction != null)
                     {
-                        currentPrimaryAction.PrimaryAction(playerStatus);
+                        currentPrimaryAction.PrimaryAction(this, playerStatus);
                     }
                     break;
                 case "WeaponActionSub":
                     if (context.phase == InputActionPhase.Performed && currentSecondaryAction != null)
                     {
-                        currentSecondaryAction.SecondaryAction(playerStatus);
+                        currentSecondaryAction.SecondaryAction(this, playerStatus);
                     }
                     break;
             }
@@ -207,6 +223,7 @@ namespace App.Main.Player
             }
 
             currentSkill?.UpdateSkill();
+            currentSecondaryAction?.UpdateSecondaryAction();
         }
 
         public void SetMovementOverride(Vector3 velocity, float durationSeconds, bool preserveY = true)

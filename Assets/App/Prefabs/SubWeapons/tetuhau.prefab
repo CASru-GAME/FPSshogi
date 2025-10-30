@@ -85,7 +85,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
   fuseTime: 2
-  explosionRadius: 5
+  explosionRadius: 10
   affectLayers:
     serializedVersion: 2
     m_Bits: 4294967295

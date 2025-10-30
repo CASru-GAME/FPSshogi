@@ -719,9 +719,37 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 419369387479853318, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1122225630710857657, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1853112147898018483, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2659359009535850398, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2878135388561193940, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
       propertyPath: m_Name
       value: Field2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2878135388561193940, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975941635531564414, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3165210540080515933, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3223135115661795694, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -761,6 +789,42 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3223135115661795694, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3597019530442598175, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3675290750548268051, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4142810331080010132, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5113935260685919463, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5772081066532473410, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6109705619764400065, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7137594530792724772, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7790600346202209190, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8630939350393705098, guid: ac383beb3eeda73479f1774cfca822e1, type: 3}
+      propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -2330,6 +2394,16 @@ MonoBehaviour:
   hisyaPieceObject: {fileID: 919132149155446097, guid: 76e0c4439b21563468a3d23af0972fe8, type: 3}
   gyokuPieceObject: {fileID: 919132149155446097, guid: dcc5b2c7dcaac1549bfb3cf9635374c2, type: 3}
   ouPieceObject: {fileID: 919132149155446097, guid: 06a7ea1a8493d004485605ab104f7e8d, type: 3}
+  bomb: {fileID: 5822960260240367337, guid: 78c61618d67fe5c4a808596dcf92d827, type: 3}
+  blackKakugyo: {fileID: 2719619479982785498, guid: e96e8a78ebeaea142a1be8ef9a3ac22b, type: 3}
+  kingWeapon: {fileID: 3615366834211219400, guid: 8730a9354e62c544fa1fcfec59930eac, type: 3}
+  fuhyoWeapon: {fileID: 1799323838118038579, guid: d87d12caed6d90b449f23eef3d932c50, type: 3}
+  kyosyaWeapon: {fileID: 1818435482136911699, guid: 4938ba6d7c4b64449a0c0f1283e455b1, type: 3}
+  keimaWeapon: {fileID: 5595995290942587534, guid: 46bc2b7dc94a0c644beb046fd0d7013a, type: 3}
+  ginWeapon: {fileID: 6858561012187481486, guid: 2d2c91e5dfd3e0a40afdff38fbd1135a, type: 3}
+  kinWeapon: {fileID: 7156132241253547110, guid: 3ecc3e6f9969e2a4ca75f0147dd10416, type: 3}
+  kakugyoWeapon: {fileID: 2719619479982785498, guid: e96e8a78ebeaea142a1be8ef9a3ac22b, type: 3}
+  hisyaWeapon: {fileID: 9006690937168398079, guid: 3df81d2f579173141812dc9739799e14, type: 3}
 --- !u!1 &1197553141
 GameObject:
   m_ObjectHideFlags: 0
