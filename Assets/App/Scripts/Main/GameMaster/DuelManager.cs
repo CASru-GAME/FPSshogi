@@ -22,22 +22,26 @@ namespace App.Main.GameMaster
 
         public void ChangeStateToPlayerOneWin()
         {
-            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerOneWin);
+            gameStateHolder.ChangeStateIntoDuelPlayerOneWin();
         }
 
         public void ChangeStateToPlayerTwoWin()
         {
-            gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoWin);
+            Debug.Log("Player Two wins.");
+            gameStateHolder.ChangeStateIntoDuelPlayerTwoWin();
         }
 
         public void Update()
         {
+            if (gameStateHolder.CurrentState != GameStateHolder.GameState.Duel) return;
             if (playerManager.PlayerOne.GetComponent<Player.Player>().playerStatus.Hp.Current <= 0)
             {
+                Debug.Log("Player One HP is 0 or less. Player Two wins.");
                 ChangeStateToPlayerTwoWin();
             }
             else if (playerManager.PlayerTwo.GetComponent<Player.Player>().playerStatus.Hp.Current <= 0)
             {
+                Debug.Log("Player Two HP is 0 or less. Player One wins.");
                 ChangeStateToPlayerOneWin();
             }
         }

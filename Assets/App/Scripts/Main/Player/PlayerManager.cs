@@ -153,8 +153,50 @@ namespace App.Main.Player
             EnableOnlyMap("Shogi");
             DisablePlayerCamera();
             //CursorEnable();
-            Destroy(PlayerOnePieceObject);
-            Destroy(PlayerTwoPieceObject);
+
+            // PlayerOne/Two に割り当てたピースオブジェクトを削除（子オブジェクトも含む）
+            if (PlayerOnePieceObject != null)
+            {
+                DestroyObjectWithChildren(PlayerOnePieceObject);
+                PlayerOnePieceObject = null;
+            }
+            if (PlayerTwoPieceObject != null)
+            {
+                DestroyObjectWithChildren(PlayerTwoPieceObject);
+                PlayerTwoPieceObject = null;
+            }
+
+            DestroyChildrenSafe(PlayerOne);
+            DestroyChildrenSafe(PlayerTwo);
+        }
+
+        // GameObject とその子を安全に破棄（Editor/PlayMode に対応）
+        private void DestroyObjectWithChildren(GameObject go)
+        {
+            if (go == null) return;
+            if (Application.isPlaying)
+                Destroy(go);
+            else
+                DestroyImmediate(go);
+        }
+
+        // 指定 GameObject の直下にある全子オブジェクトを破棄（null チェックあり）
+        private void DestroyChildrenSafe(GameObject parent)
+        {
+            if (parent == null) return;
+
+            // Transform を直接列挙すると破棄でコレクションが変わるため一旦収集する
+            var children = new System.Collections.Generic.List<GameObject>();
+            foreach (Transform t in parent.transform)
+            {
+                if (t != null && t.gameObject != null)
+                    children.Add(t.gameObject);
+            }
+
+            foreach (var c in children)
+            {
+                DestroyObjectWithChildren(c);
+            }
         }
 
         public void AddEffectToAllPlayers()
