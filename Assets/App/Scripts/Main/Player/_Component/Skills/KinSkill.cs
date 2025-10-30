@@ -1,15 +1,15 @@
 namespace App.Main.Player
 {
-    public class GinSkill : ISkill
+    public class KinSkill : ISkill
     {
-        public string skillName => "GinSkill";
-        public float cooldownTime => 30f;
+        public string skillName => "KinSkill";
+        public float cooldownTime => 10f;
         public float cooldownTimer { get; private set; }
         public bool isOnCooldown => cooldownTimer > 0f;
         public PlayerStatus playerStatus { get; private set; }
         public Player player { get; private set; }
-        int amount = 99999; // 防御力上昇量
-        float duration = 3f; // 効果持続時間
+        int amount = 10;
+        float duration = 5f;
         float timer;
 
         public void UseSkill(Player player, PlayerStatus playerStatus)
