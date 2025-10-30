@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using UnityEngine;
-
 namespace App.Main.ShogiThings
 {
     public class King : IPiece

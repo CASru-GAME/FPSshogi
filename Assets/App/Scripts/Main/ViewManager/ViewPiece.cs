@@ -2,7 +2,6 @@ using UnityEngine;
 using App.Common.Initialize;
 using App.Main.GameMaster;
 using App.Main.ShogiThings;
-using System.Collections.Generic;
 
 namespace App.Main.ViewManager
 {
