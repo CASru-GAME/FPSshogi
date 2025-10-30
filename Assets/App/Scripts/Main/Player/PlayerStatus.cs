@@ -1,3 +1,5 @@
+using System;
+
 namespace App.Main.Player
 {
     public class PlayerStatus
@@ -8,13 +10,13 @@ namespace App.Main.Player
         public MoveSpeed MoveSpeed { get; private set; }
         public EffectList EffectList { get; private set; }
 
-        public PlayerStatus(int hpMax, int attackPointDefault, float moveSpeedDefault)
+        public PlayerStatus(int hpMax, int attackPointDefault, float moveSpeedDefault, Player player)
         {
             Hp = new Hp(hpMax);
             AttackPoint = new AttackPoint(attackPointDefault);
             DefensePoint = new DefensePoint();
             MoveSpeed = new MoveSpeed(moveSpeedDefault);
-            EffectList = new EffectList(this);
+            EffectList = new EffectList(player, this);
         }
 
         public void TakeDamage(int damage)

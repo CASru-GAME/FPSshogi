@@ -25,6 +25,12 @@ namespace App.Main.Player
             }
         }
 
+        public void Multiply(float factor)
+        {
+            if (factor < 0f) factor = 0f;
+            Current *= factor;
+        }
+
         public void Reset()
         {
             Current = Default;
