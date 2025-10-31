@@ -5,13 +5,14 @@ using UnityEngine.InputSystem;
 using App.Main.GameMaster;
 using App.Main.ShogiThings;
 using System.Collections.Generic;
+using App.Main.Controller;
 
 namespace App.Main.ShogiPointer
 {
     public class ShogiPointer : MonoBehaviour, IInitializable
     {
         public int InitializationPriority => 0;
-        public System.Type[] Dependencies => new System.Type[] { typeof(PlayerManager), typeof(ShogiBoard), typeof(GameStateHolder) };
+        public System.Type[] Dependencies => new System.Type[] { typeof(ViewShogiPointer), typeof(PlayerManager), typeof(ShogiBoard), typeof(GameStateHolder) };
 
         private PlayerManager playerManager;
         private ShogiBoard shogiBoard;
@@ -21,6 +22,7 @@ namespace App.Main.ShogiPointer
         public Dictionary<PieceType, int> playerOneCapturedPieces = new Dictionary<PieceType, int>();
         public Dictionary<PieceType, int> playerTwoCapturedPieces = new Dictionary<PieceType, int>();
         CapturedPiecesPanelIndex capturedPiecesPanelIndex = new CapturedPiecesPanelIndex();
+        private ViewShogiPointer viewShogiPointer;
 
         private int[] pointerPosition = new int[2];
         private int[] selectedPiecePosition = new int[2];
@@ -30,6 +32,7 @@ namespace App.Main.ShogiPointer
             playerManager = referenceHolder.GetInitializable<PlayerManager>();
             shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
             gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
+            viewShogiPointer = referenceHolder.GetInitializable<ViewShogiPointer>();
             pointerPosition = new int[] { 0, 0 };
             selectedPiecePosition = new int[] { -1, -1 };
 
@@ -37,6 +40,11 @@ namespace App.Main.ShogiPointer
             playerManager.PlayerTwo.GetComponent<PlayerInput>().onActionTriggered += ctx => OnActionTriggered(ctx, playerManager.PlayerTwo.GetComponent<PlayerInput>());
             gameStateHolder.SubscribeToChangeToPlayerOneTurn(OnPlayerOneTurn);
             gameStateHolder.SubscribeToChangeToPlayerTwoTurn(OnPlayerTwoTurn);
+        }
+
+        public void Update()
+        {
+            viewShogiPointer?.ChangePointerPosition(pointerPosition);
         }
 
         private void OnPlayerOneTurn()
