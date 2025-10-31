@@ -41,6 +41,7 @@ namespace App.Main.Player
 
         public GameObject WeaponObject { get; private set; }
         public GameObject SubWeaponObject { get; private set; }
+        public GameObject ObjectForKingSkill { get; set; }
 
         public void Initialize()
         {
@@ -65,6 +66,11 @@ namespace App.Main.Player
                 if (pitch > 180f) pitch -= 360f;
             }
             playerStatus = new PlayerStatus(hpMax: 100, attackPointDefault: 10, moveSpeedDefault: 5f, this);
+        }
+
+        public void SetObjectForKingSkill(GameObject obj)
+        {
+            ObjectForKingSkill = obj;
         }
 
         public void SetWeaponObject(GameObject weapon)
