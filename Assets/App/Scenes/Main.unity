@@ -2441,7 +2441,8 @@ MonoBehaviour:
   ouPieceObject: {fileID: 919132149155446097, guid: 06a7ea1a8493d004485605ab104f7e8d, type: 3}
   bomb: {fileID: 5822960260240367337, guid: 78c61618d67fe5c4a808596dcf92d827, type: 3}
   Arrow: {fileID: 2288962482347024853, guid: a40e6a2a346350c4fa3a491ded15c387, type: 3}
-  blackKakugyo: {fileID: 2719619479982785498, guid: e96e8a78ebeaea142a1be8ef9a3ac22b, type: 3}
+  Gunbai: {fileID: 4453564982872612402, guid: 72a40b41644a30c4e803d4c60e40c77e, type: 3}
+  blackKakugyo: {fileID: 2344089313982693076, guid: afddbf2f2a4928a40a961a1985326135, type: 3}
   kingWeapon: {fileID: 3615366834211219400, guid: 8730a9354e62c544fa1fcfec59930eac, type: 3}
   fuhyoWeapon: {fileID: 1799323838118038579, guid: d87d12caed6d90b449f23eef3d932c50, type: 3}
   kyosyaWeapon: {fileID: 1818435482136911699, guid: 4938ba6d7c4b64449a0c0f1283e455b1, type: 3}
