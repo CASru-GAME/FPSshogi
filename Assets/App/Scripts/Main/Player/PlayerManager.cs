@@ -209,8 +209,6 @@ namespace App.Main.Player
             PlayerTwo.GetComponent<Player>().playerStatus.EffectList.AddEffect(new FlashBangEffect());
         }
 
-
-
         private void SetPlayerCondition()
         {
             IPiece pieceTypePlayerOne = shogiBoard.GetDuelPiece()[PlayerType.PlayerOne];
