@@ -81,7 +81,7 @@ namespace App.Main.Player
                 // ローカルで90度回転させる
                 WeaponObject.transform.Rotate(0, 90, 0);
                 // ローカルでplayerの少し前に出させる
-                WeaponObject.transform.localPosition = new Vector3(1.0f, -0.5f, 1.6f);
+                WeaponObject.transform.localPosition = new Vector3(1.0f, -0.5f, 3.5f);
 
                 //サイズを大きくする
                 WeaponObject.transform.localScale = new Vector3(2f, 2f, 2f);

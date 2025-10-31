@@ -48,6 +48,7 @@ namespace App.Main.Player
         [SerializeField] private GameObject gyokuPieceObject;
         [SerializeField] private GameObject ouPieceObject;
         [SerializeField] private GameObject bomb;
+        [SerializeField] private GameObject Arrow;
         [SerializeField] private GameObject blackKakugyo;
         [SerializeField] private GameObject kingWeapon;
         [SerializeField] private GameObject fuhyoWeapon;
@@ -242,7 +243,7 @@ namespace App.Main.Player
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted, PlayerOne.GetComponent<Player>()));
                     PlayerOne.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
                     PlayerOne.GetComponent<Player>().SetSkill(new FuhyoSkill());
-                    PlayerOne.GetComponent<Player>().SetPrimaryAction(new FuhyoPrimary());
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
                     PlayerOne.GetComponent<Player>().SetWeaponObject(fuhyoWeapon);
                     break;
                 case PieceType.Kyosya:
@@ -251,49 +252,56 @@ namespace App.Main.Player
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
                     PlayerOne.GetComponent<Player>().SetSkill(new KyosyaSkill());
                     PlayerOne.GetComponent<Player>().SetSubWeaponObject(bomb);
-                    //PlayerOne.GetComponent<Player>().SetPrimaryAction(kyosyaPrimaryAction);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(new ShortGunPrimary());
+                    PlayerOne.GetComponent<Player>().SetWeaponObject(kyosyaWeapon);
                     break;
                 case PieceType.Keima:
                     SetPlayerModel(PlayerOne, keimaPieceObject, pieceTypePlayerOne.IsPromoted, true);
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted, PlayerOne.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
                     PlayerOne.GetComponent<Player>().SetSkill(new KeimaSkill());
-                    //PlayerOne.GetComponent<Player>().SetPrimaryAction(keimaPrimaryAction);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+                    PlayerOne.GetComponent<Player>().SetWeaponObject(keimaWeapon);
                     break;
                 case PieceType.Gin:
                     SetPlayerModel(PlayerOne, ginPieceObject, pieceTypePlayerOne.IsPromoted, true);
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted, PlayerOne.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
                     PlayerOne.GetComponent<Player>().SetSkill(new GinSkill());
-                    //PlayerOne.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+                    PlayerOne.GetComponent<Player>().SetWeaponObject(ginWeapon);
                     break;
                 case PieceType.Kin:
                     SetPlayerModel(PlayerOne, kinPieceObject, pieceTypePlayerOne.IsPromoted, true);
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted, PlayerOne.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
                     PlayerOne.GetComponent<Player>().SetSkill(new KinSkill());
-                    //PlayerOne.GetComponent<Player>().SetPrimaryAction(kinPrimaryAction);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
                     break;
                 case PieceType.Kakugyo:
                     SetPlayerModel(PlayerOne, kakugyoPieceObject, pieceTypePlayerOne.IsPromoted, true);
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted, PlayerOne.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
                     PlayerOne.GetComponent<Player>().SetSkill(new KakugyoSkill());
-                    //PlayerOne.GetComponent<Player>().SetPrimaryAction(kakugyoPrimaryAction);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(new LongGunPrimary());
+                    PlayerOne.GetComponent<Player>().SetWeaponObject(kakugyoWeapon);
                     break;
                 case PieceType.Hisya:
                     SetPlayerModel(PlayerOne, hisyaPieceObject, pieceTypePlayerOne.IsPromoted, true);
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted, PlayerOne.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
                     PlayerOne.GetComponent<Player>().SetSkill(new HisyaSkill());
-                    //PlayerOne.GetComponent<Player>().SetPrimaryAction(hisyaPrimaryAction);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(new BowPrimary());
+                    PlayerOne.GetComponent<Player>().SetWeaponObject(hisyaWeapon);
+                    PlayerOne.GetComponent<Player>().SetSubWeaponObject(Arrow);
                     break;
                 case PieceType.King:
                     SetPlayerModel(PlayerOne, ouPieceObject, pieceTypePlayerOne.IsPromoted, true);
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted, PlayerOne.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
                     //PlayerOne.GetComponent<Player>().SetSkill(kingSkill);
-                    //PlayerOne.GetComponent<Player>().SetPrimaryAction(kingPrimaryAction);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+                    PlayerOne.GetComponent<Player>().SetWeaponObject(kingWeapon);
                     break;
             }
             switch (pieceTypePlayerTwo.Type)
@@ -303,7 +311,7 @@ namespace App.Main.Player
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
                     PlayerTwo.GetComponent<Player>().SetSkill(new FuhyoSkill());
-                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(new FuhyoPrimary());
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
                     PlayerTwo.GetComponent<Player>().SetWeaponObject(fuhyoWeapon);
                     break;
                 case PieceType.Kyosya:
@@ -311,49 +319,57 @@ namespace App.Main.Player
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
                     PlayerTwo.GetComponent<Player>().SetSkill(new KyosyaSkill());
-                    //PlayerTwo.GetComponent<Player>().SetPrimaryAction(kyosyaPrimaryAction);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(new ShortGunPrimary());
+                    PlayerTwo.GetComponent<Player>().SetWeaponObject(kyosyaWeapon);
                     break;
                 case PieceType.Keima:
                     SetPlayerModel(PlayerTwo, keimaPieceObject, pieceTypePlayerTwo.IsPromoted, false);
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
                     PlayerTwo.GetComponent<Player>().SetSkill(new KeimaSkill());
-                    //PlayerTwo.GetComponent<Player>().SetPrimaryAction(keimaPrimaryAction);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+                    PlayerTwo.GetComponent<Player>().SetWeaponObject(keimaWeapon);
                     break;
                 case PieceType.Gin:
                     SetPlayerModel(PlayerTwo, ginPieceObject, pieceTypePlayerTwo.IsPromoted, false);
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
                     PlayerTwo.GetComponent<Player>().SetSkill(new GinSkill());
-                    //PlayerTwo.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+                    PlayerTwo.GetComponent<Player>().SetWeaponObject(ginWeapon);
                     break;
                 case PieceType.Kin:
                     SetPlayerModel(PlayerTwo, kinPieceObject, pieceTypePlayerTwo.IsPromoted, false);
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
                     PlayerTwo.GetComponent<Player>().SetSkill(new KinSkill());
-                    //PlayerTwo.GetComponent<Player>().SetPrimaryAction(kinPrimaryAction);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+                    PlayerTwo.GetComponent<Player>().SetWeaponObject(kinWeapon);
                     break;
                 case PieceType.Kakugyo:
                     SetPlayerModel(PlayerTwo, kakugyoPieceObject, pieceTypePlayerTwo.IsPromoted, false);
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
                     PlayerTwo.GetComponent<Player>().SetSkill(new KakugyoSkill());
-                    //PlayerTwo.GetComponent<Player>().SetPrimaryAction(kakugyoPrimaryAction);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(new LongGunPrimary());
+                    PlayerTwo.GetComponent<Player>().SetWeaponObject(kakugyoWeapon);
                     break;
                 case PieceType.Hisya:
                     SetPlayerModel(PlayerTwo, hisyaPieceObject, pieceTypePlayerTwo.IsPromoted, false);
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
                     PlayerTwo.GetComponent<Player>().SetSkill(new HisyaSkill());
-                    //PlayerTwo.GetComponent<Player>().SetPrimaryAction(hisyaPrimaryAction);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(new BowPrimary());
+                    PlayerTwo.GetComponent<Player>().SetWeaponObject(hisyaWeapon);
+                    PlayerTwo.GetComponent<Player>().SetSubWeaponObject(Arrow);
                     break;
                 case PieceType.King:
                     SetPlayerModel(PlayerTwo, gyokuPieceObject, pieceTypePlayerTwo.IsPromoted, false);
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
                     //PlayerTwo.GetComponent<Player>().SetSkill(kingSkill);
-                    //PlayerTwo.GetComponent<Player>().SetPrimaryAction(kingPrimaryAction);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+                    PlayerTwo.GetComponent<Player>().SetWeaponObject(kingWeapon);
                     break;
             }
         }
@@ -364,13 +380,13 @@ namespace App.Main.Player
             PlayerOne.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(false, PlayerOne.GetComponent<Player>()));
             PlayerOne.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
             PlayerOne.GetComponent<Player>().SetSkill(new FuhyoSkill());
-            PlayerOne.GetComponent<Player>().SetPrimaryAction(new FuhyoPrimary());
+            PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
             PlayerOne.GetComponent<Player>().SetWeaponObject(fuhyoWeapon);
             SetPlayerModel(PlayerTwo, fuhyoPieceObject, false, false);
             PlayerTwo.GetComponent<Player>().SetPlayerStatus(fuhyoStatusParameter.CreatePlayerStatus(false, PlayerTwo.GetComponent<Player>()));
             PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
             PlayerTwo.GetComponent<Player>().SetSkill(new FuhyoSkill());
-            PlayerTwo.GetComponent<Player>().SetPrimaryAction(new FuhyoPrimary());
+            PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
             PlayerTwo.GetComponent<Player>().SetWeaponObject(fuhyoWeapon);
         }
 
@@ -381,13 +397,15 @@ namespace App.Main.Player
             PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
             PlayerOne.GetComponent<Player>().SetSkill(new KyosyaSkill());
             PlayerOne.GetComponent<Player>().SetSubWeaponObject(bomb);
-            //PlayerOne.GetComponent<Player>().SetPrimaryAction(kyosyaPrimaryAction);
+            PlayerOne.GetComponent<Player>().SetPrimaryAction(new ShortGunPrimary());
+            PlayerOne.GetComponent<Player>().SetWeaponObject(kyosyaWeapon);
             SetPlayerModel(PlayerTwo, kyosyaPieceObject, false, false);
             PlayerTwo.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(false, PlayerTwo.GetComponent<Player>()));
             PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
             PlayerTwo.GetComponent<Player>().SetSkill(new KyosyaSkill());
             PlayerTwo.GetComponent<Player>().SetSubWeaponObject(bomb);
-            //PlayerTwo.GetComponent<Player>().SetPrimaryAction(kyosyaPrimaryAction);
+            PlayerTwo.GetComponent<Player>().SetPrimaryAction(new ShortGunPrimary());
+            PlayerTwo.GetComponent<Player>().SetWeaponObject(kyosyaWeapon);
         }
 
         public void SetPlayerForDebugKeima()
@@ -396,12 +414,14 @@ namespace App.Main.Player
             PlayerOne.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(false, PlayerOne.GetComponent<Player>()));
             PlayerOne.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
             PlayerOne.GetComponent<Player>().SetSkill(new KeimaSkill());
-            //PlayerOne.GetComponent<Player>().SetPrimaryAction(keimaPrimaryAction);
+            PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+            PlayerOne.GetComponent<Player>().SetWeaponObject(keimaWeapon);
             SetPlayerModel(PlayerTwo, keimaPieceObject, false, false);
             PlayerTwo.GetComponent<Player>().SetPlayerStatus(keimaStatusParameter.CreatePlayerStatus(false, PlayerTwo.GetComponent<Player>()));
             PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
             PlayerTwo.GetComponent<Player>().SetSkill(new KeimaSkill());
-            // PlayerTwo.GetComponent<Player>().SetPrimaryAction(keimaPrimaryAction);
+            PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+            PlayerTwo.GetComponent<Player>().SetWeaponObject(keimaWeapon);
         }
 
         public void SetPlayerForDebugGin()
@@ -410,12 +430,14 @@ namespace App.Main.Player
             PlayerOne.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(false, PlayerOne.GetComponent<Player>()));
             PlayerOne.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
             PlayerOne.GetComponent<Player>().SetSkill(new GinSkill());
-            //PlayerOne.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction);
+            PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+            PlayerOne.GetComponent<Player>().SetWeaponObject(ginWeapon);
             SetPlayerModel(PlayerTwo, ginPieceObject, false, false);
             PlayerTwo.GetComponent<Player>().SetPlayerStatus(ginStatusParameter.CreatePlayerStatus(false, PlayerTwo.GetComponent<Player>()));
             PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
             PlayerTwo.GetComponent<Player>().SetSkill(new GinSkill());
-            //PlayerTwo.GetComponent<Player>().SetPrimaryAction(ginPrimaryAction);
+            PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+            PlayerTwo.GetComponent<Player>().SetWeaponObject(ginWeapon);
         }
 
         public void SetPlayerForDebugKin()
@@ -424,12 +446,14 @@ namespace App.Main.Player
             PlayerOne.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(false, PlayerOne.GetComponent<Player>()));
             PlayerOne.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
             PlayerOne.GetComponent<Player>().SetSkill(new KinSkill());
-            //PlayerOne.GetComponent<Player>().SetPrimaryAction(kinPrimaryAction);
+            PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+            PlayerOne.GetComponent<Player>().SetWeaponObject(kinWeapon);
             SetPlayerModel(PlayerTwo, kinPieceObject, false, false);
             PlayerTwo.GetComponent<Player>().SetPlayerStatus(kinStatusParameter.CreatePlayerStatus(false, PlayerTwo.GetComponent<Player>()));
             PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
             PlayerTwo.GetComponent<Player>().SetSkill(new KinSkill());
-            //PlayerTwo.GetComponent<Player>().SetPrimaryAction(kinPrimaryAction);
+            PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+            PlayerTwo.GetComponent<Player>().SetWeaponObject(kinWeapon);
         }
 
         public void SetPlayerForDebugKakugyo()
@@ -438,12 +462,14 @@ namespace App.Main.Player
             PlayerOne.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(false, PlayerOne.GetComponent<Player>()));
             PlayerOne.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
             PlayerOne.GetComponent<Player>().SetSkill(new KakugyoSkill());
-            //PlayerOne.GetComponent<Player>().SetPrimaryAction(kakugyoPrimaryAction);
+            PlayerOne.GetComponent<Player>().SetPrimaryAction(new LongGunPrimary());
+            PlayerOne.GetComponent<Player>().SetWeaponObject(kakugyoWeapon);
             SetPlayerModel(PlayerTwo, kakugyoPieceObject, false, false);
             PlayerTwo.GetComponent<Player>().SetPlayerStatus(kakugyoStatusParameter.CreatePlayerStatus(false, PlayerTwo.GetComponent<Player>()));
             PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
             PlayerTwo.GetComponent<Player>().SetSkill(new KakugyoSkill());
-            //PlayerTwo.GetComponent<Player>().SetPrimaryAction(kakugyoPrimaryAction);
+            PlayerTwo.GetComponent<Player>().SetPrimaryAction(new LongGunPrimary());
+            PlayerTwo.GetComponent<Player>().SetWeaponObject(kakugyoWeapon);
         }
 
         public void SetPlayerForDebugHisya()
@@ -452,12 +478,32 @@ namespace App.Main.Player
             PlayerOne.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(false, PlayerOne.GetComponent<Player>()));
             PlayerOne.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
             PlayerOne.GetComponent<Player>().SetSkill(new HisyaSkill());
-            //PlayerOne.GetComponent<Player>().SetPrimaryAction(hisyaPrimaryAction);
+            PlayerOne.GetComponent<Player>().SetPrimaryAction(new BowPrimary());
+            PlayerOne.GetComponent<Player>().SetWeaponObject(hisyaWeapon);
+            PlayerOne.GetComponent<Player>().SetSubWeaponObject(Arrow);
             SetPlayerModel(PlayerTwo, hisyaPieceObject, false, false);
             PlayerTwo.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(false, PlayerTwo.GetComponent<Player>()));
             PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
             PlayerTwo.GetComponent<Player>().SetSkill(new HisyaSkill());
-            //PlayerTwo.GetComponent<Player>().SetPrimaryAction(hisyaPrimaryAction);
+            PlayerTwo.GetComponent<Player>().SetPrimaryAction(new BowPrimary());
+            PlayerTwo.GetComponent<Player>().SetWeaponObject(hisyaWeapon);
+            PlayerTwo.GetComponent<Player>().SetSubWeaponObject(Arrow);
+        }
+
+        public void SetPlayerForDebugKing()
+        {
+            SetPlayerModel(PlayerOne, ouPieceObject, false, true);
+            PlayerOne.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(false, PlayerOne.GetComponent<Player>()));
+            PlayerOne.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
+            //PlayerOne.GetComponent<Player>().SetSkill(kingSkill);
+            PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+            PlayerOne.GetComponent<Player>().SetWeaponObject(kingWeapon);
+            SetPlayerModel(PlayerTwo, gyokuPieceObject, false, false);
+            PlayerTwo.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(false, PlayerTwo.GetComponent<Player>()));
+            PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
+            //PlayerTwo.GetComponent<Player>().SetSkill(kingSkill);
+            PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+            PlayerTwo.GetComponent<Player>().SetWeaponObject(kingWeapon);
         }
 
         /// <summary>

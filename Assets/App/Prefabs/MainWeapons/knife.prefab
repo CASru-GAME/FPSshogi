@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 5c4c46a99943a564b80e079b2f339141, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.85853
+      value: 6.47
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5c4c46a99943a564b80e079b2f339141, type: 3}
       propertyPath: m_LocalPosition.y
@@ -87,6 +87,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5c4c46a99943a564b80e079b2f339141, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5156376725589545931}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5c4c46a99943a564b80e079b2f339141, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -4994074285192283739}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5c4c46a99943a564b80e079b2f339141, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 270960300451300393}
   m_SourcePrefab: {fileID: 100100000, guid: 5c4c46a99943a564b80e079b2f339141, type: 3}
 --- !u!1 &3615366834211219400 stripped
 GameObject:
@@ -115,3 +121,43 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-4994074285192283739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3615366834211219400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f555720965bd0934a9e8e30287f44428, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: {fileID: 0}
+  attackAnimationName: "\u77ED\u5200_001|\u77ED\u5200\u53F3\u4E0A"
+  fallbackAttackDuration: 0.6
+  hitRadius: 0.5
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!65 &270960300451300393
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3615366834211219400}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 1.36, y: 0.03, z: -0.23}
