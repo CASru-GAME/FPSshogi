@@ -6,13 +6,14 @@ using App.Main.GameMaster;
 using App.Main.ShogiThings;
 using System.Collections.Generic;
 using App.Main.Controller;
+using App.Main.ViewManager;
 
 namespace App.Main.ShogiPointer
 {
     public class ShogiPointer : MonoBehaviour, IInitializable
     {
         public int InitializationPriority => 0;
-        public System.Type[] Dependencies => new System.Type[] { typeof(ViewShogiPointer), typeof(PlayerManager), typeof(ShogiBoard), typeof(GameStateHolder) };
+        public System.Type[] Dependencies => new System.Type[] { typeof(ViewSelectingCapturedPiecePointer), typeof(ViewShogiPointer), typeof(PlayerManager), typeof(ShogiBoard), typeof(GameStateHolder) };
 
         private PlayerManager playerManager;
         private ShogiBoard shogiBoard;
@@ -23,6 +24,7 @@ namespace App.Main.ShogiPointer
         public Dictionary<PieceType, int> playerTwoCapturedPieces = new Dictionary<PieceType, int>();
         CapturedPiecesPanelIndex capturedPiecesPanelIndex = new CapturedPiecesPanelIndex();
         private ViewShogiPointer viewShogiPointer;
+        private ViewSelectingCapturedPiecePointer viewCapturedPieces;
 
         private int[] pointerPosition = new int[2];
         private int[] selectedPiecePosition = new int[2];
@@ -33,6 +35,7 @@ namespace App.Main.ShogiPointer
             shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
             gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
             viewShogiPointer = referenceHolder.GetInitializable<ViewShogiPointer>();
+            viewCapturedPieces = referenceHolder.GetInitializable<ViewSelectingCapturedPiecePointer>();
             pointerPosition = new int[] { 0, 0 };
             selectedPiecePosition = new int[] { -1, -1 };
 
@@ -45,6 +48,7 @@ namespace App.Main.ShogiPointer
         public void Update()
         {
             viewShogiPointer?.ChangePointerPosition(pointerPosition);
+            viewCapturedPieces?.ChangePointerPosition(capturedPiecesPanelIndex.GetIndex(), gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn ? PlayerType.PlayerOne : PlayerType.PlayerTwo);
         }
 
         private void OnPlayerOneTurn()

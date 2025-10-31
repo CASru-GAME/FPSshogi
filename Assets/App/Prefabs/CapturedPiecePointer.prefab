@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2026907030871258354}
   - component: {fileID: 7894403520550714687}
   m_Layer: 0
-  m_Name: ShogiPointer
+  m_Name: CapturedPiecePointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3fb7caf1a07f7984c8f06d2ff7903458, type: 2}
+  - {fileID: 2100000, guid: 43ae8a97d6a581e4bb4845c58f434f57, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -5,10 +5,15 @@ namespace App.Main.ShogiPointer
     public  class CapturedPiecesPanelIndex
     {
         private int capturedPiecesPanelIndex = 0;
-        
+
         public PieceType GetCapturedPiecesType()
         {
             return (PieceType)capturedPiecesPanelIndex;
+        }
+        
+        public int GetIndex()
+        {
+            return capturedPiecesPanelIndex;
         }
 
         public void SetCapturedPiecesPanelIndex(int index)
