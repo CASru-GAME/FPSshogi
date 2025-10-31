@@ -81,3 +81,9 @@ crashlytics-build.properties
 /Assets/App/Textures/*.png
 /Assets/App/Textures/*.jpg
 !/Assets/App/Textures/.gitkeep
+/Assets/App/Images/*.png
+/Assets/App/Images/*.jpg
+!/Assets/App/Images/.gitkeep
+/Assets/App/Sprites/*.png
+/Assets/App/Sprites/*.jpg
+!/Assets/App/Sprites/.gitkeep
