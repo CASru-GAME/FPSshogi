@@ -19,7 +19,7 @@ namespace App.Main.ViewManager
         public GameObject gyoku;
 
         [SerializeField] private GameObject boardCellPositionMarkers;
-        private Vector3[,] boardCellPositions = new Vector3[9, 9];
+        public Vector3[,] boardCellPositions = new Vector3[9, 9];
 
         public int InitializationPriority => 80; // 優先度（低いほど先に初期化される）
         public System.Type[] Dependencies => new System.Type[] { typeof(ShogiBoard) }; // 依存関係

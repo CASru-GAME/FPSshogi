@@ -119,6 +119,51 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &60422439
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 60422441}
+  - component: {fileID: 60422440}
+  m_Layer: 0
+  m_Name: Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &60422440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60422439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 084072d95eaa8d545b8f583ac9a21657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  winnerUI: {fileID: 1592249600}
+--- !u!4 &60422441
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60422439}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 32.98453, y: 31.22803, z: -10.27822}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &111692452
 GameObject:
   m_ObjectHideFlags: 0
@@ -527,7 +572,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1132949754}
         m_TargetAssemblyTypeName: App.Main.Player.PlayerManager, Assembly-CSharp
-        m_MethodName: SetPlayerForDebugFuhyo
+        m_MethodName: ChangeToPlayerOneWinForDebug
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2904,6 +2949,7 @@ GameObject:
   - component: {fileID: 1592249602}
   - component: {fileID: 1592249601}
   - component: {fileID: 1592249603}
+  - component: {fileID: 1592249604}
   m_Layer: 0
   m_Name: ViewManager
   m_TagString: Untagged
@@ -2963,6 +3009,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerOneCapturedPiecePositionMarkers: {fileID: 826444879}
   playerTwoCapturedPiecePositionMarkers: {fileID: 579652641}
+--- !u!114 &1592249604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1592249600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8d17468c2ae82e4e8ad4387de1555f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  winnerUIPrefab: {fileID: 4210028613816131476, guid: 652e9d1e97b2792438c20576e479245b, type: 3}
+  playerOneWinnerImage: {fileID: 1871723621, guid: fcc960f7ad77e974490c6afc643315d1, type: 3}
+  playerTwoWinnerImage: {fileID: -1793794355, guid: 19185f060e793c34ea85848c5e38b96a, type: 3}
 --- !u!1 &1740089839
 GameObject:
   m_ObjectHideFlags: 0
@@ -3774,10 +3835,11 @@ SceneRoots:
   m_Roots:
   - {fileID: 996321985}
   - {fileID: 1740089841}
-  - {fileID: 1132949748}
   - {fileID: 1017229930}
   - {fileID: 1587416326}
+  - {fileID: 1132949748}
   - {fileID: 1592249602}
+  - {fileID: 60422441}
   - {fileID: 252304177}
   - {fileID: 971514395}
   - {fileID: 175486463}

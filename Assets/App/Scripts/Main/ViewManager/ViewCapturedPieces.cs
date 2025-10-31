@@ -48,7 +48,7 @@ namespace App.Main.ViewManager
             ShowCapturedPieces();
             HideUsedCapturedPieces();
         }
-        private Vector3 GetCapturedPiecePosition(int pieceTypeIndex, PlayerType playerType)
+        public Vector3 GetCapturedPiecePosition(int pieceTypeIndex, PlayerType playerType)
         {
             if (playerType == PlayerType.PlayerOne)
             {
@@ -77,7 +77,7 @@ namespace App.Main.ViewManager
             }
         }
 
-        private GameObject GetPieceGameObject(PieceType pieceType, PlayerType playerType)
+        public GameObject GetPieceGameObject(PieceType pieceType, PlayerType playerType)
         {
             switch (pieceType)
             {
