@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Hisya
   m_EditorClassIdentifier: 
   pieceTypeIndex: 1
-  hpMax: 100
-  attackPointDefault: 0
+  hpMax: 90
+  attackPointDefault: 60
   defensePointDefault: 0
   moveSpeedDefault: 6
   hpMaxUra: 120
-  attackPointDefaultUra: 0
+  attackPointDefaultUra: 90
   defensePointDefaultUra: 0
   moveSpeedDefaultUra: 6

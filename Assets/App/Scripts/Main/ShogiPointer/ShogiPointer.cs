@@ -43,6 +43,7 @@ namespace App.Main.ShogiPointer
             playerManager.PlayerTwo.GetComponent<PlayerInput>().onActionTriggered += ctx => OnActionTriggered(ctx, playerManager.PlayerTwo.GetComponent<PlayerInput>());
             gameStateHolder.SubscribeToChangeToPlayerOneTurn(OnPlayerOneTurn);
             gameStateHolder.SubscribeToChangeToPlayerTwoTurn(OnPlayerTwoTurn);
+            gameStateHolder.ChangeIntoPlayerOneTurn();
         }
 
         public void Update()

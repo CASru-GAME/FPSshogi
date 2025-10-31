@@ -125,9 +125,38 @@ namespace App.Main.Player
         private void OnChangedToDuel()
         {
             EnableOnlyMap("Player");
+            ResetPlayerPrefabPosition();
+            ResetPlayerPrefabRotation();
             EnablePlayerCamera();
-            //CursorDisable();
+            CursorDisable();
             SetPlayerCondition();
+        }
+
+        //プレイヤーのプレハブをスポーンポジションに戻す
+        private void ResetPlayerPrefabPosition()
+        {
+            if (PlayerOne != null)
+            {
+                PlayerOne.transform.position = PlayerOneSpawnPosition;
+                PlayerOne.transform.rotation = PlayerOneSpawnRotation;
+            }
+            if (PlayerTwo != null)
+            {
+                PlayerTwo.transform.position = PlayerTwoSpawnPosition;
+                PlayerTwo.transform.rotation = PlayerTwoSpawnRotation;
+            }
+        }
+
+        private void ResetPlayerPrefabRotation()
+        {
+            if (PlayerOne != null)
+            {
+                PlayerOne.transform.rotation = PlayerOneSpawnRotation;
+            }
+            if (PlayerTwo != null)
+            {
+                PlayerTwo.transform.rotation = PlayerTwoSpawnRotation;
+            }
         }
 
         public void ChangeToPlayerOneWinForDebug()
@@ -278,6 +307,7 @@ namespace App.Main.Player
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
                     PlayerOne.GetComponent<Player>().SetSkill(new KinSkill());
                     PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
+                    PlayerOne.GetComponent<Player>().SetWeaponObject(kinWeapon);
                     break;
                 case PieceType.Kakugyo:
                     SetPlayerModel(PlayerOne, kakugyoPieceObject, pieceTypePlayerOne.IsPromoted, true);
