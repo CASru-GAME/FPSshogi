@@ -48,6 +48,7 @@ namespace App.Main.Player
         [SerializeField] private GameObject gyokuPieceObject;
         [SerializeField] private GameObject ouPieceObject;
         [SerializeField] private GameObject bomb;
+        [SerializeField] private GameObject Arrow;
         [SerializeField] private GameObject blackKakugyo;
         [SerializeField] private GameObject kingWeapon;
         [SerializeField] private GameObject fuhyoWeapon;
@@ -290,7 +291,9 @@ namespace App.Main.Player
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted, PlayerOne.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
                     PlayerOne.GetComponent<Player>().SetSkill(new HisyaSkill());
-                    //PlayerOne.GetComponent<Player>().SetPrimaryAction(hisyaPrimaryAction);
+                    PlayerOne.GetComponent<Player>().SetPrimaryAction(new BowPrimary());
+                    PlayerOne.GetComponent<Player>().SetWeaponObject(hisyaWeapon);
+                    PlayerOne.GetComponent<Player>().SetSubWeaponObject(Arrow);
                     break;
                 case PieceType.King:
                     SetPlayerModel(PlayerOne, ouPieceObject, pieceTypePlayerOne.IsPromoted, true);
@@ -356,7 +359,9 @@ namespace App.Main.Player
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
                     PlayerTwo.GetComponent<Player>().SetSkill(new HisyaSkill());
-                    //PlayerTwo.GetComponent<Player>().SetPrimaryAction(hisyaPrimaryAction);
+                    PlayerTwo.GetComponent<Player>().SetPrimaryAction(new BowPrimary());
+                    PlayerTwo.GetComponent<Player>().SetWeaponObject(hisyaWeapon);
+                    PlayerTwo.GetComponent<Player>().SetSubWeaponObject(Arrow);
                     break;
                 case PieceType.King:
                     SetPlayerModel(PlayerTwo, gyokuPieceObject, pieceTypePlayerTwo.IsPromoted, false);
@@ -473,12 +478,16 @@ namespace App.Main.Player
             PlayerOne.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(false, PlayerOne.GetComponent<Player>()));
             PlayerOne.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
             PlayerOne.GetComponent<Player>().SetSkill(new HisyaSkill());
-            //PlayerOne.GetComponent<Player>().SetPrimaryAction(hisyaPrimaryAction);
+            PlayerOne.GetComponent<Player>().SetPrimaryAction(new BowPrimary());
+            PlayerOne.GetComponent<Player>().SetWeaponObject(hisyaWeapon);
+            PlayerOne.GetComponent<Player>().SetSubWeaponObject(Arrow);
             SetPlayerModel(PlayerTwo, hisyaPieceObject, false, false);
             PlayerTwo.GetComponent<Player>().SetPlayerStatus(hisyaStatusParameter.CreatePlayerStatus(false, PlayerTwo.GetComponent<Player>()));
             PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
             PlayerTwo.GetComponent<Player>().SetSkill(new HisyaSkill());
-            //PlayerTwo.GetComponent<Player>().SetPrimaryAction(hisyaPrimaryAction);
+            PlayerTwo.GetComponent<Player>().SetPrimaryAction(new BowPrimary());
+            PlayerTwo.GetComponent<Player>().SetWeaponObject(hisyaWeapon);
+            PlayerTwo.GetComponent<Player>().SetSubWeaponObject(Arrow);
         }
 
         public void SetPlayerForDebugKing()
