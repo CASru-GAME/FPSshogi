@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pieceTypeIndex: 6
   hpMax: 100
-  attackPointDefault: 0
+  attackPointDefault: 20
   defensePointDefault: 0
   moveSpeedDefault: 6
   hpMaxUra: 120
-  attackPointDefaultUra: 0
+  attackPointDefaultUra: 30
   defensePointDefaultUra: 0
   moveSpeedDefaultUra: 6
