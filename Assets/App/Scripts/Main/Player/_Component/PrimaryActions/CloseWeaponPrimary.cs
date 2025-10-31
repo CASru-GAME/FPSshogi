@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace App.Main.Player
 {
-    public class FuhyoPrimary : IPrimaryAction
+    public class CloseWeaponPrimary : IPrimaryAction
     {
-        public string primaryActionName => "FuhyoPrimary";
+        public string primaryActionName => "CloseWeaponPrimary";
         public Player player { get; private set; }
         public PlayerStatus playerStatus { get; private set; }
 

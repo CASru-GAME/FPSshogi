@@ -79,6 +79,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 763d4d4b73d0e6c4298387e461a52617, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8582953163038459418}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 763d4d4b73d0e6c4298387e461a52617, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -2483250215509414885}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 763d4d4b73d0e6c4298387e461a52617, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5188887992786747870}
   m_SourcePrefab: {fileID: 100100000, guid: 763d4d4b73d0e6c4298387e461a52617, type: 3}
 --- !u!1 &5595995290942587534 stripped
 GameObject:
@@ -107,3 +113,43 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-2483250215509414885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5595995290942587534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f555720965bd0934a9e8e30287f44428, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: {fileID: 0}
+  attackAnimationName: "\u5200_001|\u5200\u53F3\u4E0A"
+  fallbackAttackDuration: 0.6
+  hitRadius: 0.5
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!65 &5188887992786747870
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5595995290942587534}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.04, y: 1.33, z: 1}
+  m_Center: {x: -0.46, y: 0.2, z: -0.48}
