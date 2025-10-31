@@ -226,7 +226,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f468d0edf05f8c141a1c54b3a5609a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
   cameraTransform: {fileID: 7185812829083739474}
   lookSensitivity: 2
   gamepadLookMultiplier: 150
