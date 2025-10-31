@@ -76,6 +76,8 @@ namespace App.Main.Player
             DisablePlayerCamera();
             gameStateHolder.SubscribeToChangeToDuel(OnChangedToDuel);
             gameStateHolder.SubscribeToExitDuel(OnExitDuel);
+            gameStateHolder.SubscribeToChangeToPlayerOneWin(OnEndGame);
+            gameStateHolder.SubscribeToChangeToPlayerTwoWin(OnEndGame);
             EnableOnlyMap("Shogi");
         }
 
@@ -126,6 +128,14 @@ namespace App.Main.Player
             SetPlayerCondition();
         }
 
+        public void ChangeToPlayerOneWinForDebug()
+        {
+            gameStateHolder.ChangeStateIntoDuelPlayerOneWin();
+            Debug.Log("Changed to Duel Player One Win state for debug.");
+            gameStateHolder.ChangeStateIntoPlayerOneWin();
+            Debug.Log("Changed to Player One Win state for debug.");
+        }
+
         private void SetPlayerModel(GameObject player, GameObject pieceObject, bool isPromoted, bool isPlayerOne)
         {
             GameObject go = Instantiate(pieceObject);
@@ -170,11 +180,22 @@ namespace App.Main.Player
             DestroyChildrenSafe(PlayerTwo);
         }
 
+        private void OnEndGame()
+        {
+            DisableAllInput();
+            DisablePlayerCamera();
+            CursorEnable();
+        }
+
         // GameObject とその子を安全に破棄（Editor/PlayMode に対応）
         private void DestroyObjectWithChildren(GameObject go)
         {
             if (go == null) return;
-            if (Application.isPlaying)
+            if (go.GetComponent<Camera>() != null)
+            {
+                go.GetComponent<Camera>().enabled = false;
+            }
+            else if (Application.isPlaying)
                 Destroy(go);
             else
                 DestroyImmediate(go);
