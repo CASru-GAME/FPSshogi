@@ -572,7 +572,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1132949754}
         m_TargetAssemblyTypeName: App.Main.Player.PlayerManager, Assembly-CSharp
-        m_MethodName: ChangeToPlayerOneWinForDebug
+        m_MethodName: SetPlayerForDebugKakugyo
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2950,6 +2950,8 @@ GameObject:
   - component: {fileID: 1592249601}
   - component: {fileID: 1592249603}
   - component: {fileID: 1592249604}
+  - component: {fileID: 1592249605}
+  - component: {fileID: 1592249606}
   m_Layer: 0
   m_Name: ViewManager
   m_TagString: Untagged
@@ -3024,6 +3026,34 @@ MonoBehaviour:
   winnerUIPrefab: {fileID: 4210028613816131476, guid: 652e9d1e97b2792438c20576e479245b, type: 3}
   playerOneWinnerImage: {fileID: 1871723621, guid: fcc960f7ad77e974490c6afc643315d1, type: 3}
   playerTwoWinnerImage: {fileID: -1793794355, guid: 19185f060e793c34ea85848c5e38b96a, type: 3}
+--- !u!114 &1592249605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1592249600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b42178a08bc4e04499d788d818f3d7bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointerPrefab: {fileID: 2877542058604937856, guid: 3cafe1a83f0aa784d8c7b32bb0af2aea, type: 3}
+  pointerHeight: 33
+--- !u!114 &1592249606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1592249600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b91b7f5f873c2f4aa16fbd8201c4b85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointerPrefab: {fileID: 2877542058604937856, guid: 29d266c0d548b95449dfae1eb897a55c, type: 3}
+  pointerHeight: 33
 --- !u!1 &1740089839
 GameObject:
   m_ObjectHideFlags: 0
