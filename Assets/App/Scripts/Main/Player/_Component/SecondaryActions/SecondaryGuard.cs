@@ -59,6 +59,7 @@ namespace App.Main.Player
             // ステート更新
             buffActive = true;
             buffTimer = buffDuration;
+            CombatVisuals.Aura(player,"Guard_Aura",new Color(.4f,.85f,1f,.9f),buffDuration);
             cooldownTimer = cooldown;
         }
 

@@ -82,6 +82,7 @@ namespace App.Main.Player
                 }
             }
 
+            CombatVisuals.ShotFrom(owner,muzzle.position,hit.collider!=null?hit.point:muzzle.position+aimDir*range,hit.collider!=null);
             nextFireTime = Time.time + fireInterval;
         }
 

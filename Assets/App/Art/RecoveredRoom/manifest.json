@@ -1,0 +1,4755 @@
+{
+  "source": "D:\\自作ゲーム完成品\\FPSshogi\\FPSshogi_Data",
+  "textures": [
+    {
+      "key": "sharedassets0_31",
+      "name": "掛け軸和紙",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_31.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 31
+    },
+    {
+      "key": "sharedassets0_32",
+      "name": "箪笥",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_32.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 32
+    },
+    {
+      "key": "sharedassets0_34",
+      "name": "本",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_34.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 34
+    },
+    {
+      "key": "sharedassets0_36",
+      "name": "天井",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_36.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 36
+    },
+    {
+      "key": "sharedassets0_37",
+      "name": "本4",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_37.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 37
+    },
+    {
+      "key": "sharedassets0_38",
+      "name": "本5",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_38.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 38
+    },
+    {
+      "key": "sharedassets0_40",
+      "name": "本",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_40.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 40
+    },
+    {
+      "key": "sharedassets0_41",
+      "name": "柱",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_41.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 41
+    },
+    {
+      "key": "sharedassets0_42",
+      "name": "障子紙",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_42.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 42
+    },
+    {
+      "key": "sharedassets0_44",
+      "name": "本2",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_44.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 44
+    },
+    {
+      "key": "sharedassets0_45",
+      "name": "畳",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_45.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 45
+    },
+    {
+      "key": "sharedassets0_46",
+      "name": "襖枠組み",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_46.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 46
+    },
+    {
+      "key": "sharedassets0_47",
+      "name": "掛け軸台紙",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_47.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 47
+    },
+    {
+      "key": "sharedassets0_49",
+      "name": "引き出し (2)",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_49.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 49
+    },
+    {
+      "key": "sharedassets0_50",
+      "name": "和室壁紙",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_50.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 50
+    },
+    {
+      "key": "sharedassets0_51",
+      "name": "和柄赤",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_51.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 51
+    },
+    {
+      "key": "sharedassets0_52",
+      "name": "襖",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_52.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 52
+    },
+    {
+      "key": "sharedassets0_53",
+      "name": "本3",
+      "path": "Assets/App/Art/RecoveredRoom/sharedassets0_53.png",
+      "sourceFile": "sharedassets0.assets",
+      "sourceId": 53
+    }
+  ],
+  "materials": [
+    {
+      "key": "sharedassets0_2",
+      "name": "マテリアル",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_41",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_3",
+      "name": "本.002",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_44",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_5",
+      "name": "襖枠",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_46",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_6",
+      "name": "本.006",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_37",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_7",
+      "name": "本側面",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_34",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_9",
+      "name": "棚",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_32",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_10",
+      "name": "本.004",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_38",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_12",
+      "name": "本",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_40",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_13",
+      "name": "天井",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_36",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_16",
+      "name": "台紙",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_47",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_17",
+      "name": "掛け軸和紙",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_31",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_19",
+      "name": "座布団赤",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_51",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_20",
+      "name": "マテリアル.001",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_42",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_21",
+      "name": "引き出し",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_49",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_22",
+      "name": "本.001",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_53",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_24",
+      "name": "エンプティ.002",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_45",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_25",
+      "name": "本.003",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_53",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_26",
+      "name": "本.005",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_44",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_28",
+      "name": "壁紙",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_50",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets0_30",
+      "name": "襖無地",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_52",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets1_15",
+      "name": "木.001",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_32",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "key": "sharedassets1_65",
+      "name": "マテリアル.004",
+      "textures": [
+        {
+          "property": "_BaseMap",
+          "textureKey": "sharedassets0_32",
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      ],
+      "floats": [
+        {
+          "property": "_AddPrecomputedVelocity",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaClip",
+          "value": 0.0
+        },
+        {
+          "property": "_AlphaToMask",
+          "value": 0.0
+        },
+        {
+          "property": "_Blend",
+          "value": 0.0
+        },
+        {
+          "property": "_BlendModePreserveSpecular",
+          "value": 1.0
+        },
+        {
+          "property": "_BumpScale",
+          "value": 1.0
+        },
+        {
+          "property": "_ClearCoatMask",
+          "value": 0.0
+        },
+        {
+          "property": "_ClearCoatSmoothness",
+          "value": 0.0
+        },
+        {
+          "property": "_Cull",
+          "value": 2.0
+        },
+        {
+          "property": "_Cutoff",
+          "value": 0.5
+        },
+        {
+          "property": "_DetailAlbedoMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DetailNormalMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_DstBlend",
+          "value": 0.0
+        },
+        {
+          "property": "_DstBlendAlpha",
+          "value": 0.0
+        },
+        {
+          "property": "_EnvironmentReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_GlossMapScale",
+          "value": 1.0
+        },
+        {
+          "property": "_Glossiness",
+          "value": 0.5
+        },
+        {
+          "property": "_GlossyReflections",
+          "value": 1.0
+        },
+        {
+          "property": "_Metallic",
+          "value": 0.0
+        },
+        {
+          "property": "_Mode",
+          "value": 0.0
+        },
+        {
+          "property": "_OcclusionStrength",
+          "value": 1.0
+        },
+        {
+          "property": "_Parallax",
+          "value": 0.019999999552965164
+        },
+        {
+          "property": "_QueueOffset",
+          "value": 0.0
+        },
+        {
+          "property": "_ReceiveShadows",
+          "value": 1.0
+        },
+        {
+          "property": "_Smoothness",
+          "value": 0.5
+        },
+        {
+          "property": "_SmoothnessTextureChannel",
+          "value": 0.0
+        },
+        {
+          "property": "_SpecularHighlights",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlend",
+          "value": 1.0
+        },
+        {
+          "property": "_SrcBlendAlpha",
+          "value": 1.0
+        },
+        {
+          "property": "_Surface",
+          "value": 0.0
+        },
+        {
+          "property": "_UVSec",
+          "value": 0.0
+        },
+        {
+          "property": "_WorkflowMode",
+          "value": 1.0
+        },
+        {
+          "property": "_XRMotionVectorsPass",
+          "value": 1.0
+        },
+        {
+          "property": "_ZWrite",
+          "value": 1.0
+        }
+      ],
+      "colors": [
+        {
+          "property": "_BaseColor",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_Color",
+          "value": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          }
+        },
+        {
+          "property": "_EmissionColor",
+          "value": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 0.0
+          }
+        },
+        {
+          "property": "_SpecColor",
+          "value": {
+            "r": 0.19999995827674866,
+            "g": 0.19999995827674866,
+            "b": 0.19999995827674866,
+            "a": 1.0
+          }
+        }
+      ]
+    }
+  ],
+  "renderers": [
+    {
+      "name": "天井",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_13"
+        },
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_28"
+        },
+        {
+          "index": 2,
+          "materialKey": "sharedassets0_2"
+        }
+      ]
+    },
+    {
+      "name": "襖",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_5"
+        },
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_30"
+        }
+      ]
+    },
+    {
+      "name": "座布団",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_19"
+        }
+      ]
+    },
+    {
+      "name": "柱",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_2"
+        }
+      ]
+    },
+    {
+      "name": "本",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_22"
+        },
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_7"
+        },
+        {
+          "index": 2,
+          "materialKey": "sharedassets0_3"
+        },
+        {
+          "index": 3,
+          "materialKey": "sharedassets0_12"
+        },
+        {
+          "index": 4,
+          "materialKey": "sharedassets0_25"
+        },
+        {
+          "index": 5,
+          "materialKey": "sharedassets0_10"
+        },
+        {
+          "index": 6,
+          "materialKey": "sharedassets0_26"
+        },
+        {
+          "index": 7,
+          "materialKey": "sharedassets0_6"
+        }
+      ]
+    },
+    {
+      "name": "座布団.001",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_19"
+        }
+      ]
+    },
+    {
+      "name": "壁",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_28"
+        }
+      ]
+    },
+    {
+      "name": "障子",
+      "slots": [
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_20"
+        }
+      ]
+    },
+    {
+      "name": "床",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_24"
+        }
+      ]
+    },
+    {
+      "name": "掛け軸床",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_24"
+        },
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_9"
+        },
+        {
+          "index": 2,
+          "materialKey": "sharedassets0_30"
+        },
+        {
+          "index": 3,
+          "materialKey": "sharedassets0_5"
+        },
+        {
+          "index": 4,
+          "materialKey": "sharedassets0_28"
+        }
+      ]
+    },
+    {
+      "name": "箪笥",
+      "slots": [
+        {
+          "index": 2,
+          "materialKey": "sharedassets0_2"
+        },
+        {
+          "index": 3,
+          "materialKey": "sharedassets0_21"
+        }
+      ]
+    },
+    {
+      "name": "掛け軸",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_9"
+        },
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_16"
+        },
+        {
+          "index": 2,
+          "materialKey": "sharedassets0_17"
+        }
+      ]
+    },
+    {
+      "name": "天井",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_13"
+        },
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_28"
+        },
+        {
+          "index": 2,
+          "materialKey": "sharedassets0_2"
+        }
+      ]
+    },
+    {
+      "name": "襖",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_5"
+        },
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_30"
+        }
+      ]
+    },
+    {
+      "name": "座布団",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_19"
+        }
+      ]
+    },
+    {
+      "name": "柱",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_2"
+        }
+      ]
+    },
+    {
+      "name": "本",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_22"
+        },
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_7"
+        },
+        {
+          "index": 2,
+          "materialKey": "sharedassets0_3"
+        },
+        {
+          "index": 3,
+          "materialKey": "sharedassets0_12"
+        },
+        {
+          "index": 4,
+          "materialKey": "sharedassets0_25"
+        },
+        {
+          "index": 5,
+          "materialKey": "sharedassets0_10"
+        },
+        {
+          "index": 6,
+          "materialKey": "sharedassets0_26"
+        },
+        {
+          "index": 7,
+          "materialKey": "sharedassets0_6"
+        }
+      ]
+    },
+    {
+      "name": "座布団.001",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_19"
+        }
+      ]
+    },
+    {
+      "name": "壁",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_28"
+        }
+      ]
+    },
+    {
+      "name": "障子",
+      "slots": [
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_20"
+        }
+      ]
+    },
+    {
+      "name": "床",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_24"
+        }
+      ]
+    },
+    {
+      "name": "掛け軸床",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_24"
+        },
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_9"
+        },
+        {
+          "index": 2,
+          "materialKey": "sharedassets0_30"
+        },
+        {
+          "index": 3,
+          "materialKey": "sharedassets0_5"
+        },
+        {
+          "index": 4,
+          "materialKey": "sharedassets0_28"
+        }
+      ]
+    },
+    {
+      "name": "箪笥",
+      "slots": [
+        {
+          "index": 2,
+          "materialKey": "sharedassets0_2"
+        },
+        {
+          "index": 3,
+          "materialKey": "sharedassets0_21"
+        }
+      ]
+    },
+    {
+      "name": "掛け軸",
+      "slots": [
+        {
+          "index": 0,
+          "materialKey": "sharedassets0_9"
+        },
+        {
+          "index": 1,
+          "materialKey": "sharedassets0_16"
+        },
+        {
+          "index": 2,
+          "materialKey": "sharedassets0_17"
+        }
+      ]
+    }
+  ]
+}

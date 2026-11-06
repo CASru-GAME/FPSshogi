@@ -50,6 +50,7 @@ namespace App.Main.Player
             if (attackDuration <= 0f) attackDuration = 0.1f;
 
             // 初期化
+            if(onPlayerHitHandler!=null)weapon.OnPlayerHit-=onPlayerHitHandler;
             hitTargets.Clear();
             lastUseTime = Time.time;
 
@@ -78,12 +79,13 @@ namespace App.Main.Player
             };
 
             weapon.OnPlayerHit += onPlayerHitHandler;
+            var handler=onPlayerHitHandler;
 
             // 当たり判定を有効化（アニメの長さを有効時間に使用）
             weapon.ActivateHitbox(attackDuration, () =>
             {
                 // 終了コールバック：イベント解除
-                try { weapon.OnPlayerHit -= onPlayerHitHandler; }
+                try { weapon.OnPlayerHit -= handler; }
                 catch (Exception) { }
                 hitTargets.Clear();
             });

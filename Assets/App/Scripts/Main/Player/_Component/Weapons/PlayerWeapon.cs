@@ -17,6 +17,7 @@ namespace App.Main.Player
 
         Animator animator;
         Collider hitCollider;
+        Action completed;
 
         // ヒットを通知するイベント（外部で購読してダメージ等を処理する）
         public event Action<Player> OnPlayerHit;
@@ -47,13 +48,15 @@ namespace App.Main.Player
         // 使い方例: duration = weapon.PlayAnimation(weapon.attackAnimationName);
         public float PlayAnimation(string clipName)
         {
+            var presentation=GetComponent<WeaponPresentation>();
+            if(presentation!=null)return presentation.Attack();
             float duration = fallbackAttackDuration;
             if (animator != null && animator.runtimeAnimatorController != null && !string.IsNullOrEmpty(clipName))
             {
                 var clips = animator.runtimeAnimatorController.animationClips;
                 foreach (var c in clips)
                 {
-                    if (c != null && c.name == clipName)
+                    if (c != null && c.name.Replace('.', '_') == clipName.Replace('.', '_'))
                     {
                         duration = c.length;
                         break;
@@ -84,11 +87,19 @@ namespace App.Main.Player
             }
 
             StopAllCoroutines();
+            completed?.Invoke();
+            completed=onCompleted;
             StartCoroutine(ActivateRoutine(duration, onCompleted));
         }
 
         IEnumerator ActivateRoutine(float duration, Action onCompleted)
         {
+            var presentation=GetComponent<WeaponPresentation>();
+            if(presentation!=null)
+            {
+                yield return new WaitForSeconds(presentation.hitStart);
+                duration=Mathf.Max(.01f,presentation.hitEnd-presentation.hitStart);
+            }
             hitCollider.enabled = true;
 
             // 即時重なり判定：コライダーに既に入っている相手にもヒット通知を出す
@@ -97,7 +108,14 @@ namespace App.Main.Player
             yield return new WaitForSeconds(Mathf.Max(0.01f, duration));
 
             hitCollider.enabled = false;
+            completed=null;
             onCompleted?.Invoke();
+        }
+
+        void OnDisable()
+        {
+            StopAllCoroutines();if(hitCollider!=null)hitCollider.enabled=false;
+            var callback=completed;completed=null;callback?.Invoke();
         }
 
         // Collider が有効化された直後に既に入っているターゲットを検出して OnPlayerHit を呼ぶ
@@ -119,7 +137,9 @@ namespace App.Main.Player
             }
 
             int layerMask = hitLayers.value;
-            Collider[] cols = Physics.OverlapSphere(transform.position, radiusToUse, layerMask);
+            Collider[] cols = hitCollider is BoxCollider box
+                ? Physics.OverlapBox(transform.TransformPoint(box.center),Vector3.Scale(box.size*.5f,transform.lossyScale),transform.rotation,layerMask,QueryTriggerInteraction.Ignore)
+                : Physics.OverlapSphere(transform.position, radiusToUse, layerMask,QueryTriggerInteraction.Ignore);
             foreach (var c in cols)
             {
                 if (c == null) continue;

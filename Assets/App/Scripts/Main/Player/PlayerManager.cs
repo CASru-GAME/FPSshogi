@@ -142,6 +142,8 @@ namespace App.Main.Player
             EnableOnlyMap("Player");
             ResetPlayerPrefabPosition();
             ResetPlayerPrefabRotation();
+            PlayerOne.GetComponent<Player>().ResetDuelPresentation();
+            PlayerTwo.GetComponent<Player>().ResetDuelPresentation();
             EnablePlayerCamera();
             CursorDisable();
             SetPlayerCondition();
@@ -188,6 +190,12 @@ namespace App.Main.Player
             go.transform.SetParent(player.transform);
             go.transform.localPosition = Vector3.zero;
             go.transform.localRotation = Quaternion.identity;
+            // Each split-screen view hides its own body; the opponent still sees it.
+            int bodyLayer=isPlayerOne?30:31;
+            player.GetComponent<Player>().BodyLayer=bodyLayer;
+            foreach(var node in go.GetComponentsInChildren<Transform>(true))node.gameObject.layer=bodyLayer;
+            var ownCamera=player.GetComponentInChildren<Camera>(true);
+            if(ownCamera!=null)ownCamera.cullingMask&=~(1<<bodyLayer);
             if (isPromoted)
             {
                 // 成り後のモデル調整処理
@@ -206,6 +214,8 @@ namespace App.Main.Player
 
         private void OnExitDuel()
         {
+            PlayerOne.GetComponent<Player>().ResetDuelPresentation();
+            PlayerTwo.GetComponent<Player>().ResetDuelPresentation();
             EnableOnlyMap("Shogi");
             DisablePlayerCamera();
             CursorEnable();
@@ -228,6 +238,8 @@ namespace App.Main.Player
 
         private void OnEndGame()
         {
+            PlayerOne.GetComponent<Player>().ResetDuelPresentation();
+            PlayerTwo.GetComponent<Player>().ResetDuelPresentation();
             DisableAllInput();
             DisablePlayerCamera();
             CursorEnable();
@@ -347,10 +359,9 @@ namespace App.Main.Player
                     SetPlayerModel(PlayerOne, ouPieceObject, pieceTypePlayerOne.IsPromoted, true);
                     PlayerOne.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerOne.IsPromoted, PlayerOne.GetComponent<Player>()));
                     PlayerOne.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
-                    PlayerOne.GetComponent<Player>().SetSkill(new KingSkill());
+                    PlayerOne.GetComponent<Player>().SetSkill(new KingSkill { gunbaiPrefab = Gunbai, turretPrefab = blackKakugyo });
                     PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
                     PlayerOne.GetComponent<Player>().SetWeaponObject(kingWeapon);
-                    PlayerOne.GetComponent<Player>().SetObjectForKingSkill(Gunbai);
                     PlayerOne.GetComponent<Player>().SetObjectForKingSkill(blackKakugyo);
                     break;
             }
@@ -369,6 +380,7 @@ namespace App.Main.Player
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(kyosyaStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryZoom());
                     PlayerTwo.GetComponent<Player>().SetSkill(new KyosyaSkill());
+                    PlayerTwo.GetComponent<Player>().SetSubWeaponObject(bomb);
                     PlayerTwo.GetComponent<Player>().SetPrimaryAction(new ShortGunPrimary());
                     PlayerTwo.GetComponent<Player>().SetWeaponObject(kyosyaWeapon);
                     break;
@@ -417,10 +429,9 @@ namespace App.Main.Player
                     SetPlayerModel(PlayerTwo, gyokuPieceObject, pieceTypePlayerTwo.IsPromoted, false);
                     PlayerTwo.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(pieceTypePlayerTwo.IsPromoted, PlayerTwo.GetComponent<Player>()));
                     PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
-                    PlayerTwo.GetComponent<Player>().SetSkill(new KingSkill());
+                    PlayerTwo.GetComponent<Player>().SetSkill(new KingSkill { gunbaiPrefab = Gunbai, turretPrefab = blackKakugyo });
                     PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
                     PlayerTwo.GetComponent<Player>().SetWeaponObject(kingWeapon);
-                    PlayerTwo.GetComponent<Player>().SetObjectForKingSkill(Gunbai);
                     PlayerTwo.GetComponent<Player>().SetObjectForKingSkill(blackKakugyo);
                     break;
             }
@@ -547,18 +558,16 @@ namespace App.Main.Player
             SetPlayerModel(PlayerOne, ouPieceObject, false, true);
             PlayerOne.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(false, PlayerOne.GetComponent<Player>()));
             PlayerOne.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
-            PlayerOne.GetComponent<Player>().SetSkill(new KingSkill());
+            PlayerOne.GetComponent<Player>().SetSkill(new KingSkill { gunbaiPrefab = Gunbai, turretPrefab = blackKakugyo });
             PlayerOne.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
             PlayerOne.GetComponent<Player>().SetWeaponObject(kingWeapon);
-            PlayerOne.GetComponent<Player>().SetObjectForKingSkill(Gunbai);
             PlayerOne.GetComponent<Player>().SetObjectForKingSkill(blackKakugyo);
             SetPlayerModel(PlayerTwo, gyokuPieceObject, false, false);
             PlayerTwo.GetComponent<Player>().SetPlayerStatus(kingStatusParameter.CreatePlayerStatus(false, PlayerTwo.GetComponent<Player>()));
             PlayerTwo.GetComponent<Player>().SetSecondaryAction(new SecondaryGuard());
-            PlayerTwo.GetComponent<Player>().SetSkill(new KingSkill());
+            PlayerTwo.GetComponent<Player>().SetSkill(new KingSkill { gunbaiPrefab = Gunbai, turretPrefab = blackKakugyo });
             PlayerTwo.GetComponent<Player>().SetPrimaryAction(new CloseWeaponPrimary());
             PlayerTwo.GetComponent<Player>().SetWeaponObject(kingWeapon);
-            PlayerTwo.GetComponent<Player>().SetObjectForKingSkill(Gunbai);
             PlayerTwo.GetComponent<Player>().SetObjectForKingSkill(blackKakugyo);
         }
 

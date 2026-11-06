@@ -82,6 +82,7 @@ namespace App.Main.Player
 
             // インスタンス作成
             var arrowGO = UnityEngine.Object.Instantiate(arrowPrefab, origin, Quaternion.LookRotation(dir));
+            var lifetime=arrowGO.AddComponent<CombatVisualLifetime>();lifetime.owner=player;lifetime.remaining=arrowLifeTime;
 
             // ProjectileArrow コンポーネントを取得/追加して初期化
             var proj = arrowGO.GetComponent<ProjectileArrow>();

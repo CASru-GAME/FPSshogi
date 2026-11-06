@@ -26,6 +26,7 @@ namespace App.Main.Player
             // クールダウンを開始
             cooldownTimer = cooldownTime;
             timer = duration;
+            CombatVisuals.Aura(player,"KinSkill_Aura",new UnityEngine.Color(1f,.75f,.25f,.9f),duration);
         }
 
         public void UpdateSkill()
@@ -42,9 +43,9 @@ namespace App.Main.Player
             if (timer > 0f)
             {
                 timer -= UnityEngine.Time.deltaTime;
-                if (timer < 0f)
+                if (timer <= 0f)
                 {
-                    playerStatus.DefensePoint.Reset();
+                    playerStatus.DefensePoint.Add(-amount);
                     timer = 0f;
                 }
             }

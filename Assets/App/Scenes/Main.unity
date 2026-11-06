@@ -2145,7 +2145,6 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
-  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -2153,6 +2152,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &1008422127 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2367957313636304017, guid: 193ab4c29e0cb414fb8fecc3515534f9, type: 3}
@@ -2441,16 +2441,16 @@ MonoBehaviour:
   ouPieceObject: {fileID: 919132149155446097, guid: 06a7ea1a8493d004485605ab104f7e8d, type: 3}
   bomb: {fileID: 5822960260240367337, guid: 78c61618d67fe5c4a808596dcf92d827, type: 3}
   Arrow: {fileID: 2288962482347024853, guid: a40e6a2a346350c4fa3a491ded15c387, type: 3}
-  Gunbai: {fileID: 4453564982872612402, guid: 72a40b41644a30c4e803d4c60e40c77e, type: 3}
-  blackKakugyo: {fileID: 2344089313982693076, guid: afddbf2f2a4928a40a961a1985326135, type: 3}
-  kingWeapon: {fileID: 3615366834211219400, guid: 8730a9354e62c544fa1fcfec59930eac, type: 3}
-  fuhyoWeapon: {fileID: 1799323838118038579, guid: d87d12caed6d90b449f23eef3d932c50, type: 3}
-  kyosyaWeapon: {fileID: 1818435482136911699, guid: 4938ba6d7c4b64449a0c0f1283e455b1, type: 3}
-  keimaWeapon: {fileID: 5595995290942587534, guid: 46bc2b7dc94a0c644beb046fd0d7013a, type: 3}
-  ginWeapon: {fileID: 6858561012187481486, guid: 2d2c91e5dfd3e0a40afdff38fbd1135a, type: 3}
-  kinWeapon: {fileID: 7156132241253547110, guid: 3ecc3e6f9969e2a4ca75f0147dd10416, type: 3}
-  kakugyoWeapon: {fileID: 2719619479982785498, guid: e96e8a78ebeaea142a1be8ef9a3ac22b, type: 3}
-  hisyaWeapon: {fileID: 9006690937168398079, guid: 3df81d2f579173141812dc9739799e14, type: 3}
+  Gunbai: {fileID: 5971314776233895222, guid: 2d54676976e5c2644be7bdad1a94fe1e, type: 3}
+  blackKakugyo: {fileID: 3652320199217715719, guid: f21716f434af3484e9d0126036b98077, type: 3}
+  kingWeapon: {fileID: 6972189268219969691, guid: 8fba9fbe6b0d91e4d89a6887dab539eb, type: 3}
+  fuhyoWeapon: {fileID: 7180037257936128845, guid: 75861a2ce39e0f04c8d489eb302f48e3, type: 3}
+  kyosyaWeapon: {fileID: 7740350181617997382, guid: 07b77058ef66caf4faf4432f8b56c3e3, type: 3}
+  keimaWeapon: {fileID: 2137808091141467172, guid: 2719b18b310265149adc15bf2dbb698d, type: 3}
+  ginWeapon: {fileID: 1700722294894463528, guid: 69fa45b12c03b05459b6033ed4a5c9c5, type: 3}
+  kinWeapon: {fileID: 3948526237835403430, guid: cf5e9c7e8060d2c4184e55802ab5d60a, type: 3}
+  kakugyoWeapon: {fileID: 1528133750021045797, guid: bd7d1281cf84bc345a0194953bc110a5, type: 3}
+  hisyaWeapon: {fileID: 8424934053705392054, guid: 2187cbdbdac77ed41a10e8940b77fc62, type: 3}
 --- !u!1 &1197553141
 GameObject:
   m_ObjectHideFlags: 0
@@ -3166,17 +3166,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Version: 3
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_RenderingLayers: 1
   m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_ShadowRenderingLayers: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1746302705 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2367957313636304017, guid: 193ab4c29e0cb414fb8fecc3515534f9, type: 3}

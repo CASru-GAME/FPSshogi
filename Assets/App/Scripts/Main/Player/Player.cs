@@ -24,6 +24,7 @@ namespace App.Main.Player
         private Vector2 lookInput = Vector2.zero;
         private float yaw = 0f;
         private float pitch = 0f;
+        private float normalFieldOfView = 60f;
 
         public PlayerStatus playerStatus;
         public float PrimaryCooldown => currentPrimaryAction?.CooldownRemaining ?? 0f;
@@ -31,8 +32,24 @@ namespace App.Main.Player
         public float SkillCooldown => Mathf.Max(0f, currentSkill?.cooldownTimer ?? 0f);
         public string SecondaryName => currentSecondaryAction?.secondaryActionName == "SecondaryZoom" ? "ズーム" : "防御";
         public App.Main.ShogiThings.PieceType PieceType { get; set; }
+        public int BodyLayer { get; set; }
         public float LookSensitivity { get => lookSensitivity; set => lookSensitivity = Mathf.Clamp(value, .5f, 5f); }
         public void ResetInput() { moveInput = lookInput = Vector2.zero; climbInput = false; }
+        public void ResetDuelPresentation()
+        {
+            ResetInput(); ClearMovementOverride(); StopAllCoroutines();
+            CombatVisuals.Clear(this);
+            yaw=transform.eulerAngles.y; pitch=0;
+            if(cameraTransform!=null)
+            {
+                cameraTransform.localRotation=Quaternion.identity;
+                var camera=cameraTransform.GetComponent<Camera>();
+                if(camera!=null)camera.fieldOfView=normalFieldOfView;
+            }
+            currentSkill=null;currentPrimaryAction=null;currentSecondaryAction=null;
+            SubWeaponObject=null;ObjectForKingSkill=null;
+            if(rb!=null)rb.linearVelocity=Vector3.zero;
+        }
         private ISkill currentSkill;
         private IPrimaryAction currentPrimaryAction;
         private ISecondaryAction currentSecondaryAction;
@@ -69,6 +86,8 @@ namespace App.Main.Player
             yaw = transform.eulerAngles.y;
             if (cameraTransform != null)
             {
+                var camera=cameraTransform.GetComponent<Camera>();
+                if(camera!=null)normalFieldOfView=camera.fieldOfView;
                 pitch = cameraTransform.localEulerAngles.x;
                 if (pitch > 180f) pitch -= 360f;
             }
@@ -82,6 +101,7 @@ namespace App.Main.Player
 
         public void SetWeaponObject(GameObject weapon)
         {
+            if(WeaponObject!=null)Destroy(WeaponObject);
             WeaponObject = weapon;
             if (WeaponObject != null)
             {
@@ -90,6 +110,15 @@ namespace App.Main.Player
                 WeaponObject.transform.SetParent(this.transform);
                 WeaponObject.transform.localPosition = Vector3.zero;
                 WeaponObject.transform.localRotation = Quaternion.identity;
+
+                var presentation=WeaponObject.GetComponent<WeaponPresentation>();
+                if(presentation!=null)
+                {
+                    WeaponObject.transform.localScale=Vector3.one;
+                    presentation.Bind(this);
+                    WeaponObject.GetComponent<PlayerWeapon>()?.SetOwner(this);
+                    return;
+                }
 
                 // ローカルで90度回転させる
                 WeaponObject.transform.Rotate(0, 90, 0);
