@@ -63,6 +63,12 @@ namespace App.Main.Player
             TryDestroy();
         }
 
+        void FixedUpdate()
+        {
+            if (launched && !consumed && rb != null && rb.linearVelocity.sqrMagnitude > .01f)
+                rb.MoveRotation(Quaternion.LookRotation(rb.linearVelocity));
+        }
+
         System.Collections.IEnumerator MoveByTransform(Vector3 velocity)
         {
             while (!consumed)

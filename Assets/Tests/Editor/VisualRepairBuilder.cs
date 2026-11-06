@@ -33,7 +33,7 @@ public static class VisualRepairBuilder
         if(EditorApplication.isCompiling||EditorApplication.isPlayingOrWillChangePlaymode||!File.Exists(Trigger))return;
         string command=File.ReadAllText(Trigger).Trim();File.Delete(Trigger);
         if(File.Exists(".utmp/visual-fix/art-error.txt"))File.Delete(".utmp/visual-fix/art-error.txt");
-        try{if(command=="build")Build();else if(command=="room"){RestoreRoom();AssetDatabase.SaveAssets();}else if(command=="weapons"){MakeWeapons();ConfigureScene();AssetDatabase.SaveAssets();}else if(command=="report")WriteGeometryReport();else Inventory();File.WriteAllText(".utmp/visual-fix/art-complete.txt",command);}
+        try{if(command=="visual-player")BuildVisualPlayer();else if(command=="build")Build();else if(command=="room"){RestoreRoom();AssetDatabase.SaveAssets();}else if(command=="weapons"){MakeWeapons();ConfigureScene();AssetDatabase.SaveAssets();}else if(command=="report")WriteGeometryReport();else Inventory();File.WriteAllText(".utmp/visual-fix/art-complete.txt",command);}
         catch(Exception e){File.WriteAllText(".utmp/visual-fix/art-error.txt",e.ToString());Debug.LogException(e);}
     }
     const string Art="Assets/App/Art/";
@@ -89,7 +89,8 @@ public static class VisualRepairBuilder
     }
     static Material Lit(string name,Color color,float metallic=0,float smoothness=.3f)
     {
-        var mat=new Material(Shader.Find("Universal Render Pipeline/Lit")){name=name};mat.SetColor("_BaseColor",color);mat.SetFloat("_Metallic",metallic);mat.SetFloat("_Smoothness",smoothness);mat.SetFloat("_Cull",(float)CullMode.Off);
+        var mat=new Material(Shader.Find("Universal Render Pipeline/Lit")){name=name};mat.SetColor("_BaseColor",color);mat.SetColor("_Color",color);mat.SetFloat("_Metallic",metallic);mat.SetFloat("_Smoothness",smoothness);mat.SetFloat("_Cull",(float)CullMode.Off);
+        mat.doubleSidedGI=true;mat.SetOverrideTag("RenderType","Opaque");mat.SetShaderPassEnabled("MOTIONVECTORS",false);
         return Save(mat,Art+"Weapons/"+name+".mat");
     }
     static void MakeEffects()
@@ -253,6 +254,26 @@ public static class VisualRepairBuilder
         var b=mesh.bounds;float size=longest?Mathf.Max(b.size.x,b.size.y,b.size.z):b.size.y;
         mesh.vertices=mesh.vertices.Select(v=>(v-b.center)*(height/size)).ToArray();mesh.RecalculateBounds();
     }
+    static void RemoveCollapsedFaces(Mesh mesh)
+    {
+        var v=mesh.vertices;float tolerance=mesh.bounds.size.sqrMagnitude*1e-12f;
+        for(int s=0;s<mesh.subMeshCount;s++)
+        {
+            var t=mesh.GetTriangles(s);var keep=new List<int>();
+            for(int i=0;i<t.Length;i+=3)
+                if(Vector3.Cross(v[t[i+1]]-v[t[i]],v[t[i+2]]-v[t[i]]).magnitude>=tolerance)
+                    keep.AddRange(new[]{t[i],t[i+1],t[i+2]});
+            mesh.SetTriangles(keep,s);
+        }
+        mesh.RecalculateBounds();mesh.RecalculateTangents();
+    }
+    static Vector3 BarrelOpening(Mesh mesh,Material[] materials)
+    {
+        int slot=Array.FindIndex(materials,m=>m.name=="Steel");var vertices=mesh.vertices;
+        var rim=mesh.GetTriangles(slot).Distinct().Select(i=>vertices[i]).Where(v=>v.z>mesh.bounds.max.z-.015f).ToArray();
+        var bounds=new Bounds(rim[0],Vector3.zero);foreach(var v in rim)bounds.Encapsulate(v);
+        return new Vector3(bounds.center.x,bounds.center.y,mesh.bounds.max.z+.002f);
+    }
     static void CloseBladeSurface(Mesh mesh)
     {
         // Both original naginata models contain the bevel/rim but omit the broad blade faces.
@@ -313,6 +334,7 @@ public static class VisualRepairBuilder
         var wood=Lit("WarmWood",new Color(.27f,.105f,.035f));var leather=Lit("DarkLeather",new Color(.045f,.027f,.018f),0,.2f);
         var steel=Lit("Steel",new Color(.5f,.59f,.65f),.8f,.64f);var gold=Lit("Brass",new Color(.7f,.4f,.1f),.7f,.5f);
         var red=Lit("RedLacquer",new Color(.52f,.045f,.035f),.1f,.4f);var blue=Lit("BlueLacquer",new Color(.035f,.17f,.43f),.1f,.4f);
+        var feather=Lit("ArrowFeather",new Color(.7f,.66f,.55f),0,.18f);
         Material Map(Material mat,string weapon)
         {
             string n=mat.name;if(n.Contains("黒レザー"))return leather;if(n=="金")return gold;
@@ -327,32 +349,60 @@ public static class VisualRepairBuilder
             var source=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/App/Models/Weapon/"+name+".fbx");
             var renderer=source.GetComponentInChildren<Renderer>();bool gun=name.StartsWith("Gun");bool bow=name=="Bow";bool knife=name=="knife";
             float size=bow?2.25f:gun?(name=="Gun_long"?2.6f:1.9f):knife?1.05f:3f;
-            Quaternion rotation=bow?Quaternion.identity:gun?Quaternion.Euler(0,90,0):Quaternion.Euler(0,0,-90);
+            Quaternion rotation=bow||gun?Quaternion.Euler(0,90,0):Quaternion.Euler(0,0,-90);
             float length=bow?renderer.bounds.size.y:renderer.bounds.size.x;
             var mesh=Bake(renderer,rotation,renderer.bounds.center,size/length);
+            // The imported bow already includes a rigid string (slot 1). Only the
+            // limbs belong in this mesh; the animated string must be the sole string.
+            if(bow)mesh.subMeshCount=1;
             if(name.StartsWith("Naginata"))CloseBladeSurface(mesh);
-            if(Tri(mesh)>18000){var reduced=Simplify(mesh,14000f/Tri(mesh));UnityEngine.Object.DestroyImmediate(mesh);mesh=reduced;}
+            // Thin, almost coplanar blade faces do not survive unrestricted edge
+            // collapse: the katana developed sparkling slivers along its cutting edge.
+            // Its original 21k triangles are small enough to preserve intact.
+            if(bow&&Tri(mesh)>18000){var reduced=Simplify(mesh,14000f/Tri(mesh));UnityEngine.Object.DestroyImmediate(mesh);mesh=reduced;}
+            RemoveCollapsedFaces(mesh);
             mesh.name=name+"_Display";mesh=Save(mesh,Art+"Weapons/"+name+".asset");
             var root=new GameObject(name);var visual=new GameObject("Model");visual.transform.SetParent(root.transform,false);
-            visual.AddComponent<MeshFilter>().sharedMesh=mesh;visual.AddComponent<MeshRenderer>().sharedMaterials=renderer.sharedMaterials.Select(m=>Map(m,name)).ToArray();
+            var materials=renderer.sharedMaterials.Take(mesh.subMeshCount).Select(m=>Map(m,name)).ToArray();
+            visual.AddComponent<MeshFilter>().sharedMesh=mesh;visual.AddComponent<MeshRenderer>().sharedMaterials=materials;
             var presentation=root.AddComponent<WeaponPresentation>();presentation.visual=visual.transform;
             presentation.motion=bow?WeaponPresentation.Motion.Bow:gun?WeaponPresentation.Motion.Gun:knife?WeaponPresentation.Motion.Knife:name=="Spear"?WeaponPresentation.Motion.Thrust:WeaponPresentation.Motion.Slash;
             presentation.holdPosition=bow?new Vector3(.4f,-.3f,1.6f):gun?new Vector3(.38f,-.35f,1.75f):knife?new Vector3(.35f,-.28f,1.45f):new Vector3(.38f,-.45f,1.95f);
             presentation.holdEuler=bow?new Vector3(0,-20,-8):gun?new Vector3(-2,-8,0):knife?new Vector3(30,10,-28):name=="Spear"?new Vector3(82,-12,-3):new Vector3(55,-15,-28);
             presentation.muzzleLocal=presentation.holdPosition+Quaternion.Euler(presentation.holdEuler)*Vector3.forward*(size*.5f);
-            var muzzle=new GameObject("Muzzle");muzzle.transform.SetParent(visual.transform,false);muzzle.transform.localPosition=Vector3.forward*(size*.5f);presentation.muzzle=muzzle.transform;
+            var muzzle=new GameObject("Muzzle");muzzle.transform.SetParent(visual.transform,false);muzzle.transform.localPosition=gun?BarrelOpening(mesh,materials):Vector3.forward*(size*.5f);presentation.muzzle=muzzle.transform;
             if(bow)
             {
-                presentation.bowString=CombatVisuals.Line(visual,"String",new[]{new Vector3(-.08f,1.1f,0),new Vector3(-.08f,0,-.3f),new Vector3(-.08f,-1.1f,0)},new Color(.7f,.65f,.48f),.012f);
+                var v=mesh.vertices;
+                Vector3 Tip(bool upper)
+                {
+                    float y=upper?mesh.bounds.max.y:mesh.bounds.min.y;
+                    var end=v.Where(p=>Mathf.Abs(p.y-y)<.004f).ToArray();
+                    return end.Aggregate(Vector3.zero,(a,b)=>a+b)/end.Length;
+                }
+                var drawn=new Vector3(-.035f,0,-.5f);
+                presentation.bowString=CombatVisuals.Line(visual,"String",new[]{Tip(true),drawn,Tip(false)},new Color(.7f,.65f,.48f),.006f);
                 var arrowSource=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/App/Models/Weapon/Arrow.fbx").GetComponentInChildren<Renderer>();
                 var arrowMesh=Bake(arrowSource,Quaternion.Euler(0,90,0),arrowSource.bounds.center,1.1f/arrowSource.bounds.size.x);
-                arrowMesh=Save(arrowMesh,Art+"Weapons/NockedArrow.asset");var arrow=new GameObject("NockedArrow");arrow.transform.SetParent(visual.transform,false);arrow.transform.localPosition=new Vector3(-.08f,0,.25f);
-                arrow.AddComponent<MeshFilter>().sharedMesh=arrowMesh;arrow.AddComponent<MeshRenderer>().sharedMaterials=arrowSource.sharedMaterials.Select(m=>Map(m,"Arrow")).ToArray();presentation.nockedArrow=arrow.transform;
+                RemoveCollapsedFaces(arrowMesh);arrowMesh=Save(arrowMesh,Art+"Weapons/NockedArrow.asset");var arrow=new GameObject("NockedArrow");arrow.transform.SetParent(visual.transform,false);arrow.transform.localPosition=drawn-Vector3.forward*arrowMesh.bounds.min.z;
+                var arrowMaterials=new[]{steel,wood,wood,feather,feather};
+                arrow.AddComponent<MeshFilter>().sharedMesh=arrowMesh;arrow.AddComponent<MeshRenderer>().sharedMaterials=arrowMaterials;presentation.nockedArrow=arrow.transform;
+                MakeArrowProjectile(arrowMesh,arrowMaterials,"Assets/App/Prefabs/MainWeapons/Arrow.prefab");
+                MakeArrowProjectile(arrowMesh,arrowMaterials,"Assets/App/Prefabs/SubWeapons/Arrow.prefab");
             }
             var collider=root.AddComponent<BoxCollider>();collider.center=presentation.holdPosition;collider.size=mesh.bounds.size;collider.isTrigger=true;collider.enabled=false;
             root.AddComponent<PlayerWeapon>();PrefabUtility.SaveAsPrefabAsset(root,Art+"Weapons/"+name+".prefab");UnityEngine.Object.DestroyImmediate(root);
         }
         MakeKingProps();Progress("Eight weapon display prefabs generated");
+    }
+    static void MakeArrowProjectile(Mesh mesh,Material[] materials,string path)
+    {
+        // An identity root avoids carrying the FBX authoring scale/rotation into a shot.
+        // The launch copies the visible arrow's world scale for a seamless hand-off.
+        var root=new GameObject("Arrow");root.AddComponent<MeshFilter>().sharedMesh=mesh;root.AddComponent<MeshRenderer>().sharedMaterials=materials;
+        var box=root.AddComponent<BoxCollider>();box.center=mesh.bounds.center;box.size=mesh.bounds.size;
+        var rb=root.AddComponent<Rigidbody>();rb.useGravity=true;rb.constraints=RigidbodyConstraints.FreezeRotation;rb.collisionDetectionMode=CollisionDetectionMode.ContinuousDynamic;
+        PrefabUtility.SaveAsPrefabAsset(root,path);UnityEngine.Object.DestroyImmediate(root);
     }
     static void MakeKingProps()
     {
@@ -363,7 +413,7 @@ public static class VisualRepairBuilder
         body.AddComponent<MeshFilter>().sharedMesh=mesh;body.AddComponent<MeshRenderer>().sharedMaterials=r.sharedMaterials;
         var gun=new GameObject("Gun");gun.transform.SetParent(root.transform,false);gun.transform.localPosition=new Vector3(0,.9f,.3f);gun.transform.localScale=Vector3.one*.36f;
         gun.AddComponent<MeshFilter>().sharedMesh=AssetDatabase.LoadAssetAtPath<Mesh>(Art+"Weapons/Gun_long.asset");gun.AddComponent<MeshRenderer>().sharedMaterials=AssetDatabase.LoadAssetAtPath<GameObject>(Art+"Weapons/Gun_long.prefab").GetComponentInChildren<Renderer>().sharedMaterials;
-        var muzzle=new GameObject("Muzzle");muzzle.transform.SetParent(root.transform,false);muzzle.transform.localPosition=new Vector3(0,.9f,.8f);
+        var muzzle=new GameObject("Muzzle");muzzle.transform.SetParent(gun.transform,false);muzzle.transform.localPosition=AssetDatabase.LoadAssetAtPath<GameObject>(Art+"Weapons/Gun_long.prefab").GetComponent<WeaponPresentation>().muzzle.localPosition;
         PrefabUtility.SaveAsPrefabAsset(root,Art+"Weapons/KingTurret.prefab");UnityEngine.Object.DestroyImmediate(root);
         var fan=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/App/Prefabs/SubWeapons/Gunbai.prefab"));
         foreach(var a in fan.GetComponentsInChildren<Animator>())a.enabled=false;
@@ -381,9 +431,9 @@ public static class VisualRepairBuilder
         {
             var m=fanMeshes[index];m.vertices=m.vertices.Select(v=>fanRotation*((v-bounds.center)*(1.1f/Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z)))).ToArray();m.normals=m.normals.Select(n=>fanRotation*n).ToArray();m.RecalculateBounds();
             // Preserve the fan's thin decorated surface; edge collapse distorts its trim.
-            m=Save(m,Art+"Weapons/Gunbai"+index+".asset");
+            RemoveCollapsedFaces(m);m=Save(m,Art+"Weapons/Gunbai"+index+".asset");
             var child=new GameObject("Fan"+index++);child.transform.SetParent(visual.transform,false);child.AddComponent<MeshFilter>().sharedMesh=m;
-            int slot=0;child.AddComponent<MeshRenderer>().sharedMaterials=item.sharedMaterials.Select(material=>{var copy=new Material(material);if(copy.HasProperty("_Cull"))copy.SetFloat("_Cull",0);return Save(copy,Art+"Weapons/FanMaterial"+(slot++)+".mat");}).ToArray();
+            int slot=0;child.AddComponent<MeshRenderer>().sharedMaterials=item.sharedMaterials.Select(material=>{var copy=new Material(material);if(copy.HasProperty("_Cull"))copy.SetFloat("_Cull",0);if(copy.HasProperty("_BaseColor"))copy.SetColor("_Color",copy.GetColor("_BaseColor"));copy.doubleSidedGI=true;copy.SetOverrideTag("RenderType","Opaque");copy.SetShaderPassEnabled("MOTIONVECTORS",false);return Save(copy,Art+"Weapons/FanMaterial"+(slot++)+".mat");}).ToArray();
         }
         var p=root.AddComponent<WeaponPresentation>();p.visual=visual.transform;p.motion=WeaponPresentation.Motion.Command;p.holdPosition=new Vector3(-.34f,-.14f,1.55f);p.holdEuler=new Vector3(0,0,-15);p.attackDuration=.8f;
         PrefabUtility.SaveAsPrefabAsset(root,Art+"Weapons/Gunbai.prefab");UnityEngine.Object.DestroyImmediate(root);UnityEngine.Object.DestroyImmediate(fan);

@@ -85,7 +85,7 @@ MonoBehaviour:
   attackDuration: 0.65
   hitStart: 0.12
   hitEnd: 0.38
-  muzzleLocal: {x: 0.15732126, y: -1.6787281, z: 2.7810483}
+  muzzleLocal: {x: 0.33659643, y: -1.9354022, z: 2.1541977}
   muzzle: {fileID: 4415564383168229083}
   bowString: {fileID: 0}
   nockedArrow: {fileID: 0}

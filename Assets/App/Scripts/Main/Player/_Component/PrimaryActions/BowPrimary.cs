@@ -109,6 +109,12 @@ namespace App.Main.Player
 
             // インスタンス作成
             var arrowGO = UnityEngine.Object.Instantiate(arrowPrefab, origin, Quaternion.LookRotation(dir));
+            if (player.WeaponObject != null)
+            {
+                var presentation = player.WeaponObject.GetComponent<WeaponPresentation>();
+                if (presentation != null && presentation.nockedArrow != null)
+                    arrowGO.transform.localScale = presentation.nockedArrow.lossyScale;
+            }
             var lifetime=arrowGO.AddComponent<CombatVisualLifetime>();lifetime.owner=player;lifetime.remaining=arrowLifeTime;
 
             // ProjectileArrow コンポーネントを取得/追加して初期化

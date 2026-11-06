@@ -37,6 +37,21 @@ public static class WeaponMotionChecks
         Find<GameStateHolder>().ChangeStateIntoDuel();
     }
     static Vector3 Tip(WeaponPresentation w)=>w.visual.TransformPoint(Vector3.up*w.visual.GetComponent<MeshFilter>().sharedMesh.bounds.max.y);
+    public static IEnumerator Flight(Action<bool,string> check,Action<string> shot)
+    {
+        SceneManager.LoadScene("Main");yield return .7d;Duel(PieceType.Hisya);yield return 3.9d;
+        var p=One();var view=p.GetComponentInChildren<Camera>();
+        // Clear air gives gravity time to change the trajectory before any collision.
+        var go=UnityEngine.Object.Instantiate(p.SubWeaponObject,new Vector3(0,1000,0),Quaternion.identity);
+        var projectile=go.AddComponent<ProjectileArrow>();projectile.Initialize(p,p.playerStatus,1,100,200,.5f,~0);
+        projectile.Launch(Vector3.forward,12,3);var rb=go.GetComponent<Rigidbody>();
+        yield return .4d;
+        check(rb.linearVelocity.y < -2,"Arrow flight has a gravity-curved trajectory");
+        check(Vector3.Dot(go.transform.forward,rb.linearVelocity.normalized)>.998f,"Arrow model follows the curved flight direction");
+        check(go.transform.forward.y<-.15f,"Arrow tip pitches down after falling");
+        UnityEngine.Object.Destroy(go);yield return .1d;
+        shot("flight-check-duel");yield return .2d;
+    }
     static bool Changed(WeaponPresentation w,Vector3 p,Quaternion r)=>Vector3.Distance(w.visual.localPosition,p)>.045f||Quaternion.Angle(w.visual.localRotation,r)>4;
     static void Sample(WeaponPresentation w,string phase,List<string> trace,Action<string> shot,string prefix)
     {
@@ -57,14 +72,43 @@ public static class WeaponMotionChecks
             var trace=new List<string>();Sample(w,"00-idle",trace,shot,type.ToString());yield return .1d;
             Vector3 bowOrigin=w.nockedArrow!=null?w.nockedArrow.position:Vector3.zero;
             primary.PrimaryAction(p,p.playerStatus);
-            if(type==PieceType.Hisya){var arrow=UnityEngine.Object.FindObjectsByType<ProjectileArrow>(FindObjectsSortMode.None).FirstOrDefault(a=>a.GetComponent<CombatVisualLifetime>()?.owner==p);check(arrow!=null&&Vector3.Distance(arrow.transform.position,bowOrigin)<.08f,"Bow projectile starts at the visible nocked arrow");}
+            if(type==PieceType.Hisya)
+            {
+                var arrow=UnityEngine.Object.FindObjectsByType<ProjectileArrow>(FindObjectsSortMode.None).FirstOrDefault(a=>a.GetComponent<CombatVisualLifetime>()?.owner==p);
+                check(arrow!=null&&Vector3.Distance(arrow.transform.position,bowOrigin)<.08f,"Bow projectile starts at the visible nocked arrow");
+                if(arrow!=null)
+                {
+                    check(arrow.GetComponentInChildren<MeshFilter>().sharedMesh==w.nockedArrow.GetComponent<MeshFilter>().sharedMesh,"Fired arrow retains the visible arrow geometry");
+                    check(Vector3.Distance(arrow.transform.lossyScale,w.nockedArrow.lossyScale)<.001f,"Fired arrow retains the visible arrow scale");
+                    check(Vector3.Dot(arrow.transform.forward,arrow.GetComponent<Rigidbody>().linearVelocity.normalized)>.999f,"Fired arrow points in its travel direction");
+                }
+            }
             var attackStart=Field(w,"attackStarted");
             primary.PrimaryAction(p,p.playerStatus);check(Equals(Field(w,"attackStarted"),attackStart),type+" cooldown input does not restart attack");
             // Sampling a screenshot can take longer than an attack phase on this editor.
             // Pause the simulation and sample the real presentation's clock at known times;
             // the input/physics checks below still run with the ordinary game clock.
             var session=GameSessionUI.Instance;session.enabled=false;Time.timeScale=0;
-            void Pose(float elapsed,string label){Set(w,"attackStarted",Time.time-elapsed);w.SendMessage("LateUpdate");Sample(w,label,trace,shot,type.ToString());}
+            void Pose(float elapsed,string label)
+            {
+                Set(w,"attackStarted",Time.time-elapsed);w.SendMessage("LateUpdate");Sample(w,label,trace,shot,type.ToString());
+                if(type==PieceType.Hisya)
+                {
+                    var vertices=w.visual.GetComponent<MeshFilter>().sharedMesh.vertices;
+                    check(new[]{0,2}.All(i=>vertices.Min(v=>Vector3.Distance(v,w.bowString.GetPosition(i)))<.015f),"Bow limb/string contact "+label);
+                    if(w.nockedArrow.gameObject.activeSelf)
+                    {
+                        var m=w.nockedArrow.GetComponent<MeshFilter>().sharedMesh;
+                        var tail=w.nockedArrow.localPosition+Vector3.forward*m.bounds.min.z;
+                        check(Vector3.Distance(tail,w.bowString.GetPosition(1))<.015f,"Arrow nock follows string during redraw "+label);
+                    }
+                    if(elapsed<.36f)
+                    {
+                        var a=w.bowString.GetPosition(0);var b=w.bowString.GetPosition(2);var c=w.bowString.GetPosition(1);
+                        check(Vector3.Cross(c-a,(b-a).normalized).magnitude<.015f,"Released bow string is straight "+label);
+                    }
+                }
+            }
             Pose(.08f,"01-windup");Vector3 early=Tip(w);yield return .1d;
             Pose(.16f,"02-active");yield return .1d;
             Pose(.28f,"03-strike");yield return .1d;

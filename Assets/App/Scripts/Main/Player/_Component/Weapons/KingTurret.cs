@@ -42,12 +42,14 @@ namespace App.Main.Player
             this.shootAnimName = shootAnimName;
 
             // probe for muzzle and gun animator
-            muzzle = transform.Find("Muzzle") ?? transform;
             gun = transform.Find("Gun");
+            muzzle = gun != null ? gun.Find("Muzzle") : null;
+            if (muzzle == null) muzzle = transform.Find("Muzzle");
+            if (muzzle == null) muzzle = transform;
             if (gun != null)
             {
                 gunRestPosition = gun.localPosition;
-                if (muzzle != transform && gun.TryGetComponent<MeshFilter>(out var mesh))
+                if (muzzle != transform && muzzle.parent != gun && gun.TryGetComponent<MeshFilter>(out var mesh))
                 {
                     muzzle.SetParent(gun, false);
                     muzzle.localPosition = Vector3.forward * mesh.sharedMesh.bounds.max.z;

@@ -1,0 +1,4 @@
+PASS Arrow flight has a gravity-curved trajectory
+PASS Arrow model follows the curved flight direction
+PASS Arrow tip pitches down after falling
+PASS No motion runtime errors

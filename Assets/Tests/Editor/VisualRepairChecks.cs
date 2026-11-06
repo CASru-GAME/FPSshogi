@@ -92,7 +92,7 @@ public static class VisualRepairChecks
         pad1=InputSystem.AddDevice<Gamepad>("Motion check one");pad2=InputSystem.AddDevice<Gamepad>("Motion check two");yield return .4d;
         SceneManager.LoadScene("Title");yield return .6d;
         var join=SelectionTestInput.TwoGamepads(pad1,pad2);while(join.MoveNext())yield return join.Current;
-        var checks=dir.Contains("Capture") ? WeaponMotionChecks.Capture(Check,dir,pad1) : WeaponMotionChecks.Run(Check,Shot,dir,pad1,pad2);
+        var checks=dir.Contains("Flight") ? WeaponMotionChecks.Flight(Check,Shot) : dir.Contains("Capture") ? WeaponMotionChecks.Capture(Check,dir,pad1) : WeaponMotionChecks.Run(Check,Shot,dir,pad1,pad2);
         while(checks.MoveNext())yield return checks.Current;
         Check(errors.Count==0,"No motion runtime errors");
     }
