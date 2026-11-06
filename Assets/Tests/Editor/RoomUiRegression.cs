@@ -63,6 +63,11 @@ public static class RoomUiRegression
     static void Check(string name,bool pass){results.Add((pass?"PASS ":"FAIL ")+name);File.WriteAllLines(dir+"results.txt",results);}
     static T Find<T>() where T:UnityEngine.Object=>UnityEngine.Object.FindFirstObjectByType<T>();
     static bool Visible(string name)=>GameObject.Find(name)!=null;
+    static Rect ScreenBounds(RectTransform rect)
+    {
+        var corners=new Vector3[4];rect.GetWorldCorners(corners);
+        return new Rect(corners[0].x,corners[0].y,corners[2].x-corners[0].x,corners[2].y-corners[0].y);
+    }
     static void Shot(string name){ScreenCapture.CaptureScreenshot(dir+name+".png");Layout(name);}
     static void Layout(string name)
     {
@@ -97,6 +102,10 @@ public static class RoomUiRegression
         Check("Title stages all forty real pieces",GameObject.Find("Title board pieces")?.transform.childCount==40);
         var shade=GameObject.Find("Title shade").GetComponent<UiSymbol>();Check("Title shade has rendered geometry",shade.canvasRenderer!=null&&shade.canvasRenderer.GetMesh()?.vertexCount>0);
         var titleStart=GameObject.Find("Start button").GetComponent<RectTransform>();Check("Title action is on left",titleStart.position.x<Screen.width*.3f);
+        foreach(var resolution in new[]{new Vector2Int(2560,1080),new Vector2Int(1280,1024)}){
+            Resolution(resolution.x,resolution.y);yield return .3d;Shot("01-title-"+resolution.x+"x"+resolution.y);yield return .15d;
+        }
+        Resolution(1920,1080);yield return .3d;
         Session.ConfirmQuit();yield return .2d;Shot("02-quit");yield return .15d;Session.Back();yield return .3d;
         var ownerTest=Tap(one,GamepadButton.Select);while(ownerTest.MoveNext())yield return ownerTest.Current;
         InputSystem.DisableDevice(one);yield return .3d;ownerTest=Tap(two,GamepadButton.East);while(ownerTest.MoveNext())yield return ownerTest.Current;
@@ -121,10 +130,27 @@ public static class RoomUiRegression
         Session.Back();yield return .4d;Check("Help returns to lobby with assignments and preparation",Visible("Player selection panel")&&Session.Devices.PlayerFor(one)==0&&Session.Devices.PlayerFor(two)==1&&Session.Devices.IsPrepared(0)&&!Session.Devices.IsPrepared(1));
         tap=Tap(two,GamepadButton.South);while(tap.MoveNext())yield return tap.Current;yield return 1.5d;
         Check("Both prepared players load a match",SceneManager.GetActiveScene().name=="Main");Shot("08-board");yield return .15d;
+        foreach(var resolution in new[]{new Vector2Int(2560,1080),new Vector2Int(1280,1024)}){
+            Resolution(resolution.x,resolution.y);yield return .3d;Shot("08-board-"+resolution.x+"x"+resolution.y);yield return .15d;
+            var footerBounds=ScreenBounds(GameObject.Find("Board controls").GetComponent<RectTransform>());
+            Check("Board footer stays clear of playable squares at "+resolution,!Session.GetComponentsInChildren<Button>().Where(b=>b.name.StartsWith("Square ")).Any(b=>footerBounds.Overlaps(ScreenBounds(b.GetComponent<RectTransform>()))));
+            Session.OpenPause();yield return .2d;Shot("09-pause-"+resolution.x+"x"+resolution.y);yield return .15d;Session.Resume();yield return .3d;
+        }
+        Resolution(1920,1080);yield return .3d;
         tap=Tap(one,GamepadButton.Start);while(tap.MoveNext())yield return tap.Current;
         Check("Opening player owns pause",Visible("Resume button")&&GameObject.Find("Menu owner").GetComponent<Text>().text.Contains("1P"));Shot("09-pause");yield return .15d;
+        Check("Pause hides board HUD while preserving the board scene",!Visible("Board HUD")&&Find<ShogiBoard>()!=null);
         tap=Tap(two,GamepadButton.East);while(tap.MoveNext())yield return tap.Current;Check("Other player cannot dismiss pause",Visible("Resume button")&&Time.timeScale==0);
-        Session.OpenSettings();yield return .25d;Shot("10-settings");yield return .15d;Session.SetSensitivity(0,4);Session.ShowHpNumbers=true;Session.ResetSettings();
+        Session.SetSensitivity(0,2);Session.SetSensitivity(1,2);
+        Session.OpenSettings();yield return .25d;Shot("10-settings");yield return .15d;
+        float beforeSlider=Session.Sensitivity(0);tap=Tap(one,GamepadButton.DpadRight);while(tap.MoveNext())yield return tap.Current;
+        Check("Controller adjusts focused first-player sensitivity",Session.Sensitivity(0)>beforeSlider);
+        tap=Tap(one,GamepadButton.DpadDown);while(tap.MoveNext())yield return tap.Current;
+        Check("Controller navigates to second-player sensitivity",EventSystem.current.currentSelectedGameObject?.name=="Sensitivity slider 1");
+        beforeSlider=Session.Sensitivity(1);tap=Tap(one,GamepadButton.DpadRight);while(tap.MoveNext())yield return tap.Current;
+        Check("Controller adjusts focused second-player sensitivity",Session.Sensitivity(1)>beforeSlider);
+        Session.SetSensitivity(0,4);Session.ShowHpNumbers=true;Session.ResetSettings();
+        Check("Nested settings keep gameplay HUD hidden",!Visible("Board HUD")&&!Visible("Duel HUD"));
         Check("Reset restores both sensitivity and HP preference",Session.Sensitivity(0)==2&&Session.Sensitivity(1)==2&&!Session.ShowHpNumbers);
         Session.Back();yield return .25d;Check("Settings returns to pause",Visible("Resume button"));
         Session.ConfirmReturn();yield return .25d;Shot("11-return-confirm");yield return .15d;Session.Back();yield return .25d;Check("Cancelled return restores pause",Visible("Resume button"));
@@ -144,9 +170,10 @@ public static class RoomUiRegression
         Check("HP gauge follows damage without numeric text",Mathf.Abs(GameObject.Find("P1 health bar").GetComponent<RectTransform>().sizeDelta.x-212)<1&&!Visible("P1 HP"));Shot("16-damage");yield return .15d;
         InputSystem.QueueStateEvent(one,new GamepadState{rightTrigger=1});yield return .14d;InputSystem.QueueStateEvent(one,new GamepadState());yield return .12d;
         Check("Cooldown arc reflects the actual attack",p1.PrimaryCooldown>0&&GameObject.Find("P1 cooldown 0").GetComponent<UiSymbol>().Fill>0);Shot("17-cooldown");yield return .15d;
-        Session.OpenPause();yield return .2d;float remaining=p1.PrimaryCooldown;yield return .3d;Check("Pause freezes cooldown",Mathf.Approximately(p1.PrimaryCooldown,remaining));
+        Session.OpenPause();yield return .2d;Check("Pause hides FPS HUD and crosshairs",!Visible("Duel HUD")&&!Visible("P1 Crosshair"));float remaining=p1.PrimaryCooldown;yield return .3d;Check("Pause freezes cooldown",Mathf.Approximately(p1.PrimaryCooldown,remaining));
         InputSystem.QueueStateEvent(one,new GamepadState{leftStick=Vector2.up});yield return .1d;Session.Resume();yield return .3d;
         Check("Held movement remains blocked after resume",GameSessionUI.BlocksGameplay);InputSystem.QueueStateEvent(one,new GamepadState());yield return .4d;Check("Neutral movement releases gameplay gate",!GameSessionUI.BlocksGameplay);
+        Check("Resume restores FPS HUD and both crosshairs",Visible("Duel HUD")&&Visible("P1 Crosshair")&&Visible("P2 Crosshair"));
         foreach(var resolution in new[]{new Vector2Int(1280,720),new Vector2Int(2560,1080),new Vector2Int(1280,1024)}){
             Resolution(resolution.x,resolution.y);yield return .4d;Canvas.ForceUpdateCanvases();
             for(int p=0;p<2;p++){var cross=GameObject.Find($"P{p+1} Crosshair").GetComponent<RectTransform>();Check($"Crosshair {p+1} centered at {resolution}",Mathf.Abs(cross.position.x-Screen.width*(p==0?.25f:.75f))<2&&Mathf.Abs(cross.position.y-Screen.height*.5f)<2);}

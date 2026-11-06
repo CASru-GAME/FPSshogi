@@ -26,7 +26,9 @@ namespace App.UI
             string focus=EventSystem.current?.currentSelectedGameObject?.name;
             session.GuidePiece=type;session.GuidePromoted=promoted&&PiecePresentation.CanPromote(type);promoted=session.GuidePromoted;
             if(detail!=null){detail.gameObject.SetActive(false);Object.Destroy(detail.gameObject);}
-            detail=UiTheme.Box(root,"Piece details",290,0,1510,760,UiTheme.Panel).rectTransform;
+            detail=UiTheme.Rect(root,"Piece details",290,0,1510,760);
+            UiTheme.Box(detail,"Guide separator",0,20,1,700,UiTheme.Rule);
+            UiTheme.Box(detail,"Combat separator",915,35,1,590,UiTheme.Rule);
             UiTheme.Portrait(detail,"Guide portrait",session.Presentation.Portrait(type,promoted),60,65,230);
             UiTheme.Label(detail,"Guide piece name",PiecePresentation.Name(type,promoted),60,325,260,68,46,UiTheme.Ink,TextAnchor.MiddleCenter);
             if(PiecePresentation.CanPromote(type)){
@@ -39,7 +41,7 @@ namespace App.UI
             for(int y=0;y<5;y++)for(int x=0;x<5;x++){
                 // Piece coordinates increase toward the opponent; the guide faces up.
                 bool legal=moves.Any(m=>m[0]==x-2&&m[1]==2-y);
-                var cell=UiTheme.Box(detail,$"Move {x},{y}",450+x*61,115+y*61,58,58,legal?UiTheme.FocusColor:UiTheme.Paper);
+                var cell=UiTheme.Box(detail,$"Move {x},{y}",450+x*61,115+y*61,58,58,legal?UiTheme.FocusColor:new Color(0,0,0,.15f));
                 if(legal)UiTheme.Box(cell.transform,"Reachable",24,24,10,10,UiTheme.Gold);
                 if(x==2&&y==2)UiTheme.Label(cell.transform,"Origin","駒",0,0,58,58,27,UiTheme.Ink,TextAnchor.MiddleCenter);
             }
@@ -52,7 +54,7 @@ namespace App.UI
             UiTheme.Symbol(detail,"Skill icon",PiecePresentation.SkillSymbol(type),965,405,65);UiTheme.Label(detail,"Skill name",PiecePresentation.Skill(type),1050,407,420,60,30);
             UiTheme.Label(detail,"Cooldown explanation","アイコンの円が消えると\n再び使えます。",965,535,490,110,27,UiTheme.Muted);
             UiTheme.Label(detail,"Promotion note","成れる駒は、敵陣に入る・敵陣から動くと自動で成ります。",48,675,1410,50,25,UiTheme.Muted);
-            for(int i=0;i<choices.Length;i++){var colors=choices[i].colors;colors.normalColor=types[i]==type?UiTheme.FocusColor:UiTheme.Panel;choices[i].colors=colors;}
+            for(int i=0;i<choices.Length;i++)UiTheme.Current(choices[i],types[i]==type);
         }
     }
 }

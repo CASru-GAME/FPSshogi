@@ -158,7 +158,7 @@ namespace App.UI
                 EventSystem.current.sendNavigationEvents=navigation&&Time.unscaledTime>menuNavigationAfter;
                 if(navigation&&EventSystem.current.currentSelectedGameObject==null&&defaultFocus!=null&&defaultFocus.interactable)EventSystem.current.SetSelectedGameObject(defaultFocus.gameObject);
             }
-            ApplyBlock();if(state!=null){bool duel=state.CurrentState==State.Duel;boardHud.Tick(!duel);duelHud.Tick(duel);}
+            ApplyBlock();if(state!=null){bool duel=state.CurrentState==State.Duel;bool showHud=page==Page.None&&transitionRemaining<=0;boardHud.Tick(showHud&&!duel);duelHud.Tick(showHud&&duel);}
         }
         void ApplyBlock()
         {

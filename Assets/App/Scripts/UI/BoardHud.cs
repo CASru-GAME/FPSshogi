@@ -10,7 +10,7 @@ namespace App.UI
 {
     public sealed class BoardHud
     {
-        readonly RectTransform root, selected, cursor;
+        readonly RectTransform root, selected, cursor, footer, canvasRect;
         readonly Image[,] cells = new Image[9,9];
         readonly Text turn, feedback, pieceInfo, controls;
         readonly RectTransform feedbackBacking;
@@ -27,6 +27,7 @@ namespace App.UI
         readonly Camera camera;
         readonly Vector3 gridCenter, gridX, gridY;
         int lastInvalidFeedback;
+        float lastCanvasHeight;
         public BoardHud(RectTransform parent, GameSessionUI owner)
         {
             session = owner;
@@ -44,6 +45,9 @@ namespace App.UI
             float cellSize=(basisX.magnitude+basisY.magnitude)*.5f;
             gridX=basisX.normalized*cellSize; gridY=basisY.normalized*cellSize;
             root = UiTheme.Rect(parent,"Board HUD",0,0,1920,1080);
+            canvasRect=root.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
+            UiTheme.EdgeShade(root,"Board left shade",0,0,520,1080,UiSymbol.Kind.LeftShade,.82f,.65f);
+            UiTheme.EdgeShade(root,"Board right shade",1400,0,520,1080,UiSymbol.Kind.RightShade,.82f,.65f);
             for(int x=0;x<9;x++) for(int y=0;y<9;y++)
             {
                 int cx=x, cy=y;
@@ -55,22 +59,22 @@ namespace App.UI
             }
             selected=UiTheme.Frame(root,"Selected tile",UiTheme.Gold);
             cursor=UiTheme.Frame(root,"Cursor tile",UiTheme.Blue);
-            UiTheme.Box(root,"Turn backing",40,30,390,75,UiTheme.Panel);
+            UiTheme.Box(root,"Turn rule",60,110,280,2,UiTheme.Rule);
             turn=UiTheme.Label(root,"Turn label","",60,36,350,63,34);
-            UiTheme.Box(root,"Selected piece backing",40,780,350,145,UiTheme.Panel);
             pieceInfo=UiTheme.Label(root,"Piece info","",60,795,310,115,28);
             for(int p=0;p<2;p++) BuildTray(p,p==0?40:1530);
-            feedbackBacking=UiTheme.Box(root,"Feedback backing",500,925,920,60,UiTheme.Panel).rectTransform;
+            footer=UiTheme.Rect(root,"Board footer",0,900,1920,180);
+            UiTheme.EdgeShade(footer,"Board footer shade",0,0,1920,180,UiSymbol.Kind.BottomShade,.9f,.45f);
+            feedbackBacking=UiTheme.Rect(footer,"Feedback backing",500,25,920,60);
             feedback=UiTheme.Label(feedbackBacking,"Board feedback","",15,5,890,50,26,UiTheme.Ink,TextAnchor.MiddleCenter);
-            UiTheme.Box(root,"Controls backing",40,1000,1490,58,UiTheme.Panel);
-            controls=UiTheme.Label(root,"Board controls","",60,1006,1450,42,25);
+            controls=UiTheme.Label(footer,"Board controls","",60,106,1450,42,25);
             UiTheme.Button(root,"Board menu button","メニュー",1640,35,235,64,session.OpenPause);
-            UiTheme.Button(root,"Board guide button","駒の説明",1550,1000,325,58,session.OpenPieces);
+            UiTheme.Button(footer,"Board guide button","駒の説明",1550,100,325,58,session.OpenPieces);
         }
         void BuildTray(int player,float x)
         {
-            var panel=UiTheme.Box(root,$"P{player+1} captured tray",x,300,350,395,UiTheme.Panel).rectTransform;
-            UiTheme.Box(panel,"Player stripe",0,0,5,395,UiTheme.PlayerColor(player));
+            var panel=UiTheme.Rect(root,$"P{player+1} captured tray",x,300,350,395);
+            UiTheme.Box(panel,"Player stripe",22,76,306,2,UiTheme.PlayerColor(player));
             trayTitles[player]=UiTheme.Label(panel,$"P{player+1} tray heading","",22,18,306,46,28,UiTheme.PlayerColor(player));
             emptyTrays[player]=UiTheme.Label(panel,$"P{player+1} no captured pieces","なし",22,97,306,60,27,UiTheme.Muted);
             for(int i=0;i<types.Length;i++)
@@ -101,6 +105,12 @@ namespace App.UI
             root.gameObject.SetActive(visible);
             captured.SetVisible(false);
             if(!visible) return;
+            float height=canvasRect.rect.height;
+            if(!Mathf.Approximately(height,lastCanvasHeight)){
+                // Expand adds vertical canvas space on 4:3/5:4 displays. Keep the
+                // footer against the actual bottom edge, below the projected board.
+                footer.anchoredPosition=new Vector2(0,-900-Mathf.Max(0,height-1080)*.5f);lastCanvasHeight=height;
+            }
             int activePlayer=(int)pointer.ActivePlayer;
             turn.text=$"{activePlayer+1}P の手番";turn.color=UiTheme.PlayerColor(activePlayer);
             feedback.text=pointer.Feedback;
@@ -137,7 +147,7 @@ namespace App.UI
                     heldButtons[p,i].GetComponent<RectTransform>().anchoredPosition=new Vector2(22+(shown%2)*158,-95-(shown/2)*70);shown++;
                     heldLabels[p,i].text=$"{PiecePresentation.Name(types[i])} ×{count}";
                     bool chosen=active&&(pointer.IsCapturedMode||pointer.IsPlacingCaptured)&&pointer.CapturedType==types[i];
-                    var colors=heldButtons[p,i].colors;colors.normalColor=chosen?UiTheme.FocusColor:UiTheme.Paper;colors.disabledColor=UiTheme.Panel;heldButtons[p,i].colors=colors;
+                    UiTheme.Current(heldButtons[p,i],chosen);
                     heldLabels[p,i].color=active?UiTheme.Ink:UiTheme.Muted;
                     heldButtons[p,i].interactable=active&&count>0&&!GameSessionUI.BlocksGameplay;
                 }
