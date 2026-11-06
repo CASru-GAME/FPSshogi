@@ -1,2 +1,7 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Keep imported model and image bytes unchanged across platforms.
+*.fbx binary
+*.jpg binary
+*.png binary

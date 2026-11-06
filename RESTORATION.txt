@@ -1,0 +1,46 @@
+FPSshogi 復元メモ（2026-11-06）
+
+このメモは初回復元時の記録です。その後のUI・操作・ルール修正を含む現行の起動方法は README.md と UI-IMPLEMENTATION.txt を参照してください。
+GitHub公開用の更新で、復元したFBX・画像・編集可能なMesh/Material/PrefabとUnity 6.2設定をGit管理に追加しました。現在はcloneだけで必要素材が揃います。
+
+開き方
+Open-FPSshogi.cmd をダブルクリックすると、この Unity プロジェクトが開きます。
+起点のシーンは Assets/App/Scenes/Title.unity です。Play → 対局開始で開始します。
+Game ビューは Full HD (1920x1080) に設定済みです。
+対戦操作は元の実装どおりゲームパッドを使用します（2人対戦）。
+
+使用環境
+Unity 6000.2.12f1（PC にインストール済みのバージョン）。
+GitHub の元プロジェクトは 6000.1.15f1。今回、6.2 向けのパッケージ・URP 設定に更新しました。
+取得元: https://github.com/CASru-GAME/FPSshogi
+取得コミット: 271c8ade9aa89ff80d97d6596da77ac6f2e0d7c8
+
+素材の復元
+Google Drive の FPSShogi フォルダから駒、盤、背景、武器、アニメーションを取得。
+https://drive.google.com/drive/folders/1dLF0GelDKH_6guA2NwC3lpOzTLaZ9U1E
+ゲーム班 Discord の fps将棋チャンネルから Models.unitypackage を取得。
+既存の .meta / GUID を保ち、欠けていた元ファイルを復元しました。
+
+共有素材に含まれていなかったタイトル・ボタン・勝利画面の5画像は、
+D:\自作ゲーム完成品\FPSshogi\FPSshogi_Data の完成版から復元しました。
+これらは完成版に収録された解像度・圧縮後の画像です。
+
+tetuhau.fbx と kakugyo_black.fbx は元ファイルが見つからなかったため、
+同じ完成版からメッシュ、法線、UV、色、サイズ、衝突判定メッシュを取り出しました。
+Assets/App/Models/Recovered に編集可能な Mesh / Material / Prefab として保存し、
+既存の鉄炮・黒い角 Prefab の参照を修復しました。
+元の FBX 制作データや Blender ファイルそのものではありません。
+
+検証
+コンパイル、Title/Main の素材参照、Play モードでのタイトル開始、
+40枚の駒・2人の初期化、交互の駒移動、決闘開始、HPによる決着、盤面への復帰を確認。
+自動確認の実行時エラーは0件。Logs/verification-results.txt に結果を保存。
+全スキルと実機ゲームパッド2台による対戦全体は未検証です。
+
+補足
+ゲームコードの変更はしていません。起動に必要な素材と参照を復元しました。
+現在の Title/Main が使わない旧素材の一部は元ファイルが未発見です。
+孤立していた .meta は Unity の初回インポート時に削除されました。
+元のメタデータは Git と .utmp/original-metadata に残しています。
+ダウンロードした素材、復元・検証用ツールは .utmp に保管しています。
+初回復元時は FBX / 画像が元の .gitignore により Git 管理の対象外でした。公開用の更新でこの除外を解除しています。
