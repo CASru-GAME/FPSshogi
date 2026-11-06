@@ -15,11 +15,25 @@ public static class VisualRepairBuilder
     const string Trigger=".utmp/visual-fix/build-art.txt";
     static VisualRepairBuilder(){EditorApplication.update+=Poll;}
     public static void BuildArtBatch(){Build();}
+    [MenuItem("FPSshogi/Build visual verification player")]
+    public static void BuildVisualPlayer()
+    {
+        Directory.CreateDirectory("Builds/VisualSmoke");
+        var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions
+        {
+            scenes=new[]{"Assets/App/Scenes/Title.unity","Assets/App/Scenes/Main.unity"},
+            locationPathName="Builds/VisualSmoke/FPSshogi.exe",target=BuildTarget.StandaloneWindows64,
+            options=BuildOptions.None,extraScriptingDefines=new[]{"FPS_VISUAL_SMOKE"}
+        });
+        File.WriteAllText("VisualReview/player-smoke-build.txt",$"Result: {report.summary.result}\nErrors: {report.summary.totalErrors}\nWarnings: {report.summary.totalWarnings}\nTime: {report.summary.totalTime}\n");
+        if(report.summary.result!=UnityEditor.Build.Reporting.BuildResult.Succeeded)throw new Exception("Visual verification player build failed");
+    }
     static void Poll()
     {
         if(EditorApplication.isCompiling||EditorApplication.isPlayingOrWillChangePlaymode||!File.Exists(Trigger))return;
         string command=File.ReadAllText(Trigger).Trim();File.Delete(Trigger);
-        try{if(command=="build")Build();else if(command=="room"){RestoreRoom();AssetDatabase.SaveAssets();}else if(command=="weapons"){MakeWeapons();ConfigureScene();AssetDatabase.SaveAssets();}else Inventory();File.WriteAllText(".utmp/visual-fix/art-complete.txt",command);}
+        if(File.Exists(".utmp/visual-fix/art-error.txt"))File.Delete(".utmp/visual-fix/art-error.txt");
+        try{if(command=="build")Build();else if(command=="room"){RestoreRoom();AssetDatabase.SaveAssets();}else if(command=="weapons"){MakeWeapons();ConfigureScene();AssetDatabase.SaveAssets();}else if(command=="report")WriteGeometryReport();else Inventory();File.WriteAllText(".utmp/visual-fix/art-complete.txt",command);}
         catch(Exception e){File.WriteAllText(".utmp/visual-fix/art-error.txt",e.ToString());Debug.LogException(e);}
     }
     const string Art="Assets/App/Art/";
@@ -36,6 +50,19 @@ public static class VisualRepairBuilder
         Directory.CreateDirectory(Path.GetDirectoryName(path));
         value.name=Path.GetFileNameWithoutExtension(path);
         var existing=AssetDatabase.LoadAssetAtPath<T>(path);
+        if(value is Mesh sourceMesh)
+        {
+            if(sourceMesh.triangles.Any(index=>index<0||index>=sourceMesh.vertexCount))throw new InvalidOperationException("Invalid mesh indices before saving "+path+" vertices="+sourceMesh.vertexCount+" max="+sourceMesh.triangles.Max());
+            if(existing is Mesh targetMesh)
+            {
+                // Updating through the mesh API also invalidates native rendering buffers.
+                targetMesh.Clear();targetMesh.indexFormat=sourceMesh.indexFormat;
+                targetMesh.vertices=sourceMesh.vertices;targetMesh.normals=sourceMesh.normals;targetMesh.tangents=sourceMesh.tangents;targetMesh.uv=sourceMesh.uv;
+                targetMesh.subMeshCount=sourceMesh.subMeshCount;
+                for(int sub=0;sub<sourceMesh.subMeshCount;sub++)targetMesh.SetTriangles(sourceMesh.GetTriangles(sub),sub);
+                targetMesh.bounds=sourceMesh.bounds;EditorUtility.SetDirty(targetMesh);UnityEngine.Object.DestroyImmediate(value);return existing;
+            }
+        }
         if(existing!=null){EditorUtility.CopySerialized(value,existing);UnityEngine.Object.DestroyImmediate(value);EditorUtility.SetDirty(existing);return existing;}
         AssetDatabase.CreateAsset(value,path);return value;
     }
@@ -87,6 +114,16 @@ public static class VisualRepairBuilder
         simplifier.SimplificationOptions=options;simplifier.Initialize(source);simplifier.SimplifyMesh(quality);
         var mesh=simplifier.ToMesh();mesh.RecalculateBounds();return mesh;
     }
+    static Mesh SimplifySmoothProp(Mesh source,Vector3 scale,float target)
+    {
+        // Curved cloth needs connected edge collapse; independent vertex clusters open cracks.
+        var physical=UnityEngine.Object.Instantiate(source);
+        physical.vertices=source.vertices.Select(v=>Vector3.Scale(v,scale)).ToArray();
+        physical.normals=source.normals.Select(n=>new Vector3(n.x/scale.x,n.y/scale.y,n.z/scale.z).normalized).ToArray();physical.RecalculateBounds();
+        var mesh=Simplify(physical,target/Tri(source));UnityEngine.Object.DestroyImmediate(physical);
+        mesh.vertices=mesh.vertices.Select(v=>new Vector3(v.x/scale.x,v.y/scale.y,v.z/scale.z)).ToArray();
+        mesh.normals=mesh.normals.Select(n=>Vector3.Scale(n,scale).normalized).ToArray();mesh.RecalculateBounds();mesh.RecalculateTangents();return mesh;
+    }
     // CAD-style disconnected faces can stall edge-collapse. Cluster in physical units,
     // retaining each surviving face's material and UVs, rather than dropping arbitrary triangles.
     static Mesh Cluster(Mesh source,Vector3 objectScale,int resolution,bool smooth)
@@ -95,11 +132,14 @@ public static class VisualRepairBuilder
         var physical=vertices.Select(v=>Vector3.Scale(v,objectScale)).ToArray();
         var bounds=new Bounds(physical[0],Vector3.zero);foreach(var v in physical)bounds.Encapsulate(v);
         float cell=Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z)/resolution;
-        var ids=new Dictionary<(int,int),int>();var sums=new List<Vector3>();var counts=new List<int>();var keys=new Dictionary<(int,int,int,int),int>();
+        var ids=new Dictionary<(int,int),int>();var sums=new List<Vector3>();var counts=new List<int>();var keys=new Dictionary<(int,int,int,int,int,int,int),int>();
         for(int material=0;material<source.subMeshCount;material++)foreach(int i in source.GetTriangles(material))
         {
             if(ids.ContainsKey((material,i)))continue;
-            var v=physical[i];var key=(material,Mathf.RoundToInt(v.x/cell),Mathf.RoundToInt(v.y/cell),Mathf.RoundToInt(v.z/cell));
+            var v=physical[i];var n=normal.Length>i?normal[i]:Vector3.zero;
+            // Keep opposite sides of thin panels separate; position-only clustering folds
+            // drawer fronts into their back faces and exposes the dark frame behind them.
+            var key=(material,Mathf.RoundToInt(v.x/cell),Mathf.RoundToInt(v.y/cell),Mathf.RoundToInt(v.z/cell),Mathf.RoundToInt(n.x*8),Mathf.RoundToInt(n.y*8),Mathf.RoundToInt(n.z*8));
             if(!keys.TryGetValue(key,out int id)){id=sums.Count;keys[key]=id;sums.Add(Vector3.zero);counts.Add(0);}
             ids[(material,i)]=id;sums[id]+=v;counts[id]++;
         }
@@ -108,6 +148,12 @@ public static class VisualRepairBuilder
         for(int s=0;s<source.subMeshCount;s++)
         {
             var seen=new HashSet<(int,int,int)>();var input=source.GetTriangles(s);var output=new List<int>();
+            if(input.Length<=6000&&!smooth)
+            {
+                // Already simple panels carry the silhouette and UV seams. Preserve them exactly.
+                foreach(int old in input){output.Add(points.Count);points.Add(vertices[old]);tex.Add(uv.Length>old?uv[old]:Vector2.zero);normals.Add(normal.Length>old?normal[old]:Vector3.up);}
+                submeshes.Add(output.ToArray());continue;
+            }
             for(int i=0;i<input.Length;i+=3)
             {
                 int a=ids[(s,input[i])],b=ids[(s,input[i+1])],c=ids[(s,input[i+2])];if(a==b||b==c||c==a)continue;
@@ -162,8 +208,9 @@ public static class VisualRepairBuilder
                     string meshPath=Art+"Environment/"+filter.name+"_LOD"+level+".asset";
                     Progress(filter.name+" LOD"+level+" simplifying "+before+" triangles");
                     int resolution=level==0?256:level==1?96:32;
-                    var mesh=Cluster(original,filter.transform.lossyScale,resolution,filter.name.StartsWith("座布団"));
-                    while(Tri(mesh)>targets[level]*1.25f&&resolution>12)
+                    bool cloth=filter.name.StartsWith("座布団");
+                    var mesh=cloth?SimplifySmoothProp(original,filter.transform.lossyScale,targets[level]):Cluster(original,filter.transform.lossyScale,resolution,false);
+                    while(!cloth&&Tri(mesh)>targets[level]*1.25f&&resolution>12)
                     {
                         UnityEngine.Object.DestroyImmediate(mesh);resolution=Mathf.Max(12,Mathf.RoundToInt(resolution*.7f));
                         mesh=Cluster(original,filter.transform.lossyScale,resolution,filter.name.StartsWith("座布団"));
@@ -206,6 +253,61 @@ public static class VisualRepairBuilder
         var b=mesh.bounds;float size=longest?Mathf.Max(b.size.x,b.size.y,b.size.z):b.size.y;
         mesh.vertices=mesh.vertices.Select(v=>(v-b.center)*(height/size)).ToArray();mesh.RecalculateBounds();
     }
+    static void CloseBladeSurface(Mesh mesh)
+    {
+        // Both original naginata models contain the bevel/rim but omit the broad blade faces.
+        // Trace that rim rather than inventing a different silhouette.
+        var input=mesh.GetTriangles(2);var source=mesh.vertices;
+        var welded=new List<Vector3>();var map=new Dictionary<(int,int,int),int>();var ids=new Dictionary<int,int>();
+        foreach(int old in input)
+        {
+            var p=source[old];var key=(Mathf.RoundToInt(p.x*100000),Mathf.RoundToInt(p.y*100000),Mathf.RoundToInt(p.z*100000));
+            if(!map.TryGetValue(key,out int index)){index=welded.Count;map[key]=index;welded.Add(p);}ids[old]=index;
+        }
+        var edges=new Dictionary<(int,int),int>();
+        void Edge(int a,int b){var key=(Mathf.Min(a,b),Mathf.Max(a,b));edges.TryGetValue(key,out int count);edges[key]=count+1;}
+        for(int i=0;i<input.Length;i+=3){int a=ids[input[i]],b=ids[input[i+1]],c=ids[input[i+2]];if(a==b||b==c||a==c)continue;Edge(a,b);Edge(b,c);Edge(c,a);}
+        var neighbors=new Dictionary<int,List<int>>();
+        foreach(var pair in edges.Where(e=>e.Value==1))
+        {
+            var (a,b)=pair.Key;if(!neighbors.ContainsKey(a))neighbors[a]=new List<int>();if(!neighbors.ContainsKey(b))neighbors[b]=new List<int>();neighbors[a].Add(b);neighbors[b].Add(a);
+        }
+        var visited=new HashSet<int>();var outline=new List<Vector3>();float largest=0;
+        foreach(int start in neighbors.Keys)
+        {
+            if(visited.Contains(start))continue;var loop=new List<Vector3>();int previous=-1,current=start;
+            do{if(visited.Contains(current))break;visited.Add(current);loop.Add(welded[current]);var next=neighbors[current].Where(n=>n!=previous).DefaultIfEmpty(-1).First();previous=current;current=next;}while(current>=0&&current!=start);
+            if(current!=start||loop.Count<3)continue;float area=0;
+            for(int i=0;i<loop.Count;i++){var a=loop[i];var b=loop[(i+1)%loop.Count];area+=a.x*b.y-b.x*a.y;}
+            if(Mathf.Abs(area)>largest){largest=Mathf.Abs(area);outline=loop;if(area<0)outline.Reverse();}
+        }
+        if(largest<.01f)throw new InvalidOperationException("No closed blade rim in "+mesh.name);
+        float Cross(Vector3 a,Vector3 b,Vector3 c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
+        bool removed=true;while(removed&&outline.Count>3){removed=false;for(int i=0;i<outline.Count;i++)if(Mathf.Abs(Cross(outline[(i+outline.Count-1)%outline.Count],outline[i],outline[(i+1)%outline.Count]))<.0000001f){outline.RemoveAt(i);removed=true;break;}}
+        var polygon=Enumerable.Range(0,outline.Count).ToList();var cap=new List<int>();
+        while(polygon.Count>3)
+        {
+            bool clipped=false;
+            for(int i=0;i<polygon.Count;i++)
+            {
+                int a=polygon[(i+polygon.Count-1)%polygon.Count],b=polygon[i],c=polygon[(i+1)%polygon.Count];
+                if(Cross(outline[a],outline[b],outline[c])<=0)continue;
+                bool inside=polygon.Any(p=>p!=a&&p!=b&&p!=c&&Cross(outline[a],outline[b],outline[p])>=0&&Cross(outline[b],outline[c],outline[p])>=0&&Cross(outline[c],outline[a],outline[p])>=0);
+                if(inside)continue;cap.AddRange(new[]{a,b,c});polygon.RemoveAt(i);clipped=true;break;
+            }
+            if(!clipped)throw new InvalidOperationException("Cannot triangulate blade rim "+mesh.name);
+        }
+        cap.AddRange(polygon);var vertices=source.ToList();var normals=mesh.normals.ToList();var uv=mesh.uv.ToList();var indices=input.ToList();
+        float minZ=input.Min(i=>source[i].z),maxZ=input.Max(i=>source[i].z);
+        for(int side=0;side<2;side++)
+        {
+            int offset=vertices.Count;
+            foreach(var p in outline){vertices.Add(new Vector3(p.x,p.y,side==0?minZ:maxZ));normals.Add(side==0?Vector3.back:Vector3.forward);uv.Add(new Vector2(p.x,p.y));}
+            for(int i=0;i<cap.Count;i+=3){indices.Add(offset+cap[i]);indices.Add(offset+cap[i+(side==0?2:1)]);indices.Add(offset+cap[i+(side==0?1:2)]);}
+        }
+        mesh.SetVertices(vertices);mesh.SetNormals(normals);mesh.SetUVs(0,uv);mesh.SetTriangles(indices,2);mesh.RecalculateBounds();mesh.RecalculateTangents();
+        Progress("Closed blade surface: "+outline.Count+" outline points, "+cap.Count/3+" triangles per side");
+    }
     static void MakeWeapons()
     {
         var wood=Lit("WarmWood",new Color(.27f,.105f,.035f));var leather=Lit("DarkLeather",new Color(.045f,.027f,.018f),0,.2f);
@@ -228,6 +330,7 @@ public static class VisualRepairBuilder
             Quaternion rotation=bow?Quaternion.identity:gun?Quaternion.Euler(0,90,0):Quaternion.Euler(0,0,-90);
             float length=bow?renderer.bounds.size.y:renderer.bounds.size.x;
             var mesh=Bake(renderer,rotation,renderer.bounds.center,size/length);
+            if(name.StartsWith("Naginata"))CloseBladeSurface(mesh);
             if(Tri(mesh)>18000){var reduced=Simplify(mesh,14000f/Tri(mesh));UnityEngine.Object.DestroyImmediate(mesh);mesh=reduced;}
             mesh.name=name+"_Display";mesh=Save(mesh,Art+"Weapons/"+name+".asset");
             var root=new GameObject(name);var visual=new GameObject("Model");visual.transform.SetParent(root.transform,false);
@@ -237,6 +340,7 @@ public static class VisualRepairBuilder
             presentation.holdPosition=bow?new Vector3(.4f,-.3f,1.6f):gun?new Vector3(.38f,-.35f,1.75f):knife?new Vector3(.35f,-.28f,1.45f):new Vector3(.38f,-.45f,1.95f);
             presentation.holdEuler=bow?new Vector3(0,-20,-8):gun?new Vector3(-2,-8,0):knife?new Vector3(30,10,-28):new Vector3(55,-15,-28);
             presentation.muzzleLocal=presentation.holdPosition+Quaternion.Euler(presentation.holdEuler)*Vector3.forward*(size*.5f);
+            var muzzle=new GameObject("Muzzle");muzzle.transform.SetParent(visual.transform,false);muzzle.transform.localPosition=Vector3.forward*(size*.5f);presentation.muzzle=muzzle.transform;
             if(bow)
             {
                 presentation.bowString=CombatVisuals.Line(visual,"String",new[]{new Vector3(-.08f,1.1f,0),new Vector3(-.08f,0,-.3f),new Vector3(-.08f,-1.1f,0)},new Color(.7f,.65f,.48f),.012f);
@@ -245,7 +349,7 @@ public static class VisualRepairBuilder
                 arrowMesh=Save(arrowMesh,Art+"Weapons/NockedArrow.asset");var arrow=new GameObject("NockedArrow");arrow.transform.SetParent(visual.transform,false);arrow.transform.localPosition=new Vector3(-.08f,0,.25f);
                 arrow.AddComponent<MeshFilter>().sharedMesh=arrowMesh;arrow.AddComponent<MeshRenderer>().sharedMaterials=arrowSource.sharedMaterials.Select(m=>Map(m,"Arrow")).ToArray();presentation.nockedArrow=arrow.transform;
             }
-            var collider=root.AddComponent<BoxCollider>();collider.center=new Vector3(0,0,3);collider.size=new Vector3(.85f,.8f,5.4f);collider.isTrigger=true;collider.enabled=false;
+            var collider=root.AddComponent<BoxCollider>();collider.center=presentation.holdPosition;collider.size=mesh.bounds.size;collider.isTrigger=true;collider.enabled=false;
             root.AddComponent<PlayerWeapon>();PrefabUtility.SaveAsPrefabAsset(root,Art+"Weapons/"+name+".prefab");UnityEngine.Object.DestroyImmediate(root);
         }
         MakeKingProps();Progress("Eight weapon display prefabs generated");
@@ -270,12 +374,13 @@ public static class VisualRepairBuilder
         Vector3 normalAxis=bounds.size.x<bounds.size.y&&bounds.size.x<bounds.size.z?Vector3.right:bounds.size.y<bounds.size.z?Vector3.up:Vector3.forward;
         Quaternion fanRotation=Quaternion.FromToRotation(longAxis,Vector3.up);
         if(Mathf.Abs(Vector3.Dot(fanRotation*normalAxis,Vector3.forward))<.5f)fanRotation=Quaternion.Euler(0,90,0)*fanRotation;
+        fanRotation=Quaternion.Euler(0,0,180)*fanRotation;
         root=new GameObject("Gunbai");var visual=new GameObject("Model");visual.transform.SetParent(root.transform,false);
         int index=0;
         foreach(var item in renderers)
         {
             var m=fanMeshes[index];m.vertices=m.vertices.Select(v=>fanRotation*((v-bounds.center)*(1.1f/Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z)))).ToArray();m.normals=m.normals.Select(n=>fanRotation*n).ToArray();m.RecalculateBounds();
-            if(Tri(m)>12000){var reduced=Simplify(m,10000f/Tri(m));UnityEngine.Object.DestroyImmediate(m);m=reduced;}
+            // Preserve the fan's thin decorated surface; edge collapse distorts its trim.
             m=Save(m,Art+"Weapons/Gunbai"+index+".asset");
             var child=new GameObject("Fan"+index++);child.transform.SetParent(visual.transform,false);child.AddComponent<MeshFilter>().sharedMesh=m;
             int slot=0;child.AddComponent<MeshRenderer>().sharedMaterials=item.sharedMaterials.Select(material=>{var copy=new Material(material);if(copy.HasProperty("_Cull"))copy.SetFloat("_Cull",0);return Save(copy,Art+"Weapons/FanMaterial"+(slot++)+".mat");}).ToArray();

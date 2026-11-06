@@ -144,6 +144,7 @@ MonoBehaviour:
   hitStart: 0.12
   hitEnd: 0.38
   muzzleLocal: {x: 0.5, y: -0.35, z: 2.5}
+  muzzle: {fileID: 0}
   bowString: {fileID: 0}
   nockedArrow: {fileID: 0}
 --- !u!1 &9053916445567118288

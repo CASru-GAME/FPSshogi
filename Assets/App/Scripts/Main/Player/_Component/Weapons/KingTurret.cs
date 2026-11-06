@@ -64,6 +64,7 @@ namespace App.Main.Player
             {
                 transform.rotation = Quaternion.LookRotation(new Vector3(aimDir.x, 0f, aimDir.z)); // 水平回転のみ
             }
+            aimDir=(GetTargetAimPoint(target)-muzzle.position).normalized;
 
             // アニメ再生（銃子オブジェクトの Animator を利用）
             if (gunAnimator != null && !string.IsNullOrEmpty(shootAnimName))

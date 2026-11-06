@@ -1,0 +1,139 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FPSshogi 修正後の見た目</title><style>body{margin:0;background:#16191b;color:#eee;font:16px/1.6 system-ui,sans-serif}main{max-width:1300px;margin:auto;padding:28px}h1{color:#e6bd74}h2{font-size:20px}article{margin:36px 0}img{width:100%;border:1px solid #585048;border-radius:8px}a{color:#e6bd74}pre{white-space:pre-wrap;background:#24282b;padding:20px;border-radius:8px}summary{cursor:pointer}</style><main><h1>FPSshogi — 修正後の見た目</h1><p>V01〜V11の修正をUnityの実際の対局・FPS画面で確認しています。画像を押すと原寸で開きます。</p><p><a href="../VISUAL-FIXES.txt">修正内容</a> · <a href="../VISUAL-REVIEW.txt">修正前のレビュー</a> · <a href="Fixed/results.txt">検証結果</a></p><details><summary>形状データ量の比較</summary><pre>Geometry comparison (triangles per mesh; not an FPS benchmark)
+Source, original, LOD0, LOD1, LOD2
+箪笥, 1115670, 17788, 9863, 4529
+本, 156789, 6976, 3226, 1193
+座布団, 89280, 10378, 10378, 10378
+座布団.001, 89280, 10378, 10378, 10378
+</pre></details><details><summary>1080p プレイ検証ログ（仮想ゲームパッド2台）</summary><pre>PASS Board cells equally spaced
+PASS Zoom enters
+PASS FOV resets on next duel
+PASS Pitch resets on next duel
+PASS King has separate gunbai prefab
+PASS Slow field uses URP transparency
+PASS Fuhyo display component
+PASS Fuhyo spawns at idle
+PASS Fuhyo own body hidden only in own camera
+PASS Fuhyo weapon centre visible
+PASS Fuhyo primary input animates
+PASS Fuhyo player two primary input animates
+PASS Fuhyo returns to idle
+PASS Fuhyo hitbox closes
+PASS Fuhyo follows downward aim
+PASS Fuhyo follows upward aim
+PASS Melee active interval damages opponent
+PASS Melee recovery has no extra damage
+PASS Fuhyo duel exit cleans effects
+PASS Kyosya display component
+PASS Kyosya spawns at idle
+PASS Kyosya own body hidden only in own camera
+PASS Kyosya weapon centre visible
+PASS Kyosya primary input animates
+PASS Kyosya player two primary input animates
+PASS Kyosya returns to idle
+PASS Kyosya hitbox closes
+PASS Kyosya follows downward aim
+PASS Kyosya follows upward aim
+PASS Kyosya pause preserves zoom
+PASS Kyosya duel exit cleans effects
+PASS Keima display component
+PASS Keima spawns at idle
+PASS Keima own body hidden only in own camera
+PASS Keima weapon centre visible
+PASS Keima primary input animates
+PASS Keima player two primary input animates
+PASS Keima returns to idle
+PASS Keima hitbox closes
+PASS Keima follows downward aim
+PASS Keima follows upward aim
+PASS Slash contacts a target to the left of idle blade
+PASS Keima duel exit cleans effects
+PASS Gin display component
+PASS Gin spawns at idle
+PASS Gin own body hidden only in own camera
+PASS Gin weapon centre visible
+PASS Gin primary input animates
+PASS Gin player two primary input animates
+PASS Gin returns to idle
+PASS Gin hitbox closes
+PASS Gin follows downward aim
+PASS Gin follows upward aim
+PASS Gin buff visible
+PASS Gin duel exit cleans effects
+PASS Kin display component
+PASS Kin spawns at idle
+PASS Kin own body hidden only in own camera
+PASS Kin weapon centre visible
+PASS Kin primary input animates
+PASS Kin player two primary input animates
+PASS Kin returns to idle
+PASS Kin hitbox closes
+PASS Kin follows downward aim
+PASS Kin follows upward aim
+PASS Kin buff visible
+PASS Kin duel exit cleans effects
+PASS Kakugyo display component
+PASS Kakugyo spawns at idle
+PASS Kakugyo own body hidden only in own camera
+PASS Kakugyo weapon centre visible
+PASS Kakugyo primary input animates
+PASS Kakugyo player two primary input animates
+PASS Kakugyo returns to idle
+PASS Kakugyo hitbox closes
+PASS Kakugyo follows downward aim
+PASS Kakugyo follows upward aim
+PASS Kakugyo pause preserves zoom
+PASS Kakugyo duel exit cleans effects
+PASS Hisya display component
+PASS Hisya spawns at idle
+PASS Hisya own body hidden only in own camera
+PASS Hisya weapon centre visible
+PASS Hisya primary input animates
+PASS Hisya player two primary input animates
+PASS Hisya returns to idle
+PASS Hisya hitbox closes
+PASS Hisya follows downward aim
+PASS Hisya follows upward aim
+PASS Hisya pause preserves zoom
+PASS Hisya duel exit cleans effects
+PASS King display component
+PASS King spawns at idle
+PASS King own body hidden only in own camera
+PASS King weapon centre visible
+PASS King primary input animates
+PASS King player two primary input animates
+PASS King returns to idle
+PASS King hitbox closes
+PASS King follows downward aim
+PASS King follows upward aim
+PASS Knife misses a target beyond its visible reach
+PASS Knife damages a target within blade reach
+PASS King summons exactly three turrets
+PASS King command fan visible
+PASS Turrets stay below eye level
+PASS King duel exit cleans effects
+PASS Board preserves pawn and king size hierarchy
+PASS Piece fits grid 0,3
+PASS Piece fits grid 0,4
+PASS Piece fits grid 0,5
+PASS Piece fits grid 1,3
+PASS Piece fits grid 1,4
+PASS Piece fits grid 1,5
+PASS Piece fits grid 2,3
+PASS Piece fits grid 2,4
+PASS Piece fits grid 2,5
+PASS Piece fits grid 3,3
+PASS Piece fits grid 3,4
+PASS Piece fits grid 3,5
+PASS Piece fits grid 4,3
+PASS Piece fits grid 4,4
+PASS Piece fits grid 4,5
+PASS Piece fits grid 5,3
+PASS Piece fits grid 5,4
+PASS Piece fits grid 5,5
+PASS Piece fits grid 6,3
+PASS Piece fits grid 6,4
+PASS Piece fits grid 6,5
+PASS Piece fits grid 7,3
+PASS Piece fits grid 7,4
+PASS Piece fits grid 7,5
+</pre></details><p>追加確認: <a href="Fixed720/results.txt">720pの全武器検証</a> · <a href="ArtFinal1080/results.txt">補修後のモデル</a> · <a href="UI-After720/regression-results.txt">UIと対局操作</a> · <a href="PlayerSmoke/results.txt">Windows実行ファイル</a> · <a href="mesh-validation.txt">メッシュ検査</a></p><article><h2>背景・槍の構え</h2><a href="Fixed/Fuhyo-idle.png"><img loading="lazy" src="Fixed/Fuhyo-idle.png" alt="背景・槍の構え"></a></article><article><h2>短銃・木製銃床</h2><a href="Fixed/Kyosya-idle.png"><img loading="lazy" src="Fixed/Kyosya-idle.png" alt="短銃・木製銃床"></a></article><article><h2>刀</h2><a href="Fixed/Keima-idle.png"><img loading="lazy" src="Fixed/Keima-idle.png" alt="刀"></a></article><article><h2>赤い薙刀</h2><a href="ArtFinal1080/Gin-idle.png"><img loading="lazy" src="ArtFinal1080/Gin-idle.png" alt="赤い薙刀"></a></article><article><h2>青い薙刀</h2><a href="ArtFinal1080/Kin-idle.png"><img loading="lazy" src="ArtFinal1080/Kin-idle.png" alt="青い薙刀"></a></article><article><h2>長銃</h2><a href="Fixed/Kakugyo-idle.png"><img loading="lazy" src="Fixed/Kakugyo-idle.png" alt="長銃"></a></article><article><h2>弓と矢</h2><a href="Fixed/Hisya-idle.png"><img loading="lazy" src="Fixed/Hisya-idle.png" alt="弓と矢"></a></article><article><h2>短刀</h2><a href="Fixed/King-idle.png"><img loading="lazy" src="Fixed/King-idle.png" alt="短刀"></a></article><article><h2>王の軍配と砲台</h2><a href="ArtFinal1080/King-skill.png"><img loading="lazy" src="ArtFinal1080/King-skill.png" alt="王の軍配と砲台"></a></article><article><h2>飛車の半透明フィールド</h2><a href="Fixed/Hisya-skill.png"><img loading="lazy" src="Fixed/Hisya-skill.png" alt="飛車の半透明フィールド"></a></article><article><h2>防御の表示</h2><a href="Fixed/Fuhyo-secondary.png"><img loading="lazy" src="Fixed/Fuhyo-secondary.png" alt="防御の表示"></a></article><article><h2>銀の強化</h2><a href="ArtFinal1080/Gin-skill.png"><img loading="lazy" src="ArtFinal1080/Gin-skill.png" alt="銀の強化"></a></article><article><h2>金の強化</h2><a href="ArtFinal1080/Kin-skill.png"><img loading="lazy" src="ArtFinal1080/Kin-skill.png" alt="金の強化"></a></article><article><h2>盤面</h2><a href="ArtFinal1080/board.png"><img loading="lazy" src="ArtFinal1080/board.png" alt="盤面"></a></article><article><h2>全種類・成り駒</h2><a href="ArtFinal1080/board-all-promotions.png"><img loading="lazy" src="ArtFinal1080/board-all-promotions.png" alt="全種類・成り駒"></a></article><article><h2>背景の形状確認：LOD 0</h2><a href="ArtFinal1080/room-overview-LOD0.png"><img loading="lazy" src="ArtFinal1080/room-overview-LOD0.png" alt="軽量化後の家具と座布団"></a></article><article><h2>背景の形状確認：LOD 2</h2><a href="ArtFinal1080/room-overview-LOD2.png"><img loading="lazy" src="ArtFinal1080/room-overview-LOD2.png" alt="軽量化後の家具と座布団"></a></article><article><h2>Windows版：減速フィールド</h2><a href="PlayerSmoke/slow-field.png"><img loading="lazy" src="PlayerSmoke/slow-field.png" alt="Windows版：減速フィールド"></a></article><article><h2>Windows版：発砲</h2><a href="PlayerSmoke/gun-shot.png"><img loading="lazy" src="PlayerSmoke/gun-shot.png" alt="Windows版：発砲"></a></article><article><h2>Windows版：銀の強化</h2><a href="PlayerSmoke/silver-buff.png"><img loading="lazy" src="PlayerSmoke/silver-buff.png" alt="Windows版：銀の強化"></a></article><article><h2>Windows版：軍配</h2><a href="PlayerSmoke/king-fan.png"><img loading="lazy" src="PlayerSmoke/king-fan.png" alt="Windows版：軍配"></a></article><p><a href="verification-summary.txt">最終検証のまとめ</a> · <a href="final-build-results.txt">通常版のビルド結果</a> · <a href="ReleaseLaunch/title.png">通常版の起動画面</a> · <a href="ReleaseLaunch/help.png">遊び方画面</a></p><p>このPCのWindows / GeForce RTX 4060で検証しました。Unity EditorはDirect3D 11、Windows実行ファイルはDirect3D 12です。実物のゲームパッド、別GPU、FPSの比較測定は対象外です。</p></main></html>

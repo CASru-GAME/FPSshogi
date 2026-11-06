@@ -30,6 +30,7 @@ namespace App.Main.ViewManager
             shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
 
             CreateBoardCellPositions();
+            CalculateCommonScale();
             // 初期化処理
             SetPieces();
         }
@@ -39,6 +40,32 @@ namespace App.Main.ViewManager
         private bool[,] previousPromotion = new bool[9, 9];
         private float boardSurface = 29.845f;
         private float cellSize = 5.2222f;
+        private float commonPieceScale=1f;
+        private void CalculateCommonScale()
+        {
+            float largest=0;
+            foreach(var prefab in new[]{fuhyo,kyosya,keima,gin,kin,kakugyo,hisya,ou,gyoku})
+            {
+                if(prefab==null)continue;
+                // Asset Renderer.bounds can be stale and includes the source root rotation.
+                // Measure mesh corners in the same pose used when instantiating a board piece.
+                var pose=Matrix4x4.TRS(Vector3.zero,Quaternion.Euler(-90,0,0),prefab.transform.localScale);
+                Bounds bounds=default;bool first=true;
+                foreach(var filter in prefab.GetComponentsInChildren<MeshFilter>())
+                {
+                    if(filter.sharedMesh==null)continue;
+                    var matrix=pose*prefab.transform.worldToLocalMatrix*filter.transform.localToWorldMatrix;
+                    var b=filter.sharedMesh.bounds;
+                    for(int corner=0;corner<8;corner++)
+                    {
+                        var point=matrix.MultiplyPoint3x4(b.center+Vector3.Scale(b.extents,new Vector3((corner&1)==0?-1:1,(corner&2)==0?-1:1,(corner&4)==0?-1:1)));
+                        if(first){bounds=new Bounds(point,Vector3.zero);first=false;}else bounds.Encapsulate(point);
+                    }
+                }
+                largest=Mathf.Max(largest,bounds.size.x,bounds.size.z);
+            }
+            commonPieceScale=largest>0?Mathf.Min(1f,cellSize*.78f/largest):1f;
+        }
 
         private Vector3 GetBoardCellPosition(int x, int y)
         {
@@ -60,7 +87,7 @@ namespace App.Main.ViewManager
             piece.transform.rotation=promoted?Quaternion.Euler(90,-90,player==PlayerType.PlayerOne?90:-90):Quaternion.Euler(-90,0,player==PlayerType.PlayerOne?0:-180);
             var renderers=piece.GetComponentsInChildren<Renderer>();if(renderers.Length==0)return;
             Bounds bounds=renderers[0].bounds;foreach(var r in renderers)bounds.Encapsulate(r.bounds);
-            float fit=Mathf.Min(1f,cellSize*.78f/Mathf.Max(bounds.size.x,bounds.size.z));piece.transform.localScale*=fit;
+            piece.transform.localScale*=commonPieceScale;
             bounds=renderers[0].bounds;foreach(var r in renderers)bounds.Encapsulate(r.bounds);
             Vector3 centre=boardCellPositions[x,y];piece.transform.position+=new Vector3(centre.x-bounds.center.x,centre.y-bounds.min.y,centre.z-bounds.center.z);
         }

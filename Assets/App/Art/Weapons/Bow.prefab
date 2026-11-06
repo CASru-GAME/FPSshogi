@@ -31,6 +31,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6817667459947486414}
   - {fileID: 8836418732242403870}
   - {fileID: 3240717764896682470}
   m_Father: {fileID: 2973691369602010438}
@@ -92,6 +93,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &5976100568586748100
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6817667459947486414}
+  m_Layer: 0
+  m_Name: Muzzle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6817667459947486414
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5976100568586748100}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1.125}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2438211038276007864}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7009147606520490712
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,6 +272,7 @@ MonoBehaviour:
   hitStart: 0.12
   hitEnd: 0.38
   muzzleLocal: {x: 0.015227348, y: -0.3, z: 2.657154}
+  muzzle: {fileID: 6817667459947486414}
   bowString: {fileID: 8110297684330713555}
   nockedArrow: {fileID: 3240717764896682470}
 --- !u!65 &6093206255572230884
@@ -261,8 +294,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 0.85, y: 0.8, z: 5.4}
-  m_Center: {x: 0, y: 0, z: 3}
+  m_Size: {x: 0.39481962, y: 2.2501464, z: 0.018880606}
+  m_Center: {x: 0.4, y: -0.3, z: 1.6}
 --- !u!114 &7424070017191024528
 MonoBehaviour:
   m_ObjectHideFlags: 0

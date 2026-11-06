@@ -14,14 +14,22 @@ namespace App.Main.Player
         public float hitStart = .12f;
         public float hitEnd = .38f;
         public Vector3 muzzleLocal = new(.5f, -.35f, 2.5f);
+        public Transform muzzle;
         public LineRenderer bowString;
         public Transform nockedArrow;
         Player owner;
         Camera view;
         float attackStarted = -100f;
         float guardUntil;
+        BoxCollider hitbox;
+        Bounds meshBounds;
         public bool IsAttacking => Time.time - attackStarted < attackDuration;
-        public Vector3 MuzzlePosition => transform.TransformPoint(muzzleLocal);
+        public Vector3 MuzzlePosition => muzzle!=null?muzzle.position:transform.TransformPoint(muzzleLocal);
+        void Awake()
+        {
+            hitbox=GetComponent<BoxCollider>();
+            if(visual!=null&&visual.TryGetComponent<MeshFilter>(out var filter))meshBounds=filter.sharedMesh.bounds;
+        }
         public void Bind(Player p) { owner=p; view=p.GetComponentInChildren<Camera>(true); }
         public float Attack() { attackStarted=Time.time; return attackDuration; }
         public void Guard(float seconds) { guardUntil=Time.time+seconds; }
@@ -53,6 +61,15 @@ namespace App.Main.Player
                 pos.y+=Mathf.Sin(Time.time*(speed>.2f?9:2))*(speed>.2f?.025f:.006f);
             }
             visual.localPosition=pos;visual.localRotation=Quaternion.Euler(euler);
+            if(hitbox!=null)
+            {
+                // Keep the collision volume around the moving blade, including sideways swings.
+                var matrix=transform.worldToLocalMatrix*visual.localToWorldMatrix;
+                Bounds bounds=new Bounds(matrix.MultiplyPoint3x4(meshBounds.center),Vector3.zero);
+                for(int x=-1;x<=1;x+=2)for(int y=-1;y<=1;y+=2)for(int z=-1;z<=1;z+=2)
+                    bounds.Encapsulate(matrix.MultiplyPoint3x4(meshBounds.center+Vector3.Scale(meshBounds.extents,new Vector3(x,y,z))));
+                hitbox.center=bounds.center;hitbox.size=bounds.size+Vector3.one*.12f;
+            }
         }
     }
 }

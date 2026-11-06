@@ -1,0 +1,6 @@
+FAIL Board cells equally spaced
+PASS Zoom enters
+FAIL FOV resets on next duel
+FAIL Pitch resets on next duel
+FAIL King has separate gunbai prefab
+FAIL Slow field uses URP transparency

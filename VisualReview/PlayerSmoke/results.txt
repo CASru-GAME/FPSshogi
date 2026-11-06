@@ -1,0 +1,13 @@
+PASS Built player shader supported: Transparent
+PASS Built player shader supported: SlowField
+PASS Built player shader supported: Glow
+PASS Native weapon present 0
+PASS Native visual effect present 0
+PASS Native weapon present 1
+PASS Native visual effect present 1
+PASS Native weapon present 2
+PASS Native visual effect present 2
+PASS Native weapon present 3
+PASS Native visual effect present 3
+PASS Native scene change cleans effects
+PASS No native runtime errors

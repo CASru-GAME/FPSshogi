@@ -37,7 +37,7 @@ public static class VisualRepairChecks
                 dir = "VisualReview/" + SessionState.GetString("VisualChecksDir", "After") + "/";
                 Directory.CreateDirectory(dir); results.Clear(); errors.Clear();
                 Application.logMessageReceived += Log;
-                routine = Run(); next = EditorApplication.timeSinceStartup + 1;
+                routine = dir.Contains("Art") ? RunArt() : Run(); next = EditorApplication.timeSinceStartup + 1;
             }
             if(s == PlayModeStateChange.ExitingPlayMode && routine != null) Finish(false);
         };
@@ -122,17 +122,11 @@ public static class VisualRepairChecks
             var bounds=p.WeaponObject.GetComponentInChildren<Renderer>().bounds;var screen=view.WorldToViewportPoint(bounds.center);
             Check(screen.z>view.nearClipPlane && screen.x>0 && screen.x<1 && screen.y>0 && screen.y<1,type+" weapon centre visible");
             Shot(type+"-idle");yield return .25;
-            if(type==PieceType.Fuhyo)
-            {
-                var chest=UnityEngine.Object.FindObjectsByType<MeshFilter>(FindObjectsSortMode.None).First(f=>f.name=="箪笥");
-                var lod=chest.GetComponent<LODGroup>();var current=chest.sharedMesh;
-                lod.enabled=false;foreach(Transform child in chest.transform)foreach(var r in child.GetComponentsInChildren<Renderer>())r.enabled=false;
-                chest.GetComponent<Renderer>().enabled=true;
-                chest.sharedMesh=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/App/Models/Field2.fbx").GetComponentsInChildren<MeshFilter>().First(f=>f.name=="箪笥").sharedMesh;
-                yield return .1;Shot("chest-original-geometry");yield return .25;chest.sharedMesh=current;lod.enabled=true;
-            }
             InputSystem.QueueStateEvent(pad1,new GamepadState{rightTrigger=1});yield return .10;
             Check(w.IsAttacking,type+" primary input animates");Shot(type+"-attack");yield return .12;
+            InputSystem.QueueStateEvent(pad2,new GamepadState{rightTrigger=1});yield return .1;
+            Check(Two().WeaponObject.GetComponent<WeaponPresentation>().IsAttacking,type+" player two primary input animates");
+            InputSystem.QueueStateEvent(pad2,new GamepadState());
             InputSystem.QueueStateEvent(pad1,new GamepadState());yield return .9;
             Check(!w.IsAttacking,type+" returns to idle");
             Check(!p.WeaponObject.GetComponent<Collider>().enabled,type+" hitbox closes");
@@ -145,6 +139,22 @@ public static class VisualRepairChecks
             {
                 float fov=view.fieldOfView;App.UI.GameSessionUI.Instance.OpenPause();yield return .2;
                 Check(Mathf.Abs(view.fieldOfView-fov)<.01f,type+" pause preserves zoom");App.UI.GameSessionUI.Instance.Resume();yield return .2;Secondary(p);
+            }
+            if(type==PieceType.King)
+            {
+                var target=Two();Vector3 original=target.transform.position;int hp=target.playerStatus.Hp.Current;
+                // Player root scale is 2 and the opponent capsule radius is 1 world unit.
+                // Seven units is beyond the animated knife, but inside the former fixed box.
+                target.transform.position=p.transform.position+p.transform.forward*7f;target.GetComponent<Rigidbody>().linearVelocity=Vector3.zero;yield return .1;
+                Primary(p);yield return 1.1;Check(target.playerStatus.Hp.Current==hp,"Knife misses a target beyond its visible reach");
+                target.transform.position=p.transform.position+p.transform.forward*1.8f+p.transform.right*.25f;target.GetComponent<Rigidbody>().linearVelocity=Vector3.zero;yield return .1;
+                Primary(p);yield return .55;Check(target.playerStatus.Hp.Current<hp,"Knife damages a target within blade reach");target.transform.position=original;yield return .6;
+            }
+            if(type==PieceType.Keima)
+            {
+                var target=Two();Vector3 original=target.transform.position;int hp=target.playerStatus.Hp.Current;
+                target.transform.position=p.transform.position+p.transform.forward*3.8f-p.transform.right*2.2f;target.GetComponent<Rigidbody>().linearVelocity=Vector3.zero;yield return .1;
+                Primary(p);yield return .55;Check(target.playerStatus.Hp.Current<hp,"Slash contacts a target to the left of idle blade");target.transform.position=original;yield return .6;
             }
             if(type==PieceType.Hisya){Set(p,"pitch",30f);yield return .15;}
             InputSystem.QueueStateEvent(pad1,new GamepadState().WithButton(GamepadButton.East));yield return .22;
@@ -166,12 +176,49 @@ public static class VisualRepairChecks
             Two().playerStatus.Hp.Subtract(100000);yield return .6;
             Check(UnityEngine.Object.FindObjectsByType<CombatVisualLifetime>(FindObjectsSortMode.None).Length==0,type+" duel exit cleans effects");
         }
+        yield return .1;
+        var boardCheck=CheckBoard();while(boardCheck.MoveNext())yield return boardCheck.Current;
+    }
+    static IEnumerator RunArt()
+    {
+        pad1=InputSystem.AddDevice<Gamepad>("Visual art one");pad2=InputSystem.AddDevice<Gamepad>("Visual art two");yield return .4;
+        SceneManager.LoadScene("Title");yield return .6;App.UI.GameSessionUI.Instance.StartMatch();yield return 1.3;
+        Shot("board");yield return .3;
+        var overview=Camera.main;
+        if(overview!=null)
+        {
+            float size=overview.orthographicSize,fov=overview.fieldOfView;
+            if(overview.orthographic)overview.orthographicSize*=1.7f;else overview.fieldOfView=Mathf.Min(90,fov*1.5f);
+            var lods=UnityEngine.Object.FindObjectsByType<LODGroup>(FindObjectsSortMode.None);
+            for(int level=0;level<3;level++){foreach(var item in lods)item.ForceLOD(level);yield return .2;Shot("room-overview-LOD"+level);yield return .3;}
+            foreach(var item in lods)item.ForceLOD(-1);overview.orthographicSize=size;overview.fieldOfView=fov;
+        }
+        Duel(PieceType.Fuhyo);yield return 4.0;
+        var chest=UnityEngine.Object.FindObjectsByType<MeshFilter>(FindObjectsSortMode.None).First(f=>f.name=="箪笥");
+        var group=chest.GetComponent<LODGroup>();
+        for(int level=0;level<3;level++){group.ForceLOD(level);yield return .3;Shot("chest-LOD"+level);yield return .3;}
+        SceneManager.LoadScene("Main");yield return .8;Duel(PieceType.King);yield return 4.0;
+        Skill(One());yield return .22;Shot("King-skill");yield return .4;
+        foreach(var type in new[]{PieceType.Gin,PieceType.Kin})
+        {
+            SceneManager.LoadScene("Main");yield return .8;Duel(type);yield return 4.0;
+            var mesh=One().WeaponObject.GetComponentInChildren<MeshFilter>().sharedMesh;var vertices=mesh.vertices;var indices=mesh.GetTriangles(2);float area=0;
+            for(int i=0;i<indices.Length;i+=3)area+=Vector3.Cross(vertices[indices[i+1]]-vertices[indices[i]],vertices[indices[i+2]]-vertices[indices[i]]).magnitude*.5f;
+            Check(area>.1f,type+" blade has broad visible faces");Shot(type+"-idle");yield return .25;
+            Primary(One());yield return .18;Shot(type+"-attack");yield return .8;Secondary(One());yield return .1;Shot(type+"-secondary");yield return .2;
+            Skill(One());yield return .2;Shot(type+"-skill");yield return .3;
+        }
+        var boardCheck=CheckBoard();while(boardCheck.MoveNext())yield return boardCheck.Current;
+    }
+    static IEnumerator CheckBoard()
+    {
         SceneManager.LoadScene("Main");yield return .9;
         var board=Find<ShogiBoard>().GetBoard();var types=new[]{PieceType.Fuhyo,PieceType.Kyosya,PieceType.Keima,PieceType.Gin,PieceType.Kin,PieceType.Kakugyo,PieceType.Hisya,PieceType.King};
         for(int x=0;x<9;x++)for(int y=0;y<9;y++)board[x,y]=null;
         for(int x=0;x<8;x++){board[x,3]=Piece(types[x],PlayerType.PlayerOne);board[x,5]=Piece(types[x],PlayerType.PlayerTwo);board[x,4]=Piece(types[x],PlayerType.PlayerOne);if(board[x,4].IsPromotable)board[x,4].Promote();}
         yield return .5;Shot("board-all-promotions");yield return .4;
         var vp=Find<ViewPiece>();var pieces=(GameObject[,])Field(vp,"pieceObjects");
+        Check(pieces[0,3].GetComponentInChildren<Renderer>().bounds.size.z < pieces[7,3].GetComponentInChildren<Renderer>().bounds.size.z*.9f,"Board preserves pawn and king size hierarchy");
         for(int x=0;x<8;x++)for(int y=3;y<=5;y++)
         {
             var rs=pieces[x,y].GetComponentsInChildren<Renderer>();var b=rs[0].bounds;foreach(var r in rs)b.Encapsulate(r.bounds);

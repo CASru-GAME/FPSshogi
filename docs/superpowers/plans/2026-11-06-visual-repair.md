@@ -22,34 +22,34 @@ Preserve original source models and user changes. Preserve game rules and UI. Do
 ## Tasks
 
 ### 1. Regression evidence and editor tooling
-- [ ] Preserve a baseline and write real play-mode checks for zoom carryover, action return-to-idle, skill visibility, scene cleanup and board spacing.
-- [ ] Run the checks against current code; retain expected failures and screenshots.
-- [ ] Add repeatable editor asset generation and source-identity texture export tooling.
+- [x] Preserve a baseline and write real play-mode checks for zoom carryover, action return-to-idle, skill visibility, scene cleanup and board spacing.
+- [x] Run the checks against current code; retain expected failures and screenshots.
+- [x] Add repeatable editor asset generation and source-identity texture export tooling.
 
 ### 2. Restore materials and optimize environment (V01/V08/V09)
-- [ ] Export original textures/material renderer slots to `Assets/App/Art` and apply to Field2.
-- [ ] Generate readable weapon materials using existing geometry.
-- [ ] Generate prop LODs and simple collision; record before/after triangle counts.
-- [ ] Inspect room screenshots and check assignments and bounds.
+- [x] Export original textures/material renderer slots to `Assets/App/Art` and apply to Field2.
+- [x] Generate readable weapon materials using existing geometry.
+- [x] Generate prop LODs and simple collision; record before/after triangle counts.
+- [x] Inspect room screenshots and check assignments and bounds.
 
 ### 3. Weapon and camera presentation (V02/V05/V06/V07)
-- [ ] Generate per-weapon normalized prefabs with explicit mount settings.
-- [ ] Implement idle/action/recovery motion, view following, consistent attack timing and cleanup.
-- [ ] Reset zoom/pitch at duel boundaries; preserve paused state.
-- [ ] Run all eight weapon cases and repeated-duel regressions; inspect 1080p and 720p images.
+- [x] Generate per-weapon normalized prefabs with explicit mount settings.
+- [x] Implement idle/action/recovery motion, view following, consistent attack timing and cleanup.
+- [x] Reset zoom/pitch at duel boundaries; preserve paused state.
+- [x] Run all eight weapon cases and repeated-duel regressions; inspect 1080p and 720p images.
 
 ### 4. Skill and combat feedback (V03/V04/V11)
-- [ ] Fix URP slow-field material and ground placement.
-- [ ] Separate gunbai and turret references; place and size turrets with clear sightline.
-- [ ] Add guard/buff feedback, muzzle flash/tracer/impact and cleanup.
-- [ ] Verify with actual input, pause, duel exit and built-player shader usage.
+- [x] Fix URP slow-field material and ground placement.
+- [x] Separate gunbai and turret references; place and size turrets with clear sightline.
+- [x] Add guard/buff feedback, muzzle flash/tracer/impact and cleanup.
+- [x] Verify with actual input, pause, duel exit and built-player shader usage.
 
 ### 5. Board alignment (V10)
-- [ ] Derive equal cell centers from the visible grid; size pieces to fit while retaining type differences.
-- [ ] Verify initial arrangement, all six promoted types, captures and drops against HUD highlights.
+- [x] Derive equal cell centers from the visible grid; size pieces to fit while retaining type differences.
+- [x] Verify initial arrangement, all six promoted types, captures and drops against HUD highlights.
 
 ### 6. Integration and delivery
-- [ ] Run visual and existing UI suites; inspect screenshots; fix relevant failures.
-- [ ] Obtain fresh code review, resolve important findings, and run affected regressions.
-- [ ] Build Windows, check native launch, document all eleven outcomes and measured geometry changes.
-- [ ] Commit only task changes and leave the Unity project ready to open/play.
+- [x] Run visual and existing UI suites; inspect screenshots; fix relevant failures.
+- [x] Obtain fresh code review, resolve important findings, and run affected regressions.
+- [x] Build Windows, check native launch, document all eleven outcomes and measured geometry changes.
+- [x] Commit only task changes and leave the Unity project ready to open/play.

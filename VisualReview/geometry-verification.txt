@@ -1,0 +1,6 @@
+Geometry comparison (triangles per mesh; not an FPS benchmark)
+Source, original, LOD0, LOD1, LOD2
+箪笥, 1115670, 17788, 9863, 4529
+本, 156789, 6976, 3226, 1193
+座布団, 89280, 10378, 10378, 10378
+座布団.001, 89280, 10378, 10378, 10378
