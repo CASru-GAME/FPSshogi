@@ -8,6 +8,7 @@ namespace App.Main.Controller
     {
         [SerializeField] private GameObject pointerPrefab;
         private GameObject pointerInstance;
+        public void SetVisible(bool visible) { if (pointerInstance != null) pointerInstance.SetActive(visible); }
         private ViewPiece viewPiece;
         [SerializeField] private float pointerHeight = 1;
 

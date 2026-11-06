@@ -26,6 +26,13 @@ namespace App.Main.Player
         private float pitch = 0f;
 
         public PlayerStatus playerStatus;
+        public float PrimaryCooldown => currentPrimaryAction?.CooldownRemaining ?? 0f;
+        public float SecondaryCooldown => currentSecondaryAction?.CooldownRemaining ?? 0f;
+        public float SkillCooldown => Mathf.Max(0f, currentSkill?.cooldownTimer ?? 0f);
+        public string SecondaryName => currentSecondaryAction?.secondaryActionName == "SecondaryZoom" ? "ズーム" : "防御";
+        public App.Main.ShogiThings.PieceType PieceType { get; set; }
+        public float LookSensitivity { get => lookSensitivity; set => lookSensitivity = Mathf.Clamp(value, .5f, 5f); }
+        public void ResetInput() { moveInput = lookInput = Vector2.zero; climbInput = false; }
         private ISkill currentSkill;
         private IPrimaryAction currentPrimaryAction;
         private ISecondaryAction currentSecondaryAction;
@@ -127,6 +134,7 @@ namespace App.Main.Player
 
         private void OnActionTriggered(InputAction.CallbackContext context)
         {
+            if (App.UI.GameSessionUI.BlocksGameplay) { ResetInput(); return; }
             if (context.action == null) return;
 
             switch (context.action.name)

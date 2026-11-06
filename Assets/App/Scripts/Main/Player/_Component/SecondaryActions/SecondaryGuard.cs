@@ -15,6 +15,7 @@ namespace App.Main.Player
         public float buffDuration = 1f;
 
         // 実行状態
+        public float CooldownRemaining => Mathf.Max(0f, cooldownTimer);
         private float cooldownTimer = 0f;
         private bool buffActive = false;
         private float buffTimer = 0f;

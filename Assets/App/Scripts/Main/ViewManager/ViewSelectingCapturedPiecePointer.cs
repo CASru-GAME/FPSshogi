@@ -8,6 +8,7 @@ namespace App.Main.ViewManager
     {
         [SerializeField] private GameObject pointerPrefab;
         private GameObject pointerInstance;
+        public void SetVisible(bool visible) { if (pointerInstance != null) pointerInstance.SetActive(visible); }
         public int InitializationPriority => 150; // 優先度（低いほど先に初期化される）
         public System.Type[] Dependencies => new System.Type[] { typeof(ViewCapturedPieces) }; // 依存関係
         private ViewCapturedPieces viewCapturedPieces;

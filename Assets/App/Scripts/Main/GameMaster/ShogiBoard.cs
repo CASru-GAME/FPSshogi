@@ -217,6 +217,7 @@ namespace App.Main.GameMaster
 
         public MoveResult SetPiece(int x, int y, PieceType piece, PlayerType player)
         {
+            if (x < 0 || x >= 9 || y < 0 || y >= 9) return MoveResult.InvalidMove;
             currentPlayer = player;
             IPiece pieceInstance = FindPieceFromPieceType(piece, player);
             Debug.Log("[ShogiBoard] Attempting to set piece: " + piece + " at " + x + "," + y + " for " + player);
@@ -278,6 +279,19 @@ namespace App.Main.GameMaster
             return board[toX, toY] != null && board[toX, toY].Player != board[fromX, fromY].Player;
         }
 
+        public bool CanMove(int fromX, int fromY, int toX, int toY, PlayerType player)
+        {
+            return IsValidMove(fromX, fromY, toX, toY, player);
+        }
+
+        public bool CanDrop(int x, int y, PieceType type, PlayerType player)
+        {
+            if (x < 0 || x >= 9 || y < 0 || y >= 9 || !IsCaptured(player, type)) return false;
+            var piece = FindPieceFromPieceType(type, player);
+            return piece != null && board[x, y] == null &&
+                (type != PieceType.Fuhyo || !IsNifu(x, player)) && !IsDeadEndPiece(x, y, piece);
+        }
+
         private bool IsCaptured(PlayerType player, PieceType pieceType)
         {
             return capturedPieces[player].Contains(pieceType);
@@ -288,7 +302,7 @@ namespace App.Main.GameMaster
             Debug.Log("[ShogiBoard] Checking if settable at " + x + "," + y + " for piece " + piece.Type + " by " + player);
             if (board[x, y] != null) return false; // 既に駒がある場合は置けない
             Debug.Log("[ShogiBoard] No piece at target position.");
-            if (IsNifu(x, player)) return false; // 二歩の判定
+            if (piece.Type == PieceType.Fuhyo && IsNifu(x, player)) return false;
             Debug.Log("[ShogiBoard] Nifu check passed.");
             if (IsDeadEndPiece(x, y, piece)) return false; // 駒が詰む場合は置けない
             Debug.Log("[ShogiBoard] Dead end piece check passed.");
@@ -358,6 +372,7 @@ namespace App.Main.GameMaster
 
         private bool IsValidMove(int fromX, int fromY, int toX, int toY, PlayerType player)
         {
+            if (fromX < 0 || fromX >= 9 || fromY < 0 || fromY >= 9) return false;
             // 盤外チェック
             if (toX < 0 || toX >= 9 || toY < 0 || toY >= 9)
                 return false;

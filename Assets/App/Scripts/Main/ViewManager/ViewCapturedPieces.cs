@@ -160,7 +160,7 @@ namespace App.Main.ViewManager
                     playerOneCapturedPieceObjects.Remove(pieceType);
                 }
             }
-            foreach (PieceType pieceType in playerTwoCapturedPieces.Keys.ToList())
+            foreach (PieceType pieceType in playerTwoCapturedPieceObjects.Keys.ToList())
             {
                 Debug.Log("Checking captured piece: " + pieceType);
                 if (!playerTwoCapturedPieces.ContainsKey(pieceType)|| playerTwoCapturedPieces[pieceType] == 0)
@@ -171,6 +171,11 @@ namespace App.Main.ViewManager
                     playerTwoCapturedPieceObjects.Remove(pieceType);
                 }
             }
+        }
+        public void SetVisible(bool visible)
+        {
+            foreach (var go in playerOneCapturedPieceObjects.Values) if (go != null) go.SetActive(visible);
+            foreach (var go in playerTwoCapturedPieceObjects.Values) if (go != null) go.SetActive(visible);
         }
     }
 }

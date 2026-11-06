@@ -15,6 +15,7 @@ namespace App.Main.Player
         public float zoomDuration = 0f; // 0以下なら自動解除なし（トグルのみ）
 
         // 実行状態
+        public float CooldownRemaining => Mathf.Max(0f, cooldownTimer);
         private float cooldownTimer = 0f;
         private bool zoomActive = false;
         private float zoomTimer = 0f;

@@ -21,6 +21,7 @@ namespace App.Main.Player
         public Transform muzzleTransform;             // 任意：マズルの位置（無ければカメラ位置）
 
         // 実行管理
+        public float CooldownRemaining => Mathf.Max(0f, cooldown - (Time.time - lastUseTime));
         private float lastUseTime = -999f;
 
         public void PrimaryAction(Player player, PlayerStatus playerStatus)
