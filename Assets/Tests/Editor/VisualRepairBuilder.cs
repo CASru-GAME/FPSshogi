@@ -338,7 +338,7 @@ public static class VisualRepairBuilder
             var presentation=root.AddComponent<WeaponPresentation>();presentation.visual=visual.transform;
             presentation.motion=bow?WeaponPresentation.Motion.Bow:gun?WeaponPresentation.Motion.Gun:knife?WeaponPresentation.Motion.Knife:name=="Spear"?WeaponPresentation.Motion.Thrust:WeaponPresentation.Motion.Slash;
             presentation.holdPosition=bow?new Vector3(.4f,-.3f,1.6f):gun?new Vector3(.38f,-.35f,1.75f):knife?new Vector3(.35f,-.28f,1.45f):new Vector3(.38f,-.45f,1.95f);
-            presentation.holdEuler=bow?new Vector3(0,-20,-8):gun?new Vector3(-2,-8,0):knife?new Vector3(30,10,-28):new Vector3(55,-15,-28);
+            presentation.holdEuler=bow?new Vector3(0,-20,-8):gun?new Vector3(-2,-8,0):knife?new Vector3(30,10,-28):name=="Spear"?new Vector3(82,-12,-3):new Vector3(55,-15,-28);
             presentation.muzzleLocal=presentation.holdPosition+Quaternion.Euler(presentation.holdEuler)*Vector3.forward*(size*.5f);
             var muzzle=new GameObject("Muzzle");muzzle.transform.SetParent(visual.transform,false);muzzle.transform.localPosition=Vector3.forward*(size*.5f);presentation.muzzle=muzzle.transform;
             if(bow)

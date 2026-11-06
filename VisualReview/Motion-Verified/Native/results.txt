@@ -1,0 +1,23 @@
+PASS Native title opens an unassigned selection screen
+PASS Native two controllers join without auto preparation
+PASS Native first player cannot approve the second
+PASS Native third controller cannot approve another slot
+PASS Native joining order determines 1P and 2P
+PASS Selected players can enter a real duel
+PASS Native 1P controller moves only its selected player's camera
+PASS Native 2P controller moves only its selected player's camera
+PASS Native mixed selection honors the chosen devices: keyboardFirst=True
+PASS Native mixed match waits for both confirmations
+PASS Native mixed match keeps keyboard/mouse and controller separate
+PASS Selected players can enter a real duel
+PASS Native mixed mouse moves only its selected player's camera
+PASS Native mixed controller moves only its selected player's camera
+PASS Native mixed selection honors the chosen devices: keyboardFirst=False
+PASS Native mixed match waits for both confirmations
+PASS Native mixed match keeps keyboard/mouse and controller separate
+PASS Selected players can enter a real duel
+PASS Native mixed mouse moves only its selected player's camera
+PASS Native mixed controller moves only its selected player's camera
+PASS Native rematch retains devices but requires fresh preparation
+PASS Native rematch starts only after both players prepare
+PASS No native runtime errors

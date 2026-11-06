@@ -24,6 +24,9 @@ namespace App.Main.Player
         // 子の銃オブジェクトにある Animator を使って射撃アニメを再生
         Animator gunAnimator;
         string shootAnimName;
+        Transform gun;
+        Vector3 gunRestPosition;
+        float lastShotTime = -100f;
 
         public void Initialize(Player owner, PlayerStatus ownerStatus,
             float fireInterval, float range, float falloffStart, float minDamageMul, float damageMultiplier, LayerMask hitLayers, string shootAnimName)
@@ -40,6 +43,17 @@ namespace App.Main.Player
 
             // probe for muzzle and gun animator
             muzzle = transform.Find("Muzzle") ?? transform;
+            gun = transform.Find("Gun");
+            if (gun != null)
+            {
+                gunRestPosition = gun.localPosition;
+                if (muzzle != transform && gun.TryGetComponent<MeshFilter>(out var mesh))
+                {
+                    muzzle.SetParent(gun, false);
+                    muzzle.localPosition = Vector3.forward * mesh.sharedMesh.bounds.max.z;
+                    muzzle.localRotation = Quaternion.identity;
+                }
+            }
             // gun object might be a child; try to find Animator on children
             gunAnimator = GetComponentInChildren<Animator>();
 
@@ -63,7 +77,9 @@ namespace App.Main.Player
             Vector3 aimDir = (GetTargetAimPoint(target) - muzzle.position).normalized;
             if (aimDir.sqrMagnitude > 0.0001f)
             {
-                transform.rotation = Quaternion.LookRotation(new Vector3(aimDir.x, 0f, aimDir.z)); // 水平回転のみ
+                var horizontal = new Vector3(aimDir.x, 0f, aimDir.z);
+                if (horizontal.sqrMagnitude > .0001f) transform.rotation = Quaternion.LookRotation(horizontal);
+                if (gun != null) gun.rotation = Quaternion.LookRotation(GetTargetAimPoint(target) - gun.position);
             }
             aimDir=(GetTargetAimPoint(target)-muzzle.position).normalized;
 
@@ -85,7 +101,16 @@ namespace App.Main.Player
             }
 
             CombatVisuals.ShotFrom(owner,muzzle.position,hit.collider!=null?hit.point:muzzle.position+aimDir*range,hit.collider!=null);
+            lastShotTime = Time.time;
             nextFireTime = Time.time + fireInterval;
+        }
+
+        void LateUpdate()
+        {
+            if (gun == null) return;
+            float age = Time.time - lastShotTime;
+            float recoil = age < .025f ? Mathf.Clamp01(age / .025f) : 1 - Mathf.SmoothStep(0, 1, (age - .025f) / .16f);
+            gun.localPosition = gunRestPosition - gun.localRotation * Vector3.forward * (.09f * recoil);
         }
 
         private Player FindNearestEnemyPlayer()

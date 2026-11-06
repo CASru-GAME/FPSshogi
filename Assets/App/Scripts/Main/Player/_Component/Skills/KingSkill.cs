@@ -22,6 +22,7 @@ namespace App.Main.Player
         {
             if(isOnCooldown||player==null||playerStatus==null)return;
             this.player=player;this.playerStatus=playerStatus;cooldownTimer=cooldownTime;
+            player.WeaponObject?.GetComponent<WeaponPresentation>()?.PlaySkill(WeaponPresentation.SkillMotion.Command,.85f);
             if(gunbaiPrefab!=null)
             {
                 var fan=Object.Instantiate(gunbaiPrefab,player.transform);fan.name="Gunbai_Command";

@@ -1,0 +1,10 @@
+PASS Keima attack captured at 30 frames per game second
+PASS Keima secondary captured at 30 frames per game second
+PASS Keima skill captured at 30 frames per game second
+PASS Gin attack captured at 30 frames per game second
+PASS Gin secondary captured at 30 frames per game second
+PASS Gin skill captured at 30 frames per game second
+PASS Kin attack captured at 30 frames per game second
+PASS Kin secondary captured at 30 frames per game second
+PASS Kin skill captured at 30 frames per game second
+PASS No motion runtime errors

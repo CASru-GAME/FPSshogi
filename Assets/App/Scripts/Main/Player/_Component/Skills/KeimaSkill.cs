@@ -77,6 +77,7 @@ namespace App.Main.Player
             // クールダウン開始
             isOnCooldown = true;
             cooldownTimer = cooldownTime;
+            player.WeaponObject?.GetComponent<WeaponPresentation>()?.PlaySkill(WeaponPresentation.SkillMotion.Dash, moveDuration + .45f, moveDuration);
         }
 
         public void UpdateSkill()

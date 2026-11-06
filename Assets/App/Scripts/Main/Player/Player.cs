@@ -44,6 +44,7 @@ namespace App.Main.Player
         public void ResetInput() { moveInput = lookInput = Vector2.zero; climbInput = false; }
         public void ResetDuelPresentation()
         {
+            if (WeaponObject != null) WeaponObject.GetComponent<WeaponPresentation>()?.ResetMotion();
             ResetInput(); ClearMovementOverride(); StopAllCoroutines();
             playerStatus?.EffectList.ClearEffects();
             playerStatus?.DefensePoint.Reset();

@@ -1,0 +1,25 @@
+PASS Fuhyo attack captured at 30 frames per game second
+PASS Fuhyo secondary captured at 30 frames per game second
+PASS Fuhyo skill captured at 30 frames per game second
+PASS Kyosya attack captured at 30 frames per game second
+PASS Kyosya secondary captured at 30 frames per game second
+PASS Kyosya skill captured at 30 frames per game second
+PASS Keima attack captured at 30 frames per game second
+PASS Keima secondary captured at 30 frames per game second
+PASS Keima skill captured at 30 frames per game second
+PASS Gin attack captured at 30 frames per game second
+PASS Gin secondary captured at 30 frames per game second
+PASS Gin skill captured at 30 frames per game second
+PASS Kin attack captured at 30 frames per game second
+PASS Kin secondary captured at 30 frames per game second
+PASS Kin skill captured at 30 frames per game second
+PASS Kakugyo attack captured at 30 frames per game second
+PASS Kakugyo secondary captured at 30 frames per game second
+PASS Kakugyo skill captured at 30 frames per game second
+PASS Hisya attack captured at 30 frames per game second
+PASS Hisya secondary captured at 30 frames per game second
+PASS Hisya skill captured at 30 frames per game second
+PASS King attack captured at 30 frames per game second
+PASS King secondary captured at 30 frames per game second
+PASS King skill captured at 30 frames per game second
+PASS No motion runtime errors

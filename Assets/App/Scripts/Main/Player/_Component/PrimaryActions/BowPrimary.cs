@@ -40,6 +40,7 @@ namespace App.Main.Player
             Camera cam = player.GetComponentInChildren<Camera>() ?? Camera.main;
             Vector3 origin;
             Vector3 dir;
+            RaycastHit blockedLaunch = default;
             if (muzzleTransform != null)
             {
                 origin = muzzleTransform.position;
@@ -49,6 +50,19 @@ namespace App.Main.Player
             {
                 origin = cam.transform.position + cam.transform.forward * 0.5f;
                 dir = cam.transform.forward;
+                var display = player.WeaponObject?.GetComponent<WeaponPresentation>();
+                if (display != null && display.nockedArrow != null)
+                {
+                    origin = display.nockedArrow.position;
+                    // Aim at the reticle from the visible arrow, rather than teleporting
+                    // the projectile from the bow to a point in front of the camera.
+                    Vector3 target = ShotPhysics.Raycast(new Ray(cam.transform.position, cam.transform.forward), maxRange, hitLayers, player, out var aimHit)
+                        ? aimHit.point : cam.transform.position + cam.transform.forward * maxRange;
+                    Vector3 toNock = origin - cam.transform.position;
+                    if (toNock.sqrMagnitude > .0001f)
+                        ShotPhysics.Raycast(new Ray(cam.transform.position, toNock.normalized), toNock.magnitude, hitLayers, player, out blockedLaunch);
+                    dir = (target - origin).normalized;
+                }
             }
             else
             {
@@ -71,6 +85,18 @@ namespace App.Main.Player
                 }
             }
             catch { }
+
+            // The bow can visibly cross near cover. Resolve that contact immediately:
+            // moving just the projectile pivot back left its solid hull inside the wall.
+            if (blockedLaunch.collider != null)
+            {
+                var target = blockedLaunch.collider.GetComponentInParent<Player>();
+                if (target != null && target != player)
+                    target.playerStatus?.TakeDamage(Mathf.CeilToInt(playerStatus.AttackPoint.Current * damageMultiplier), cam.transform.position);
+                CombatVisuals.Impact(player, blockedLaunch.point);
+                lastUseTime = Time.time;
+                return;
+            }
 
             // 矢プレハブは player.SubWeaponObject を想定（プレハブ参照が入っていること）
             GameObject arrowPrefab = player.SubWeaponObject;

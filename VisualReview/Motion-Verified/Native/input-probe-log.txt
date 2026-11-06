@@ -1,0 +1,5 @@
+keyboard=1 layout=Keyboard
+Keyboard event: STAT, device=1
+Keyboard event: STAT, device=1
+Keyboard event: TEXT, device=1
+Keyboard event: TEXT, device=1

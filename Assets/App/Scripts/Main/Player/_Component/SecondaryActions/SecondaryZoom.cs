@@ -85,6 +85,7 @@ namespace App.Main.Player
             // 元のFOVを保存してから変更（重ね掛けを避ける）
             originalFOV = cachedCamera.fieldOfView;
             cachedCamera.fieldOfView = originalFOV / Mathf.Max(0.0001f, zoomMultiplier);
+            player.WeaponObject?.GetComponent<WeaponPresentation>()?.SetAiming(true);
 
             zoomActive = true;
             zoomTimer = (zoomDuration > 0f) ? zoomDuration : Mathf.Infinity;
@@ -93,6 +94,8 @@ namespace App.Main.Player
         private void DeactivateZoom()
         {
             if (!zoomActive) return;
+
+            player.WeaponObject?.GetComponent<WeaponPresentation>()?.SetAiming(false);
 
             if (cachedCamera != null)
             {

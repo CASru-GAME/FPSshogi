@@ -100,6 +100,7 @@ namespace App.Main.Player
                 yield return new WaitForSeconds(presentation.hitStart);
                 duration=Mathf.Max(.01f,presentation.hitEnd-presentation.hitStart);
             }
+            presentation?.RefreshPose();
             hitCollider.enabled = true;
 
             // 即時重なり判定：コライダーに既に入っている相手にもヒット通知を出す
