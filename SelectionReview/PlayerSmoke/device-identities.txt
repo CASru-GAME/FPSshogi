@@ -1,0 +1,8 @@
+Screen: 1280x720
+Before keyboard: fixture mouse=24, current mouse=24
+Before keyboard: fixture mouse=24, current mouse=24
+keyboardFirst=True: paired=Keyboard#23,Mouse#24; expected=23,24
+Before keyboard: fixture mouse=24, current mouse=24
+Before keyboard: fixture mouse=24, current mouse=24
+keyboardFirst=False: paired=Keyboard#23,Mouse#24; expected=23,24
+Before keyboard: fixture mouse=24, current mouse=24

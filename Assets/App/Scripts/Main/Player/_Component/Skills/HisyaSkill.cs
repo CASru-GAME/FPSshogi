@@ -42,7 +42,7 @@ namespace App.Main.Player
                 }
                 else
                 {
-                    spawnPos = cam.transform.position + cam.transform.forward * spawnDistance;
+                    spawnPos = cam.transform.position + cam.transform.forward * 12f;
                 }
             }
             else
@@ -51,7 +51,9 @@ namespace App.Main.Player
             }
 
             // ルートオブジェクト作成
-            var root = new GameObject("Hisya_SlowField");
+            // Project wall hits onto the ground, keeping the disc above the surface.
+            if(Physics.Raycast(spawnPos+Vector3.up*.5f,Vector3.down,out var floor,100f,~0,QueryTriggerInteraction.Ignore))spawnPos=floor.point;
+            var root = CombatVisuals.Scope(player,"Hisya_SlowField",duration+.1f);
             root.transform.position = spawnPos;
             root.transform.rotation = Quaternion.identity;
 
@@ -61,18 +63,20 @@ namespace App.Main.Player
             visual.name = "Visual";
             visual.transform.SetParent(root.transform, false);
             // 円盤が地面に埋まらないように少し上にする
-            visual.transform.localPosition = Vector3.up * 0.01f;
+            visual.transform.localPosition = Vector3.up * 0.045f;
             visual.transform.localRotation = Quaternion.identity;
             visual.transform.localScale = new Vector3(radius * 2f, 0.02f, radius * 2f); // 高さは小さくする
 
             var mr = visual.GetComponent<MeshRenderer>();
             if (mr != null)
             {
-                var mat = CreateTransparentMaterial(new Color(0.6f, 0.2f, 0.9f, 0.5f)); // alpha = 0.5
-                mr.material = mat;
+                mr.sharedMaterial = Resources.Load<Material>("Combat/SlowField");
                 mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 mr.receiveShadows = false;
             }
+
+            var boundary=new GameObject("FieldBoundary");boundary.transform.SetParent(root.transform,false);boundary.transform.localPosition=Vector3.up*.08f;
+            CombatVisuals.Ring(boundary,radius,new Color(.7f,.35f,1f,.9f),.06f);
 
             // トリガー用コライダー（球形で範囲検出）
             var trigger = root.AddComponent<SphereCollider>();
@@ -108,42 +112,6 @@ namespace App.Main.Player
             }
         }
 
-        private Material CreateTransparentMaterial(Color color)
-        {
-            // 利用可能な透明対応シェーダーを順に探す（URP/HDRP/旧レンダーパイプラインの差に対応）
-            Shader shader = Shader.Find("Unlit/Transparent");
-            if (shader == null) shader = Shader.Find("Sprites/Default");
-            if (shader == null) shader = Shader.Find("Unlit/Color");
-            Material mat;
-
-            if (shader != null)
-            {
-                mat = new Material(shader);
-                // Sprites/Default 等はアルファをそのまま扱うので特別な設定は不要
-            }
-            else
-            {
-                // 最悪 Standard にフォールバックして透明モードを強制する
-                Shader std = Shader.Find("Standard");
-                mat = new Material(std ?? Shader.Find("Hidden/InternalErrorShader"));
-                if (std != null)
-                {
-                    mat.SetFloat("_Mode", 3f);
-                    mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                    mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    mat.SetInt("_ZWrite", 0);
-                    mat.DisableKeyword("_ALPHATEST_ON");
-                    mat.EnableKeyword("_ALPHABLEND_ON");
-                    mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                    mat.renderQueue = 3000;
-                }
-            }
-
-            // 色と透過度を設定（alpha = 0.5 にしたい場合は呼び出し側でその値を渡してください）
-            mat.color = color;
-
-            return mat;
-        }
     }
 
     // フィールドの実体（他クラス名と衝突しない固有名）
@@ -155,7 +123,14 @@ namespace App.Main.Player
         public float slowMultiplier = 0.6f;
         public LayerMask affectLayers = ~0;
 
-        private Dictionary<Player, HisyaFieldSlowEffect> applied = new Dictionary<Player, HisyaFieldSlowEffect>();
+        private sealed class FieldContact
+        {
+            public HisyaFieldSlowEffect effect;
+            public readonly HashSet<Collider> colliders = new HashSet<Collider>();
+        }
+
+        private readonly Dictionary<Player, FieldContact> applied = new Dictionary<Player, FieldContact>();
+        private readonly List<Player> unavailableContacts = new List<Player>();
         private float lifeTimer;
 
         void Start()
@@ -165,6 +140,7 @@ namespace App.Main.Player
 
         void Update()
         {
+            PruneUnavailableContacts();
             lifeTimer -= Time.deltaTime;
             if (lifeTimer <= 0f)
             {
@@ -174,49 +150,88 @@ namespace App.Main.Player
 
         void OnTriggerEnter(Collider other)
         {
+            if (IsUnavailableBody(other)) return;
             if ((affectLayers.value & (1 << other.gameObject.layer)) == 0) return;
 
             var p = other.GetComponentInParent<Player>();
             if (p == null) return;
-            if (applied.ContainsKey(p)) return;
-
             var ps = p.playerStatus;
             if (ps == null) return;
 
-            var effect = new HisyaFieldSlowEffect(slowMultiplier);
-            try
+            if (applied.TryGetValue(p, out var contact))
             {
-                ps.EffectList.AddEffect(effect);
-            }
-            catch (Exception)
-            {
-                // EffectList に問題がある場合は直接起動
-                effect.Effect(p, ps, null);
+                if (contact.effect.isActive && contact.effect.playerStatus == ps)
+                {
+                    contact.colliders.Add(other);
+                    return;
+                }
+                contact.effect.RemoveField(this);
+                applied.Remove(p);
             }
 
-            applied[p] = effect;
+            // All overlapping fields share the registered effect; each field
+            // keeps a source reference until its last player collider leaves.
+            var effect = ps.EffectList.GetEffect<HisyaFieldSlowEffect>();
+            if (effect == null)
+            {
+                effect = new HisyaFieldSlowEffect(slowMultiplier);
+                ps.EffectList.AddEffect(effect);
+            }
+            effect.AddField(this, slowMultiplier);
+            contact = new FieldContact { effect = effect };
+            contact.colliders.Add(other);
+            applied[p] = contact;
         }
 
         void OnTriggerExit(Collider other)
         {
             var p = other.GetComponentInParent<Player>();
             if (p == null) return;
-            if (!applied.TryGetValue(p, out var eff)) return;
+            if (!applied.TryGetValue(p, out var contact)) return;
+            if (!contact.colliders.Remove(other) || contact.colliders.Count > 0) return;
 
-            try { eff.EndEffect(); } catch (Exception) { }
+            contact.effect.RemoveField(this);
             applied.Remove(p);
+        }
+
+        private static bool IsUnavailableBody(Collider collider)
+        {
+            return collider == null || !collider.enabled || collider.isTrigger || !collider.gameObject.activeInHierarchy;
+        }
+
+        private void PruneUnavailableContacts()
+        {
+            // Unity does not send OnTriggerExit when a collider is disabled or
+            // destroyed. Only live body colliders can keep this field applied.
+            foreach (var pair in applied)
+            {
+                pair.Value.colliders.RemoveWhere(IsUnavailableBody);
+                if (pair.Key == null || pair.Value.colliders.Count == 0)
+                    unavailableContacts.Add(pair.Key);
+            }
+            foreach (var player in unavailableContacts)
+            {
+                applied[player].effect.RemoveField(this);
+                applied.Remove(player);
+            }
+            unavailableContacts.Clear();
         }
 
         private void DestroySelf()
         {
+            ReleaseEffects();
+            Destroy(gameObject);
+        }
+        void OnDestroy(){ReleaseEffects();}
+        private void ReleaseEffects()
+        {
             // 残存効果を解除
-            foreach (var kv in new List<KeyValuePair<Player, HisyaFieldSlowEffect>>(applied))
+            foreach (var contact in new List<FieldContact>(applied.Values))
             {
-                try { kv.Value.EndEffect(); } catch (Exception) { }
+                contact.effect.RemoveField(this);
             }
             applied.Clear();
 
-            Destroy(gameObject);
         }
     }
 
@@ -231,7 +246,8 @@ namespace App.Main.Player
         public PlayerStatus playerStatus { get; private set; }
         public Player player { get; private set; }
 
-        private float multiplier = 1f;
+        private readonly float multiplier;
+        private readonly Dictionary<HisyaFieldArea, float> fields = new Dictionary<HisyaFieldArea, float>();
 
         public HisyaFieldSlowEffect(float multiplier)
         {
@@ -247,13 +263,31 @@ namespace App.Main.Player
             isActive = true;
             lastTime = duration;
 
-            try
+            UpdateMultiplier();
+        }
+
+        internal void AddField(HisyaFieldArea field, float fieldMultiplier)
+        {
+            fields[field] = Mathf.Clamp01(fieldMultiplier);
+            UpdateMultiplier();
+        }
+
+        internal void RemoveField(HisyaFieldArea field)
+        {
+            if (!fields.Remove(field)) return;
+            if (fields.Count == 0) EndEffect();
+            else UpdateMultiplier();
+        }
+
+        private void UpdateMultiplier()
+        {
+            float factor = multiplier;
+            if (fields.Count > 0)
             {
-                playerStatus.MoveSpeed.Multiply(multiplier);
+                factor = 1f;
+                foreach (float fieldMultiplier in fields.Values) factor = Mathf.Min(factor, fieldMultiplier);
             }
-            catch (Exception)
-            {
-            }
+            playerStatus?.MoveSpeed.SetMultiplier(this, factor);
         }
 
         public void UpdateEffect()
@@ -272,15 +306,11 @@ namespace App.Main.Player
         {
             if (!isActive && playerStatus == null) return;
 
-            try
-            {
-                playerStatus.MoveSpeed.Reset();
-            }
-            catch (Exception)
-            {
-            }
+            playerStatus?.MoveSpeed.RemoveMultiplier(this);
+            fields.Clear();
 
             isActive = false;
+            lastTime = 0f;
             onEffectComplete?.Invoke();
             onEffectComplete = null;
             playerStatus = null;

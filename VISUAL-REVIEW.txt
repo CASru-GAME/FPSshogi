@@ -1,0 +1,126 @@
+FPSshogi 見た目の確認結果 — 2026-11-06
+
+対象
+UI修正後の Unity 6000.2.12f1 プロジェクト。Title / Main を 1920×1080 で確認。
+歩・香車・桂馬・銀・金・角・飛車・王の8種類で、FPS開始、攻撃、補助動作、スキルを実行。
+盤上の通常駒・成り駒、対戦相手のモデル、背景、復元した鉄炮・黒角も確認した。
+Unity の実行画面、Prefab / Animator / Material、去年の完成版の収録素材を照合した。
+
+先に直すべき問題
+V01 背景テクスチャの復元漏れ
+V02 武器の位置・向きと視点への追従
+V03 飛車の減速フィールドが白い面になる
+V04 王の砲台が視界を塞ぐ／軍配が出ない
+V05 次の決闘にズームが残る
+
+V01 【高・復元漏れ】背景のテクスチャと材質の割り当てが失われている
+現象: 壁、畳、箪笥、本、襖、障子、掛け軸などが白・灰色の単色に近く、和室の質感が欠けている。
+根拠: 現在の Field2 の対応 Material は _BaseMap が NULL。
+去年の D:/自作ゲーム完成品/FPSshogi/FPSshogi_Data には、該当する背景用 Texture2D が18点、
+それらへの材質の割り当てが22件残っていた。名前が同じ「本」が2点あるため、名前だけでの照合は不可。
+例: 棚→箪笥、本.002→本2、襖枠→襖枠組み。これは単色を選んだデザインではなく復元漏れ。
+対応案: 完成版から画像と材質の対応を回収し、Field2 の各サブメッシュへ再割り当てする。
+資料: VisualReview/original-build-textures.json、scene-mesh-materials.txt、detail-room-yaw-270.png
+
+V02 【高・表示不具合】武器が読める向き・位置に収まっていない
+現象: 銀・金では開始直後の姿勢で武器がほぼ見えず、動き終わっても柄の端だけが目立つ。
+飛車は弓の本体より矢だけが見える。王の短刀は画面中央を横切る細い線のように見える。
+上下を向くと武器が画面外に外れ、視線と武器の向きが一致しない。
+根拠: Player.SetWeaponObject は全武器を一律に (1,-0.5,3.5)、Y回転90度、scale=2で配置。
+武器の親は Player 本体で、上下の視線は子Cameraだけを回す。武器別の原点・姿勢の差を吸収していない。
+素材は読み込めており、単純なMissing Meshではない。SkinnedMeshのBoundsとカリングも調整対象。
+対応案: 武器ごとに保持位置・回転・倍率・待機姿勢を設定し、一人称表示をカメラの上下回転へ追従させる。
+資料: Gin-idle.png、Kin-idle.png、detail-Gin-settled.png、detail-Hisya-settled.png、
+detail-King-settled.png、detail-weapon-pitch-up-fixture.png
+実装箇所: Assets/App/Scripts/Main/Player/Player.cs:83、Assets/App/Prefabs/MainWeapons/
+
+V03 【高・表示不具合】飛車の減速フィールドが不透明な白い面になる
+現象: 足元寄りを狙ってスキルを使うと、白い大きな面が盤面を隠す。
+再現: 飛車でFPS開始→約30度下を向く→Bスキル。実際のInput System入力でも再現した。
+根拠: 設定色は紫 RGBA(0.6,0.2,0.9,0.5)だが、実表示は白。
+生成された材質のshaderは Unlit/Transparent。コードの色指定と実際の描画結果が一致していない。
+対応案: 現在のURPで色と透過を制御できる材質へ変更し、設置面との高さ・重なりも確認する。
+資料: final-slow-field-input.png、detail-slow-field.txt
+実装箇所: Assets/App/Scripts/Main/Player/_Component/Skills/HisyaSkill.cs
+
+V04 【高・視界と演出】王の砲台が至近距離で重なり、軍配の演出も出ない
+現象: 王のスキル発動直後、黒角の砲台が1Pの画面を大きく覆う。軍配は表示されない。
+根拠: 3体を前方2.6～3.0、左右±1.2に生成するが、各砲台の高さは約5.18、幅も約3.2。
+モデルの幅に対して配置間隔が狭く、カメラの直前を塞ぐ。復元時のscale数値だけを見て巨大化と判断すべきではない。
+gunbaiPrefab は実行時null。PlayerManagerは同じObjectForKingSkillへ軍配→黒角を続けて代入しており、
+軍配の参照が上書きされ、KingSkill側の軍配用フィールドへ渡っていない。
+対応案: カメラ前方を空ける砲台の間隔・距離・サイズを設計し、軍配と砲台の参照を分けて渡す。
+資料: King-skill-018.png、detail-King-skill.png、detail-king-turret-bounds.txt
+実装箇所: PlayerManager.cs:353、_Component/Skills/KingSkill.cs:45、KingSkill.cs:90
+
+V05 【高・カメラ】ズームが次の決闘に残る
+現象: 香車でズームして決闘を終え、次に歩で戦うと、1Pだけ拡大されたままになる。
+根拠: 次の歩の決闘で1PのFOV=30、2P=60を記録。SecondaryZoomは解除時にだけFOVを戻すが、
+決闘終了・次のSecondaryActionへの置き換えでその解除が呼ばれていない。
+対応案: 決闘終了とプレイヤー再初期化でズーム・カメラ状態を明示的に戻す。
+資料: 90-zoom-first-duel.txt、91-next-duel-after-zoom.png / .txt
+実装箇所: PlayerManager.cs:207、_Component/SecondaryActions/SecondaryZoom.cs:85
+
+V06 【中・モーション】攻撃から待機姿勢に戻る構造がない
+現象: FPS開始時に入力せず攻撃クリップが進み、その後は終端の姿勢で止まる。
+攻撃後も自然な構えへ戻らず、V02の見づらい表示を悪化させる。
+根拠: 使用中の武器Controllerは攻撃1ステートをDefaultにしており、遷移が空。
+入力前後のAnimator状態・normalizedTimeと連続画像で確認した。
+飛車のBow PrefabはArrow.controllerを使っており、弓を引く動作のController構成も見直しが必要。
+対応案: Idle→Attack→Idleを用意し、弓を引く・放つ動作と武器の構えを接続する。
+資料: prefab-animations.txt、detail-*-settled.png、detail-*-input-attack.png、detail-*-attack-ended.png
+実装箇所: Assets/App/Animations/*.controller、Assets/App/Prefabs/MainWeapons/Bow.prefab
+
+V07 【中・モーションと判定】一部の武器で表示時間と攻撃判定時間が一致しない
+現象: 桂馬・金・王の攻撃判定用の時間が、実際のアニメーション長ではなく0.6秒へフォールバックする。
+根拠: PlayerWeapon.PlayAnimationがstate名をclip.nameと完全一致で検索している。
+例: state「刀_001|刀右上」に対しclip「刀.001|刀右上」。Animatorでの再生はできるが長さの検索は失敗する。
+桂馬1.0417秒／金1.75秒／王1.25秒に対しfallbackは0.6秒。接触ダメージの全タイミングを実測した結果ではなく、
+実際の設定・クリップ長・時間を渡すコード経路から確認した不一致。
+対応案: ステート指定とクリップ長の参照を分け、攻撃の有効区間をモーションに合わせる。
+資料: Keima-detail.txt、Kin-detail.txt、King-detail.txt
+実装箇所: _Component/Weapons/PlayerWeapon.cs:50、_Component/PrimaryActions/CloseWeaponPrimary.cs
+
+V08 【中・品質改善】武器の材質が単調で、種類や素材の違いが弱い
+現象: 赤・青の薙刀が色で区別しにくく、木・黒レザー・金の部位まで白っぽい。
+根拠: 「鞘」「金」「黒レザー」などのBaseColorはほぼ(0.906,0.906,0.906)、テクスチャなし。
+完成版の同名材質にも同じ色が含まれているため、背景の復元漏れとは別の既存の品質課題。
+対応案: 木、革、金属の色と粗さを分け、赤・青の武器の特徴を実際の材質へ反映する。
+資料: detail-Gin-settled.png、detail-Kin-settled.png、King-detail.txt、original-build-textures.json
+
+V09 【中・性能リスク】背景小物のメッシュが過密
+根拠: 箪笥だけで1,115,670三角形、本156,789、座布団は各89,280。
+LODなし。MeshColliderにも同じ詳細なメッシュを使っている。
+FPS画面のEditor統計では約438万三角形を記録したが、これは描画パス込みの参考値であり、
+実機でのフレーム落ちや衝突不良を確定した測定ではない。
+対応案: 箪笥・本・座布団を優先して軽量化し、衝突用メッシュを簡略化。遠距離用LODを用意する。
+資料: scene-mesh-materials.txt、detail-colliders-materials.txt、Fuhyo-idle.txt
+実装箇所: Assets/App/Models/Field2.fbx、Assets/App/Prefabs/Field2.prefab
+
+V10 【中・盤上のモデル配置】駒の大きさとマス内の余白が揃っていない
+現象: 角・飛車・王などがマスの境界に接触／はみ出し、隣接した駒が詰まって見える。
+根拠: マーカー位置が不均等で、横方向の間隔に約4.7～5.7の差がある。
+駒の長辺は角・飛車が約5.18、王が約5.4。マーカーだけでは全モデルの大きさを吸収できない。
+対応案: 盤面の格子から等間隔に位置を計算し、種類間の大小関係を保ってマス内の余白を確保する。
+資料: 01-board-initial.png、02-board-promotion-fixture.png、scene-mesh-materials.txt
+実装箇所: Assets/App/Prefabs/boardSquarePostitionMarkers.prefab、Scripts/Main/ViewManager/ViewPiece.cs
+
+V11 【中・演出改善】防御・強化・射撃の視覚フィードバックが弱い
+現象: 通常防御、銀の無敵、金の防御強化がモデルの構えや色に出ず、相手から有効中か判別しにくい。
+銃の発射・着弾にも、反動以外の光・煙・着弾表示が乏しい。
+根拠: SecondaryGuard / GinSkill / KinSkillは主に数値の変更のみ。
+銃のmuzzleFlashPrefabは通常のnewによる生成経路で未設定。
+対応案: 防御の構え・発光・終了演出、銃口と着弾の短い演出を追加する。
+資料: Gin-skill-018.png、Kin-skill-018.png、Kyosya-attack-036.png
+実装箇所: Scripts/Main/Player/_Component/SecondaryActions、Skills、PrimaryActions
+
+問題としなかった点・確認範囲
+・6種の成り駒の赤い裏面は表示できる。画像02の中央段では、成れない金・王を通常のまま表示。
+・復元した鉄炮は投擲時に表示され、黒角も砲台として生成できる。V04は主に配置・参照渡しの問題。
+・確認した通常の駒・武器・背景にMissing MeshやピンクのErrorShaderは見られなかった。
+・板状の駒が動く造形そのものは、このゲームの表現として扱い、人体の手足がないことは欠陥としない。
+・古い開発用Sceneや未使用素材すべての動作、実機ゲームパッド2台、別PC・GPUでの性能は未確認。
+・攻撃・スキルは主に同じ実行処理を直接呼び、重要箇所を仮想Gamepadによる入力でも再現した。
+・近距離・視線の検査用fixtureでは位置や視点を一時調整している。画像名にfixtureを付記した。
+・検査用スクリプトは Assets から撤去し、.utmp/visual-audit に保管。ゲーム実装・素材の修正はこの調査には含めていない。
+・画像と根拠一覧: VisualReview/index.html。元画像は加工していない1920×1080の実行画面。

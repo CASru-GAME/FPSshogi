@@ -1,0 +1,5 @@
+PASS Normal Windows build launches title
+PASS Help shows king-capture, automatic promotion and draw rules without clipping
+PASS Back returns to usable title
+PASS Exit closes the game
+PASS No runtime exceptions, errors or crash entries in Player.log

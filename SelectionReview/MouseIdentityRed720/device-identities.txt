@@ -1,0 +1,11 @@
+Before Enter: fixture mouse=147, current mouse=2
+Before Enter: fixture mouse=147, current mouse=2
+keyboardFirst=True: paired=Keyboard#146,Mouse#2; expected=146,147
+Before Enter: fixture mouse=147, current mouse=2
+Before Enter: fixture mouse=147, current mouse=2
+keyboardFirst=False: paired=Keyboard#146,Mouse#2; expected=146,147
+Before Enter: fixture mouse=147, current mouse=2
+Before Enter: fixture mouse=147, current mouse=2
+Before Escape: fixture mouse=147, current mouse=2
+Before Escape: fixture mouse=147, current mouse=2
+Before Escape: fixture mouse=147, current mouse=2

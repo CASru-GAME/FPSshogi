@@ -1,0 +1,304 @@
+Mono path[0] = 'C:/Users/tubas/Documents/codex/2026-11-06/fpsshogi/builds/visualsmoke/fpsshogi_Data/Managed'
+Mono config path = 'C:/Users/tubas/Documents/codex/2026-11-06/fpsshogi/builds/visualsmoke/MonoBleedingEdge/etc'
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.2.12f1 (e89d5df0e333)
+[Subsystems] Discovering subsystems at path C:/Users/tubas/Documents/codex/2026-11-06/fpsshogi/builds/visualsmoke/fpsshogi_Data/UnitySubsystems
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 4060
+[D3D12 Device Filter] Driver Version: 32.0.16.1714
+[D3D12 Device Filter] Feature Level: 12.1
+[D3D12 Device Filter] Graphics Memory: 7957 MB
+[D3D12 Device Filter] Processor Count: 12
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.1]
+    Renderer:        NVIDIA GeForce RTX 4060 (ID=0x2882)
+    Vendor:          NVIDIA
+    VRAM:            7957 MB
+    App VRAM Budget: 7189 MB
+    Driver:          32.0.16.1714
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.251 seconds
+- Finished resetting the current domain, in  0.002 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+Using Windows.Gaming.Input
+UnloadTime: 0.457000 ms
+=== GameInitiater: 依存関係解決付き初期化開始 ===
+初期化対象コンポーネント数: 0
+=== GameInitiater: 初期化完了 ===
+RenderGraph is now enabled.
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 4.250300 ms
+=== GameInitiater: 依存関係解決付き初期化開始 ===
+初期化対象コンポーネント数: 0
+=== GameInitiater: 初期化完了 ===
+Unloading 43 unused Assets to reduce memory usage. Loaded Objects now: 2819.
+Total: 2.291800 ms (FindLiveObjects: 0.104000 ms CreateObjectMapping: 0.113600 ms MarkObjects: 2.052300 ms  DeleteObjects: 0.021700 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.330600 ms
+=== GameInitiater: 依存関係解決付き初期化開始 ===
+初期化対象コンポーネント数: 10
+🔧 初期化順序決定: GameStateHolder (Priority: 50, Dependencies: [])
+⚠️ 同じ優先度(100)のコンポーネントが複数あります: UIController, ShogiBoard → 型名順で実行されます
+🔧 初期化順序決定: ShogiBoard (Priority: 100, Dependencies: [GameStateHolder])
+🔧 初期化順序決定: PlayerManager (Priority: 0, Dependencies: [GameStateHolder, ShogiBoard])
+🔧 初期化順序決定: DuelManager (Priority: 0, Dependencies: [ShogiBoard, GameStateHolder, PlayerManager])
+🔧 初期化順序決定: ViewPiece (Priority: 80, Dependencies: [ShogiBoard])
+🔧 初期化順序決定: ViewCapturedPieces (Priority: 90, Dependencies: [ViewPiece, ShogiBoard, GameStateHolder])
+🔧 初期化順序決定: UIController (Priority: 100, Dependencies: [GameStateHolder])
+🔧 初期化順序決定: ViewSelectingCapturedPiecePointer (Priority: 150, Dependencies: [ViewCapturedPieces])
+🔧 初期化順序決定: ViewShogiPointer (Priority: 200, Dependencies: [ViewPiece])
+🔧 初期化順序決定: ShogiPointer (Priority: 0, Dependencies: [ViewSelectingCapturedPiecePointer, ViewShogiPointer, PlayerManager, ShogiBoard, GameStateHolder])
+GameStateHolder 初期化完了
+✅ 初期化完了: GameStateHolder (Priority: 50)
+  0 1 2 3 4 5 6 7 8
+8 k k g k k k g k k
+7 . h . . . . . k .
+6 f f f f f f f f f
+5 . . . . . . . . .
+4 . . . . . . . . .
+3 . . . . . . . . .
+2 F F F F F F F F F
+1 . K . . . . . H .
+0 K K G K K K G K K
+Captured Pieces:
+PlayerOne: None
+PlayerTwo: None
+✅ 初期化完了: ShogiBoard (Priority: 100)
+✅ 初期化完了: PlayerManager (Priority: 0)
+✅ 初期化完了: DuelManager (Priority: 0)
+✅ 初期化完了: ViewPiece (Priority: 80)
+✅ 初期化完了: ViewCapturedPieces (Priority: 90)
+✅ 初期化完了: UIController (Priority: 100)
+✅ 初期化完了: ViewSelectingCapturedPiecePointer (Priority: 150)
+✅ 初期化完了: ViewShogiPointer (Priority: 200)
+CapturedPieceCounts:
+playerOneCapturedPieces count: 0
+playerTwoCapturedPieces count: 0
+Hiding used captured pieces...
+GameState changed from Starting to PlayerOneTurn
+✅ 初期化完了: ShogiPointer (Priority: 0)
+=== GameInitiater: 初期化完了 ===
+Unloading 41 unused Assets to reduce memory usage. Loaded Objects now: 4729.
+Total: 2.570500 ms (FindLiveObjects: 0.242500 ms CreateObjectMapping: 0.127000 ms MarkObjects: 1.883200 ms  DeleteObjects: 0.317800 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 5.487300 ms
+=== GameInitiater: 依存関係解決付き初期化開始 ===
+初期化対象コンポーネント数: 10
+🔧 初期化順序決定: GameStateHolder (Priority: 50, Dependencies: [])
+⚠️ 同じ優先度(100)のコンポーネントが複数あります: UIController, ShogiBoard → 型名順で実行されます
+🔧 初期化順序決定: ShogiBoard (Priority: 100, Dependencies: [GameStateHolder])
+🔧 初期化順序決定: PlayerManager (Priority: 0, Dependencies: [GameStateHolder, ShogiBoard])
+🔧 初期化順序決定: DuelManager (Priority: 0, Dependencies: [ShogiBoard, GameStateHolder, PlayerManager])
+🔧 初期化順序決定: ViewPiece (Priority: 80, Dependencies: [ShogiBoard])
+🔧 初期化順序決定: ViewCapturedPieces (Priority: 90, Dependencies: [ViewPiece, ShogiBoard, GameStateHolder])
+🔧 初期化順序決定: UIController (Priority: 100, Dependencies: [GameStateHolder])
+🔧 初期化順序決定: ViewSelectingCapturedPiecePointer (Priority: 150, Dependencies: [ViewCapturedPieces])
+🔧 初期化順序決定: ViewShogiPointer (Priority: 200, Dependencies: [ViewPiece])
+🔧 初期化順序決定: ShogiPointer (Priority: 0, Dependencies: [ViewSelectingCapturedPiecePointer, ViewShogiPointer, PlayerManager, ShogiBoard, GameStateHolder])
+GameStateHolder 初期化完了
+✅ 初期化完了: GameStateHolder (Priority: 50)
+  0 1 2 3 4 5 6 7 8
+8 k k g k k k g k k
+7 . h . . . . . k .
+6 f f f f f f f f f
+5 . . . . . . . . .
+4 . . . . . . . . .
+3 . . . . . . . . .
+2 F F F F F F F F F
+1 . K . . . . . H .
+0 K K G K K K G K K
+Captured Pieces:
+PlayerOne: None
+PlayerTwo: None
+✅ 初期化完了: ShogiBoard (Priority: 100)
+✅ 初期化完了: PlayerManager (Priority: 0)
+✅ 初期化完了: DuelManager (Priority: 0)
+✅ 初期化完了: ViewPiece (Priority: 80)
+✅ 初期化完了: ViewCapturedPieces (Priority: 90)
+✅ 初期化完了: UIController (Priority: 100)
+✅ 初期化完了: ViewSelectingCapturedPiecePointer (Priority: 150)
+✅ 初期化完了: ViewShogiPointer (Priority: 200)
+CapturedPieceCounts:
+playerOneCapturedPieces count: 0
+playerTwoCapturedPieces count: 0
+Hiding used captured pieces...
+GameState changed from Starting to PlayerOneTurn
+✅ 初期化完了: ShogiPointer (Priority: 0)
+=== GameInitiater: 初期化完了 ===
+Unloading 36 unused Assets to reduce memory usage. Loaded Objects now: 4713.
+Total: 2.100000 ms (FindLiveObjects: 0.174300 ms CreateObjectMapping: 0.127200 ms MarkObjects: 1.729000 ms  DeleteObjects: 0.069400 ms)
+
+GameState changed from PlayerOneTurn to Duel
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 4.326200 ms
+=== GameInitiater: 依存関係解決付き初期化開始 ===
+初期化対象コンポーネント数: 10
+🔧 初期化順序決定: GameStateHolder (Priority: 50, Dependencies: [])
+⚠️ 同じ優先度(100)のコンポーネントが複数あります: UIController, ShogiBoard → 型名順で実行されます
+🔧 初期化順序決定: ShogiBoard (Priority: 100, Dependencies: [GameStateHolder])
+🔧 初期化順序決定: PlayerManager (Priority: 0, Dependencies: [GameStateHolder, ShogiBoard])
+🔧 初期化順序決定: DuelManager (Priority: 0, Dependencies: [ShogiBoard, GameStateHolder, PlayerManager])
+🔧 初期化順序決定: ViewPiece (Priority: 80, Dependencies: [ShogiBoard])
+🔧 初期化順序決定: ViewCapturedPieces (Priority: 90, Dependencies: [ViewPiece, ShogiBoard, GameStateHolder])
+🔧 初期化順序決定: UIController (Priority: 100, Dependencies: [GameStateHolder])
+🔧 初期化順序決定: ViewSelectingCapturedPiecePointer (Priority: 150, Dependencies: [ViewCapturedPieces])
+🔧 初期化順序決定: ViewShogiPointer (Priority: 200, Dependencies: [ViewPiece])
+🔧 初期化順序決定: ShogiPointer (Priority: 0, Dependencies: [ViewSelectingCapturedPiecePointer, ViewShogiPointer, PlayerManager, ShogiBoard, GameStateHolder])
+GameStateHolder 初期化完了
+✅ 初期化完了: GameStateHolder (Priority: 50)
+  0 1 2 3 4 5 6 7 8
+8 k k g k k k g k k
+7 . h . . . . . k .
+6 f f f f f f f f f
+5 . . . . . . . . .
+4 . . . . . . . . .
+3 . . . . . . . . .
+2 F F F F F F F F F
+1 . K . . . . . H .
+0 K K G K K K G K K
+Captured Pieces:
+PlayerOne: None
+PlayerTwo: None
+✅ 初期化完了: ShogiBoard (Priority: 100)
+✅ 初期化完了: PlayerManager (Priority: 0)
+✅ 初期化完了: DuelManager (Priority: 0)
+✅ 初期化完了: ViewPiece (Priority: 80)
+✅ 初期化完了: ViewCapturedPieces (Priority: 90)
+✅ 初期化完了: UIController (Priority: 100)
+✅ 初期化完了: ViewSelectingCapturedPiecePointer (Priority: 150)
+✅ 初期化完了: ViewShogiPointer (Priority: 200)
+CapturedPieceCounts:
+playerOneCapturedPieces count: 0
+playerTwoCapturedPieces count: 0
+Hiding used captured pieces...
+GameState changed from Starting to PlayerOneTurn
+✅ 初期化完了: ShogiPointer (Priority: 0)
+=== GameInitiater: 初期化完了 ===
+Unloading 35 unused Assets to reduce memory usage. Loaded Objects now: 4724.
+Total: 2.135600 ms (FindLiveObjects: 0.223800 ms CreateObjectMapping: 0.136600 ms MarkObjects: 1.701900 ms  DeleteObjects: 0.073100 ms)
+
+GameState changed from PlayerOneTurn to Duel
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.989000 ms
+=== GameInitiater: 依存関係解決付き初期化開始 ===
+初期化対象コンポーネント数: 10
+🔧 初期化順序決定: GameStateHolder (Priority: 50, Dependencies: [])
+⚠️ 同じ優先度(100)のコンポーネントが複数あります: ShogiBoard, UIController → 型名順で実行されます
+🔧 初期化順序決定: ShogiBoard (Priority: 100, Dependencies: [GameStateHolder])
+🔧 初期化順序決定: PlayerManager (Priority: 0, Dependencies: [GameStateHolder, ShogiBoard])
+🔧 初期化順序決定: DuelManager (Priority: 0, Dependencies: [ShogiBoard, GameStateHolder, PlayerManager])
+🔧 初期化順序決定: ViewPiece (Priority: 80, Dependencies: [ShogiBoard])
+🔧 初期化順序決定: ViewCapturedPieces (Priority: 90, Dependencies: [ViewPiece, ShogiBoard, GameStateHolder])
+🔧 初期化順序決定: UIController (Priority: 100, Dependencies: [GameStateHolder])
+🔧 初期化順序決定: ViewSelectingCapturedPiecePointer (Priority: 150, Dependencies: [ViewCapturedPieces])
+🔧 初期化順序決定: ViewShogiPointer (Priority: 200, Dependencies: [ViewPiece])
+🔧 初期化順序決定: ShogiPointer (Priority: 0, Dependencies: [ViewSelectingCapturedPiecePointer, ViewShogiPointer, PlayerManager, ShogiBoard, GameStateHolder])
+GameStateHolder 初期化完了
+✅ 初期化完了: GameStateHolder (Priority: 50)
+  0 1 2 3 4 5 6 7 8
+8 k k g k k k g k k
+7 . h . . . . . k .
+6 f f f f f f f f f
+5 . . . . . . . . .
+4 . . . . . . . . .
+3 . . . . . . . . .
+2 F F F F F F F F F
+1 . K . . . . . H .
+0 K K G K K K G K K
+Captured Pieces:
+PlayerOne: None
+PlayerTwo: None
+✅ 初期化完了: ShogiBoard (Priority: 100)
+✅ 初期化完了: PlayerManager (Priority: 0)
+✅ 初期化完了: DuelManager (Priority: 0)
+✅ 初期化完了: ViewPiece (Priority: 80)
+✅ 初期化完了: ViewCapturedPieces (Priority: 90)
+✅ 初期化完了: UIController (Priority: 100)
+✅ 初期化完了: ViewSelectingCapturedPiecePointer (Priority: 150)
+✅ 初期化完了: ViewShogiPointer (Priority: 200)
+CapturedPieceCounts:
+playerOneCapturedPieces count: 0
+playerTwoCapturedPieces count: 0
+Hiding used captured pieces...
+GameState changed from Starting to PlayerOneTurn
+✅ 初期化完了: ShogiPointer (Priority: 0)
+=== GameInitiater: 初期化完了 ===
+Unloading 33 unused Assets to reduce memory usage. Loaded Objects now: 4724.
+Total: 2.058800 ms (FindLiveObjects: 0.196600 ms CreateObjectMapping: 0.129900 ms MarkObjects: 1.708000 ms  DeleteObjects: 0.024300 ms)
+
+GameState changed from PlayerOneTurn to Duel
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 2.250100 ms
+=== GameInitiater: 依存関係解決付き初期化開始 ===
+初期化対象コンポーネント数: 10
+🔧 初期化順序決定: GameStateHolder (Priority: 50, Dependencies: [])
+⚠️ 同じ優先度(100)のコンポーネントが複数あります: ShogiBoard, UIController → 型名順で実行されます
+🔧 初期化順序決定: ShogiBoard (Priority: 100, Dependencies: [GameStateHolder])
+🔧 初期化順序決定: PlayerManager (Priority: 0, Dependencies: [GameStateHolder, ShogiBoard])
+🔧 初期化順序決定: DuelManager (Priority: 0, Dependencies: [ShogiBoard, GameStateHolder, PlayerManager])
+🔧 初期化順序決定: ViewPiece (Priority: 80, Dependencies: [ShogiBoard])
+🔧 初期化順序決定: ViewCapturedPieces (Priority: 90, Dependencies: [ViewPiece, ShogiBoard, GameStateHolder])
+🔧 初期化順序決定: UIController (Priority: 100, Dependencies: [GameStateHolder])
+🔧 初期化順序決定: ViewSelectingCapturedPiecePointer (Priority: 150, Dependencies: [ViewCapturedPieces])
+🔧 初期化順序決定: ViewShogiPointer (Priority: 200, Dependencies: [ViewPiece])
+🔧 初期化順序決定: ShogiPointer (Priority: 0, Dependencies: [ViewSelectingCapturedPiecePointer, ViewShogiPointer, PlayerManager, ShogiBoard, GameStateHolder])
+GameStateHolder 初期化完了
+✅ 初期化完了: GameStateHolder (Priority: 50)
+  0 1 2 3 4 5 6 7 8
+8 k k g k k k g k k
+7 . h . . . . . k .
+6 f f f f f f f f f
+5 . . . . . . . . .
+4 . . . . . . . . .
+3 . . . . . . . . .
+2 F F F F F F F F F
+1 . K . . . . . H .
+0 K K G K K K G K K
+Captured Pieces:
+PlayerOne: None
+PlayerTwo: None
+✅ 初期化完了: ShogiBoard (Priority: 100)
+✅ 初期化完了: PlayerManager (Priority: 0)
+✅ 初期化完了: DuelManager (Priority: 0)
+✅ 初期化完了: ViewPiece (Priority: 80)
+✅ 初期化完了: ViewCapturedPieces (Priority: 90)
+✅ 初期化完了: UIController (Priority: 100)
+✅ 初期化完了: ViewSelectingCapturedPiecePointer (Priority: 150)
+✅ 初期化完了: ViewShogiPointer (Priority: 200)
+CapturedPieceCounts:
+playerOneCapturedPieces count: 0
+playerTwoCapturedPieces count: 0
+Hiding used captured pieces...
+GameState changed from Starting to PlayerOneTurn
+✅ 初期化完了: ShogiPointer (Priority: 0)
+=== GameInitiater: 初期化完了 ===
+Unloading 33 unused Assets to reduce memory usage. Loaded Objects now: 4724.
+Total: 2.030200 ms (FindLiveObjects: 0.181500 ms CreateObjectMapping: 0.148200 ms MarkObjects: 1.680900 ms  DeleteObjects: 0.019400 ms)
+
+GameState changed from PlayerOneTurn to Duel
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 2.251400 ms
+=== GameInitiater: 依存関係解決付き初期化開始 ===
+初期化対象コンポーネント数: 0
+=== GameInitiater: 初期化完了 ===
+Unloading 375 unused Assets to reduce memory usage. Loaded Objects now: 2815.
+Total: 2.183700 ms (FindLiveObjects: 0.118800 ms CreateObjectMapping: 0.124100 ms MarkObjects: 1.670800 ms  DeleteObjects: 0.269800 ms)
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.

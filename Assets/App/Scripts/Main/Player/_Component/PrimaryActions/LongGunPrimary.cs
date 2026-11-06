@@ -21,6 +21,8 @@ namespace App.Main.Player
         public Transform muzzleTransform;             // 任意：マズルの位置（無ければカメラ位置）
 
         // 実行管理
+        public float CooldownRemaining => Mathf.Max(0f, cooldown - (Time.time - lastUseTime));
+        public float CooldownDuration => cooldown;
         private float lastUseTime = -999f;
 
         public void PrimaryAction(Player player, PlayerStatus playerStatus)
@@ -83,7 +85,7 @@ namespace App.Main.Player
 
             // ヒットスキャン（即時）
             Ray ray = new Ray(cam.transform.position, cam.transform.forward);
-            if (Physics.Raycast(ray, out RaycastHit hit, maxRange, hitLayers.value))
+            if (ShotPhysics.Raycast(ray, maxRange, hitLayers, player, out RaycastHit hit))
             {
                 // プレイヤーに当たったか確認
                 var targetPlayer = hit.collider.GetComponentInParent<Player>();
@@ -123,7 +125,7 @@ namespace App.Main.Player
                         var ts = targetPlayer.playerStatus;
                         if (ts != null)
                         {
-                            ts.TakeDamage(damage);
+                            ts.TakeDamage(damage, player.transform.position);
                         }
                     }
                     catch (Exception ex)
@@ -138,6 +140,7 @@ namespace App.Main.Player
             }
 
             // 発射成功としてクールダウンを記録（アニメ長を反映させたい場合は Mathf.Max を使う）
+            CombatVisuals.Shot(player, hit.collider != null ? hit.point : ray.GetPoint(maxRange), hit.collider != null);
             lastUseTime = Time.time;
             // もしアニメがクールダウンに影響するなら以下のようにすることも可能:
             // lastUseTime = Time.time - (animDuration > cooldown ? -animDuration : 0f);

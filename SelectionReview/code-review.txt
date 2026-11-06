@@ -1,0 +1,7 @@
+Fresh read-only review by selection_final_review (gpt-6-astra), base d0f69de to scoped uncommitted worktree, 2026-11-06.
+Critical: none. Minor: none. Declined to judge: none.
+Important: completed attempted720 run had54 PASS/2FAIL, both keyboard AND mouse pairing assertions. Investigate actual paired IDs; do not weaken assertion. Static review found no concrete production defect.
+Strengths: explicit ownership/readiness; extra pads cannot prepare occupied slots; held-input guards; real Input System tests; shipping helper exclusion.
+Verdict at review time: pending mixed-device failure resolution and remaining native/gameplay/visual/release verification.
+Resolution and fresh evidence will be recorded in PLAYER-SELECTION.txt and .utmp/player-selection/progress.md.
+Resolved: MouseIdentityRed720 records paired Mouse2 vs fixture147 after real mouse movement. Final72056/56 and native23/23 pass with fixture mouse event and strict paired IDs retained. UI57/57, gameplay199/199, visual132/132, release0errors and6shipping-exclusion checks passed. No deferred findings.

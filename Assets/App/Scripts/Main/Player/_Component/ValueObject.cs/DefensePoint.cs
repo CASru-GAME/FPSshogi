@@ -3,9 +3,11 @@ namespace App.Main.Player
     public class DefensePoint
     {
         public int Current { get; private set; }
-        public DefensePoint()
+        public int Default { get; private set; }
+        public DefensePoint(int defaultPoint = 0)
         {
-            Current = 0;
+            Default = defaultPoint;
+            Current = defaultPoint;
         }
 
         public void Add(int amount)
@@ -15,7 +17,7 @@ namespace App.Main.Player
 
         public void Reset()
         {
-            Current = 0;
+            Current = Default;
         }
 
         public void DumpStatus()

@@ -1,0 +1,12 @@
+Screen: 1280x720
+Before Enter: fixture mouse=152, current mouse=152
+Before Enter: fixture mouse=152, current mouse=152
+keyboardFirst=True: paired=Keyboard#151,Mouse#152; expected=151,152
+Before Enter: fixture mouse=152, current mouse=152
+Before Enter: fixture mouse=152, current mouse=152
+keyboardFirst=False: paired=Keyboard#151,Mouse#152; expected=151,152
+Before Enter: fixture mouse=152, current mouse=152
+Before Enter: fixture mouse=152, current mouse=152
+Before Escape: fixture mouse=152, current mouse=152
+Before Escape: fixture mouse=152, current mouse=152
+Before Escape: fixture mouse=152, current mouse=152

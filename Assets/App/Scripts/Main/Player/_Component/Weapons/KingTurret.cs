@@ -48,6 +48,7 @@ namespace App.Main.Player
 
         void Update()
         {
+            if (Time.timeScale <= 0f || App.UI.GameSessionUI.BlocksGameplay) return;
             if (Time.time < nextFireTime) return;
 
             // ターゲットを取得（最も近い敵プレイヤー）
@@ -64,6 +65,7 @@ namespace App.Main.Player
             {
                 transform.rotation = Quaternion.LookRotation(new Vector3(aimDir.x, 0f, aimDir.z)); // 水平回転のみ
             }
+            aimDir=(GetTargetAimPoint(target)-muzzle.position).normalized;
 
             // アニメ再生（銃子オブジェクトの Animator を利用）
             if (gunAnimator != null && !string.IsNullOrEmpty(shootAnimName))
@@ -73,7 +75,7 @@ namespace App.Main.Player
 
             // 即時ヒットスキャン
             Ray ray = new Ray(muzzle.position, aimDir);
-            if (Physics.Raycast(ray, out RaycastHit hit, range, hitLayers.value))
+            if (ShotPhysics.Raycast(ray, range, hitLayers, owner, out RaycastHit hit, transform))
             {
                 var hitPlayer = hit.collider.GetComponentInParent<Player>();
                 if (hitPlayer != null && hitPlayer != owner)
@@ -82,6 +84,7 @@ namespace App.Main.Player
                 }
             }
 
+            CombatVisuals.ShotFrom(owner,muzzle.position,hit.collider!=null?hit.point:muzzle.position+aimDir*range,hit.collider!=null);
             nextFireTime = Time.time + fireInterval;
         }
 
@@ -143,7 +146,7 @@ namespace App.Main.Player
                 var ts = target.playerStatus;
                 if (ts != null)
                 {
-                    ts.TakeDamage(damage);
+                    ts.TakeDamage(damage, transform.position);
                 }
             }
             catch { }

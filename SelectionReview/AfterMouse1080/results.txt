@@ -1,0 +1,56 @@
+PASS Start opens player selection instead of loading a match
+PASS Connected devices are not assigned until they participate
+PASS empty text fits
+PASS empty buttons fit screen
+PASS First press joins only 1P
+PASS Held join does not prepare the player
+PASS Second press prepares only its player
+PASS One prepared player cannot start
+PASS Second device joins 2P unprepared
+PASS Third controller cannot prepare an occupied slot
+PASS Unjoined controller cannot cancel another player
+PASS Cancel first clears readiness and keeps assignment
+PASS Second cancel leaves only its own slot
+PASS Both cards show preparation before launch
+PASS both-ready text fits
+PASS both-ready buttons fit screen
+PASS Disconnection during ready delay aborts launch
+PASS disconnected text fits
+PASS disconnected buttons fit screen
+PASS Reconnected selection requires fresh preparation
+PASS Cancelling during ready delay aborts launch
+PASS Both prepared controllers start Main
+PASS 1P uses the controller that claimed 1P
+PASS 2P keeps the controller that claimed 2P
+PASS Held ready button is blocked from board controls
+PASS Held ready button does not select a board piece
+PASS Releasing ready enables gameplay
+PASS Disconnect pauses an existing match
+PASS Reconnect preserves the surviving player's assignment
+PASS Rematch opens selection and resets readiness
+PASS Rematch cannot start with only one confirmation
+PASS Both rematch confirmations create a fresh match
+PASS Mixed participants join without being prepared (keyboard first=True)
+PASS Mixed mode honors choice despite extra connected pad
+PASS mixed-True text fits
+PASS mixed-True buttons fit screen
+PASS Keyboard prepares only its own slot
+PASS Mixed mode starts with keyboard AND mouse paired
+PASS Mixed mode pairs only the participating controller
+PASS Mixed participants join without being prepared (keyboard first=False)
+PASS Mixed mode honors choice despite extra connected pad
+PASS mixed-False text fits
+PASS mixed-False buttons fit screen
+PASS Keyboard prepares only its own slot
+PASS Mixed mode starts with keyboard AND mouse paired
+PASS Mixed mode pairs only the participating controller
+PASS Same keyboard cannot fill the second slot
+PASS Keyboard cancel clears its preparation
+PASS Keyboard can leave its slot
+PASS Empty selection can return to title
+PASS Mouse button joins keyboard/mouse without preparing
+PASS Controller submit cannot activate the focused keyboard button
+PASS Mouse button prepares only keyboard/mouse
+PASS Mouse button cancels keyboard/mouse readiness
+PASS Mouse can return from selection to title
+PASS No runtime errors or exceptions

@@ -13,252 +13,161 @@ namespace App.Main.ShogiPointer
     public class ShogiPointer : MonoBehaviour, IInitializable
     {
         public int InitializationPriority => 0;
-        public System.Type[] Dependencies => new System.Type[] { typeof(ViewSelectingCapturedPiecePointer), typeof(ViewShogiPointer), typeof(PlayerManager), typeof(ShogiBoard), typeof(GameStateHolder) };
-
+        public System.Type[] Dependencies => new[] { typeof(ViewSelectingCapturedPiecePointer), typeof(ViewShogiPointer), typeof(PlayerManager), typeof(ShogiBoard), typeof(GameStateHolder) };
         private PlayerManager playerManager;
         private ShogiBoard shogiBoard;
         private GameStateHolder gameStateHolder;
-        bool isOpenCapturedPiecesPanel = false;
-        bool isCapturedPiecesSelected = false;
-        public Dictionary<PieceType, int> playerOneCapturedPieces = new Dictionary<PieceType, int>();
-        public Dictionary<PieceType, int> playerTwoCapturedPieces = new Dictionary<PieceType, int>();
-        CapturedPiecesPanelIndex capturedPiecesPanelIndex = new CapturedPiecesPanelIndex();
         private ViewShogiPointer viewShogiPointer;
         private ViewSelectingCapturedPiecePointer viewCapturedPieces;
+        private bool isOpenCapturedPiecesPanel;
+        private bool isCapturedPiecesSelected;
+        private int[] pointerPosition = { 0, 0 };
+        private int[] selectedPiecePosition = { -1, -1 };
+        private readonly CapturedPiecesPanelIndex capturedPiecesPanelIndex = new CapturedPiecesPanelIndex();
+        public Dictionary<PieceType, int> playerOneCapturedPieces = new Dictionary<PieceType, int>();
+        public Dictionary<PieceType, int> playerTwoCapturedPieces = new Dictionary<PieceType, int>();
+        public Vector2Int CursorPosition => new Vector2Int(pointerPosition[0], pointerPosition[1]);
+        public Vector2Int SelectedPosition => new Vector2Int(selectedPiecePosition[0], selectedPiecePosition[1]);
+        public bool IsCapturedMode => isOpenCapturedPiecesPanel;
+        public bool IsPlacingCaptured => isCapturedPiecesSelected;
+        public PieceType CapturedType => capturedPiecesPanelIndex.GetCapturedPiecesType();
+        public string Feedback { get; private set; } = "駒を選んでください";
+        public int InvalidFeedbackVersion { get; private set; }
+        void Reject(string reason){Feedback=reason;InvalidFeedbackVersion++;}
+        public PlayerType ActivePlayer => gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn ? PlayerType.PlayerTwo : PlayerType.PlayerOne;
+        public bool IsBoardTurn => gameStateHolder != null && (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn || gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn);
 
-        private int[] pointerPosition = new int[2];
-        private int[] selectedPiecePosition = new int[2];
-        public void Initialize(ReferenceHolder referenceHolder)
+        public void Initialize(ReferenceHolder references)
         {
-            // 初期化処理をここに記述
-            playerManager = referenceHolder.GetInitializable<PlayerManager>();
-            shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
-            gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
-            viewShogiPointer = referenceHolder.GetInitializable<ViewShogiPointer>();
-            viewCapturedPieces = referenceHolder.GetInitializable<ViewSelectingCapturedPiecePointer>();
-            pointerPosition = new int[] { 0, 0 };
-            selectedPiecePosition = new int[] { -1, -1 };
-
-            playerManager.PlayerOne.GetComponent<PlayerInput>().onActionTriggered += ctx => OnActionTriggered(ctx, playerManager.PlayerOne.GetComponent<PlayerInput>());
-            playerManager.PlayerTwo.GetComponent<PlayerInput>().onActionTriggered += ctx => OnActionTriggered(ctx, playerManager.PlayerTwo.GetComponent<PlayerInput>());
+            playerManager = references.GetInitializable<PlayerManager>();
+            shogiBoard = references.GetInitializable<ShogiBoard>();
+            gameStateHolder = references.GetInitializable<GameStateHolder>();
+            viewShogiPointer = references.GetInitializable<ViewShogiPointer>();
+            viewCapturedPieces = references.GetInitializable<ViewSelectingCapturedPiecePointer>();
+            playerManager.PlayerOne.GetComponent<PlayerInput>().onActionTriggered += OnPlayerOneInput;
+            playerManager.PlayerTwo.GetComponent<PlayerInput>().onActionTriggered += OnPlayerTwoInput;
             gameStateHolder.SubscribeToChangeToPlayerOneTurn(OnPlayerOneTurn);
             gameStateHolder.SubscribeToChangeToPlayerTwoTurn(OnPlayerTwoTurn);
             gameStateHolder.ChangeIntoPlayerOneTurn();
         }
-
-        public void Update()
+        private void OnPlayerOneInput(InputAction.CallbackContext ctx) => OnAction(ctx, PlayerType.PlayerOne);
+        private void OnPlayerTwoInput(InputAction.CallbackContext ctx) => OnAction(ctx, PlayerType.PlayerTwo);
+        private void OnAction(InputAction.CallbackContext ctx, PlayerType source)
         {
-            viewShogiPointer?.ChangePointerPosition(pointerPosition);
-            viewCapturedPieces?.ChangePointerPosition(capturedPiecesPanelIndex.GetIndex(), gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn ? PlayerType.PlayerOne : PlayerType.PlayerTwo);
-        }
-
-        private void OnPlayerOneTurn()
-        {
-            pointerPosition = new int[] { 0, 0 };
-            selectedPiecePosition = new int[] { -1, -1 };
-        }
-
-        private void OnPlayerTwoTurn()
-        {
-            pointerPosition = new int[] { 8, 8 };
-            selectedPiecePosition = new int[] { -1, -1 };
-        }
-
-        private void OnActionTriggered(InputAction.CallbackContext context, PlayerInput sourcePlayerInput)
-        {
-            if (context.phase != InputActionPhase.Started) return;
-
-            if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn && sourcePlayerInput.playerIndex != playerManager.PlayerIndexPlayerOne)
+            if (!IsBoardTurn || source != ActivePlayer || ctx.phase != InputActionPhase.Started || App.UI.GameSessionUI.BlocksGameplay) return;
+            switch (ctx.action.name)
             {
-                return;
-            }
-            if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn && sourcePlayerInput.playerIndex != playerManager.PlayerIndexPlayerTwo)
-            {
-                return;
-            }
-
-            else if (context.action.name == "SelectUp")
-            {
-                if (isOpenCapturedPiecesPanel) return;
-                else SelectPositionUp();
-            }
-            else if (context.action.name == "SelectDown")
-            {
-                if (isOpenCapturedPiecesPanel) return;
-                else SelectPositionDown();
-            }
-            else if (context.action.name == "SelectLeft")
-            {
-                if (isOpenCapturedPiecesPanel)
-                {
-                    capturedPiecesPanelIndex.DecrementIndex();
-                    Debug.Log("Captured Pieces Panel Index: " + capturedPiecesPanelIndex.GetCapturedPiecesType());
-                }
-
-                else SelectPositionLeft();
-            }
-            else if (context.action.name == "SelectRight")
-            {
-                if (isOpenCapturedPiecesPanel)
-                {
-                    capturedPiecesPanelIndex.IncrementIndex();
-                    Debug.Log("Captured Pieces Panel Index: " + capturedPiecesPanelIndex.GetCapturedPiecesType());
-                }
-
-                else SelectPositionRight();
-            }
-            else if (context.action.name == "Select")
-            {
-                if (isCapturedPiecesSelected) SetCapturedPieceOnBoard();
-                else if (isOpenCapturedPiecesPanel)
-                {
-                    isCapturedPiecesSelected = true;
-                    ToggleCapturedPiecesPanel();
-                    Debug.Log("Selected Captured Piece: " + capturedPiecesPanelIndex.GetCapturedPiecesType());
-                }
-                else Select();
-            }
-            else if (context.action.name == "Cancel")
-            {
-                if (isCapturedPiecesSelected)
-                {
-                    isCapturedPiecesSelected = false;
-                    Debug.Log("Cancelled Captured Piece Selection");
-                }
-                else if (isOpenCapturedPiecesPanel) ToggleCapturedPiecesPanel();
-                else Deselect();
-            }
-            else if (context.action.name == "UseCaptured")
-            {
-                ToggleCapturedPiecesPanel();
+                case "SelectUp": if (!IsCapturedMode) SelectPositionUp(); break;
+                case "SelectDown": if (!IsCapturedMode) SelectPositionDown(); break;
+                case "SelectLeft": if (IsCapturedMode) CycleCaptured(-1); else SelectPositionLeft(); break;
+                case "SelectRight": if (IsCapturedMode) CycleCaptured(1); else SelectPositionRight(); break;
+                case "Select": Select(); break;
+                case "Cancel": Deselect(); break;
+                case "UseCaptured": ToggleCapturedPiecesPanel(); break;
             }
         }
-
-        public void SelectPositionUp()
+        private void ResetSelection(int cursor)
         {
-            if (pointerPosition[1] < 8) pointerPosition[1]++;
-            Debug.Log("Selected Position: (" + pointerPosition[0] + ", " + pointerPosition[1] + ")");
+            pointerPosition = new[] { cursor, cursor };
+            selectedPiecePosition = new[] { -1, -1 };
+            isCapturedPiecesSelected = isOpenCapturedPiecesPanel = false;
+            Feedback = "駒を選んでください";
         }
-        public void SelectPositionDown()
+        private void OnPlayerOneTurn() => ResetSelection(0);
+        private void OnPlayerTwoTurn() => ResetSelection(8);
+        public void SelectPositionUp() => SetCursor(pointerPosition[0], pointerPosition[1] + 1);
+        public void SelectPositionDown() => SetCursor(pointerPosition[0], pointerPosition[1] - 1);
+        public void SelectPositionLeft() => SetCursor(pointerPosition[0] - 1, pointerPosition[1]);
+        public void SelectPositionRight() => SetCursor(pointerPosition[0] + 1, pointerPosition[1]);
+        public void SetCursor(int x, int y)
         {
-            if (pointerPosition[1] > 0) pointerPosition[1]--;
-            Debug.Log("Selected Position: (" + pointerPosition[0] + ", " + pointerPosition[1] + ")");
+            pointerPosition[0] = Mathf.Clamp(x, 0, 8);
+            pointerPosition[1] = Mathf.Clamp(y, 0, 8);
         }
-        public void SelectPositionLeft()
-        {
-            if (pointerPosition[0] > 0) pointerPosition[0]--;
-            Debug.Log("Selected Position: (" + pointerPosition[0] + ", " + pointerPosition[1] + ")");
-        }
-        public void SelectPositionRight()
-        {
-            if (pointerPosition[0] < 8) pointerPosition[0]++;
-            Debug.Log("Selected Position: (" + pointerPosition[0] + ", " + pointerPosition[1] + ")");
-        }
-
-        public void SetCapturedPieceOnBoard()
-        {
-            if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn)
-            {
-                PieceType pieceType = capturedPiecesPanelIndex.GetCapturedPiecesType();
-                ShogiBoard.MoveResult moveResult = shogiBoard.SetPiece(pointerPosition[0], pointerPosition[1], pieceType, PlayerType.PlayerOne);
-                Debug.Log("Attempted to Place Captured Piece: " + pieceType + " at (" + pointerPosition[0] + ", " + pointerPosition[1] + ") Result: " + moveResult);
-                if (moveResult == ShogiBoard.MoveResult.NormalMove)
-                {
-                    isCapturedPiecesSelected = false;
-                    Debug.Log("Placed Captured Piece: " + pieceType + " at (" + pointerPosition[0] + ", " + pointerPosition[1] + ")");
-                }
-            }
-            else if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn)
-            {
-                PieceType pieceType = capturedPiecesPanelIndex.GetCapturedPiecesType();
-                ShogiBoard.MoveResult moveResult = shogiBoard.SetPiece(pointerPosition[0], pointerPosition[1], pieceType, PlayerType.PlayerTwo);
-                Debug.Log("Attempted to Place Captured Piece: " + pieceType + " at (" + pointerPosition[0] + ", " + pointerPosition[1] + ") Result: " + moveResult);
-                if (moveResult == ShogiBoard.MoveResult.NormalMove)
-                {
-                    isCapturedPiecesSelected = false;
-                    Debug.Log("Placed Captured Piece: " + pieceType + " at (" + pointerPosition[0] + ", " + pointerPosition[1] + ")");
-                }
-            }
-        }
-
         public void Select()
         {
-            if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn)
+            if (!IsBoardTurn) return;
+            if (IsPlacingCaptured) { SetCapturedPieceOnBoard(); return; }
+            if (IsCapturedMode) { ChooseCaptured(CapturedType); return; }
+            var piece = shogiBoard.GetPieceAt(pointerPosition[0], pointerPosition[1]);
+            if (piece != null && piece.Player == ActivePlayer)
             {
-                if (selectedPiecePosition[0] != -1 && selectedPiecePosition[1] != -1)
-                {
-                    // すでに駒が選択されている場合、移動を試みる
-                    ShogiBoard.MoveResult moveSuccessful = shogiBoard.MovePiece(selectedPiecePosition[0], selectedPiecePosition[1], pointerPosition[0], pointerPosition[1], PlayerType.PlayerOne);
-                    Debug.Log("Attempted Move Result: " + moveSuccessful);
-                    if (moveSuccessful == ShogiBoard.MoveResult.NormalMove)
-                    {
-                        Debug.Log("Moved Piece to: (" + pointerPosition[0] + ", " + pointerPosition[1] + ")");
-                        selectedPiecePosition[0] = -1;
-                        selectedPiecePosition[1] = -1;
-                    }
-                }
-                else
-                {
-                    // 駒を選択する
-                    IPiece piece = shogiBoard.GetPieceAt(pointerPosition[0], pointerPosition[1]);
-                    if (piece != null && piece.Player == PlayerType.PlayerOne)
-                    {
-                        selectedPiecePosition[0] = pointerPosition[0];
-                        selectedPiecePosition[1] = pointerPosition[1];
-                        Debug.Log("Selected Piece at: (" + selectedPiecePosition[0] + ", " + selectedPiecePosition[1] + ")");
-                        Debug.Log("Piece Info: " + piece.GetType().Name);
-                    }
-                }
+                selectedPiecePosition = (int[])pointerPosition.Clone();
+                Feedback = "光っているマスへ移動できます。決定で移動 / 取消で解除";
+                return;
             }
-            else if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn)
-            {
-                if (selectedPiecePosition[0] != -1 && selectedPiecePosition[1] != -1)
-                {
-                    // すでに駒が選択されている場合、移動を試みる
-                    ShogiBoard.MoveResult moveSuccessful = shogiBoard.MovePiece(selectedPiecePosition[0], selectedPiecePosition[1], pointerPosition[0], pointerPosition[1], PlayerType.PlayerTwo);
-                    Debug.Log("Attempted Move Result: " + moveSuccessful);
-                    if (moveSuccessful == ShogiBoard.MoveResult.NormalMove)
-                    {
-                        selectedPiecePosition[0] = -1;
-                        selectedPiecePosition[1] = -1;
-                    }
-                }
-                else
-                {
-                    // 駒を選択する
-                    IPiece piece = shogiBoard.GetPieceAt(pointerPosition[0], pointerPosition[1]);
-                    if (piece != null && piece.Player == PlayerType.PlayerTwo)
-                    {
-                        selectedPiecePosition[0] = pointerPosition[0];
-                        selectedPiecePosition[1] = pointerPosition[1];
-                        Debug.Log("Selected Piece at: (" + selectedPiecePosition[0] + ", " + selectedPiecePosition[1] + ")");
-                        Debug.Log("Piece Info: " + piece.GetType().Name);
-                    }
-                }
-            }
+            if (selectedPiecePosition[0] < 0) { Reject("自分の駒を選んでください"); return; }
+            var result = shogiBoard.MovePiece(selectedPiecePosition[0], selectedPiecePosition[1], pointerPosition[0], pointerPosition[1], ActivePlayer);
+            if (result == ShogiBoard.MoveResult.InvalidMove) Reject("そこへは移動できません。光っているマスを選んでください");
         }
-
+        public void SetCapturedPieceOnBoard()
+        {
+            if (!IsBoardTurn) return;
+            var result = shogiBoard.SetPiece(pointerPosition[0], pointerPosition[1], CapturedType, ActivePlayer);
+            if (result == ShogiBoard.MoveResult.InvalidMove) Reject(shogiBoard.GetDropProblem(pointerPosition[0],pointerPosition[1],CapturedType,ActivePlayer) switch {
+                ShogiBoard.DropProblem.Nifu=>"同じ筋に歩があります（二歩）",ShogiBoard.DropProblem.Occupied=>"駒のないマスを選んでください",ShogiBoard.DropProblem.DeadEnd=>"その位置では、次に動けなくなります",ShogiBoard.DropProblem.Unavailable=>"その持ち駒はありません",ShogiBoard.DropProblem.Outside=>"盤の中を選んでください",_=>"今は持ち駒を打てません"
+            });
+            else { isCapturedPiecesSelected = isOpenCapturedPiecesPanel = false; }
+        }
+        public void ChooseCaptured(PieceType type)
+        {
+            if (!IsBoardTurn) return;
+            var counts = shogiBoard.GetCapturedPieces(ActivePlayer);
+            if (!counts.TryGetValue(type, out int count) || count <= 0) { Reject("その持ち駒はありません"); return; }
+            capturedPiecesPanelIndex.SetCapturedPiecesPanelIndex((int)type);
+            isCapturedPiecesSelected = true;
+            isOpenCapturedPiecesPanel = false;
+            selectedPiecePosition = new[] { -1, -1 };
+            Feedback = "持ち駒を打つマスを選んでください / 取消で解除";
+        }
         public void ToggleCapturedPiecesPanel()
         {
-            isOpenCapturedPiecesPanel = !isOpenCapturedPiecesPanel;
-            if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn)
-                playerOneCapturedPieces = shogiBoard.GetCapturedPieces(PlayerType.PlayerOne);
-            else if (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn)
-                playerTwoCapturedPieces = shogiBoard.GetCapturedPieces(PlayerType.PlayerTwo);
-            Debug.Log("Captured Pieces Panel is now " + (isOpenCapturedPiecesPanel ? "Open" : "Closed"));
+            if (!IsBoardTurn) return;
+            if (IsCapturedMode || IsPlacingCaptured) { Deselect(); return; }
+            var counts = shogiBoard.GetCapturedPieces(ActivePlayer);
+            if (counts.Count == 0) { Reject("持ち駒はまだありません"); return; }
+            isOpenCapturedPiecesPanel = true;
+            selectedPiecePosition = new[] { -1, -1 };
+            capturedPiecesPanelIndex.SetCapturedPiecesPanelIndex(0);
+            CycleCaptured(1);
+            Feedback = "持ち駒を選択中：左右で選択 / 決定で打つ / 取消で戻る";
         }
-
+        private void CycleCaptured(int direction)
+        {
+            var counts = shogiBoard.GetCapturedPieces(ActivePlayer);
+            int index = capturedPiecesPanelIndex.GetIndex();
+            for (int i = 0; i < 7; i++)
+            {
+                index += direction;
+                if (index > 7) index = 1;
+                if (index < 1) index = 7;
+                if (counts.TryGetValue((PieceType)index, out int count) && count > 0) { capturedPiecesPanelIndex.SetCapturedPiecesPanelIndex(index); break; }
+            }
+        }
         public void Deselect()
         {
-            selectedPiecePosition[0] = -1;
-            selectedPiecePosition[1] = -1;
-
-            Debug.Log("Deselected");
+            selectedPiecePosition = new[] { -1, -1 };
+            isCapturedPiecesSelected = isOpenCapturedPiecesPanel = false;
+            Feedback = "選択を解除しました。駒を選んでください";
         }
-
-        public void OnDestroy()
+        private void Update()
         {
-            // クリーンアップ処理をここに記述
+            // The screen-space board view supplies accessible selection outlines.
+            viewShogiPointer?.SetVisible(false);
+            viewCapturedPieces?.SetVisible(false);
+        }
+        private void OnDestroy()
+        {
+            if (playerManager != null)
+            {
+                if (playerManager.PlayerOne != null) playerManager.PlayerOne.GetComponent<PlayerInput>().onActionTriggered -= OnPlayerOneInput;
+                if (playerManager.PlayerTwo != null) playerManager.PlayerTwo.GetComponent<PlayerInput>().onActionTriggered -= OnPlayerTwoInput;
+            }
+            if (gameStateHolder != null)
+            {
+                gameStateHolder.UnsubscribeFromChangeToPlayerOneTurn(OnPlayerOneTurn);
+                gameStateHolder.UnsubscribeFromChangeToPlayerTwoTurn(OnPlayerTwoTurn);
+            }
         }
     }
 }

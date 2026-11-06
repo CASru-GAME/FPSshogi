@@ -31,6 +31,7 @@ namespace App.Main.GameMaster
             // イベントの購読
             gameStateHolder.SubscribeToChangeToDuelPlayerOneWin(OnChangeToDuelPlayerOneWin);
             gameStateHolder.SubscribeToChangeToDuelPlayerTwoWin(OnChangeToDuelPlayerTwoWin);
+            gameStateHolder.SubscribeToDuelDraw(OnDuelDraw);
 
             Debug.Log(BoardToString());
             Debug.Log(CapturedPiecesToString());
@@ -105,7 +106,7 @@ namespace App.Main.GameMaster
         // その他の将棋盤操作メソッドをここに追加
         public MoveResult MovePiece(int fromX, int fromY, int toX, int toY, PlayerType player)
         {
-            if (!IsValidMove(fromX, fromY, toX, toY, player)) return MoveResult.InvalidMove;
+            if (!CanAct(player) || !IsValidMove(fromX, fromY, toX, toY, player)) return MoveResult.InvalidMove;
             currentPlayer = player;
 
             if (IsDuel(fromX, fromY, toX, toY))
@@ -217,7 +218,7 @@ namespace App.Main.GameMaster
 
         public MoveResult SetPiece(int x, int y, PieceType piece, PlayerType player)
         {
-            currentPlayer = player;
+            if (!CanAct(player) || x < 0 || x >= 9 || y < 0 || y >= 9 || piece == PieceType.King) return MoveResult.InvalidMove;
             IPiece pieceInstance = FindPieceFromPieceType(piece, player);
             Debug.Log("[ShogiBoard] Attempting to set piece: " + piece + " at " + x + "," + y + " for " + player);
             if (pieceInstance == null) return MoveResult.InvalidMove;
@@ -226,6 +227,7 @@ namespace App.Main.GameMaster
             Debug.Log("[ShogiBoard] Setting piece: " + pieceInstance.Type + " at " + x + "," + y + " for " + player);
             if (!IsSettable(x, y, pieceInstance, player)) return MoveResult.InvalidMove;
             Debug.Log("[ShogiBoard] Settable confirmed.");
+            currentPlayer = player;
             board[x, y] = pieceInstance;
             capturedPieces[player].Remove(pieceInstance.Type);
             if (currentPlayer == PlayerType.PlayerOne)
@@ -278,9 +280,37 @@ namespace App.Main.GameMaster
             return board[toX, toY] != null && board[toX, toY].Player != board[fromX, fromY].Player;
         }
 
+        public bool CanMove(int fromX, int fromY, int toX, int toY, PlayerType player)
+        {
+            return IsValidMove(fromX, fromY, toX, toY, player);
+        }
+
+        public bool CanDrop(int x, int y, PieceType type, PlayerType player)
+        {
+            return GetDropProblem(x,y,type,player)==DropProblem.None;
+        }
+        public enum DropProblem { None, Outside, Unavailable, Occupied, Nifu, DeadEnd }
+        public DropProblem GetDropProblem(int x,int y,PieceType type,PlayerType player)
+        {
+            if(x<0||x>=9||y<0||y>=9)return DropProblem.Outside;
+            if(type==PieceType.King||!IsCaptured(player,type))return DropProblem.Unavailable;
+            var piece = FindPieceFromPieceType(type, player);
+            if(piece==null)return DropProblem.Unavailable;
+            if(board[x,y]!=null)return DropProblem.Occupied;
+            if(type==PieceType.Fuhyo&&IsNifu(x,player))return DropProblem.Nifu;
+            return IsDeadEndPiece(x,y,piece)?DropProblem.DeadEnd:DropProblem.None;
+        }
+
         private bool IsCaptured(PlayerType player, PieceType pieceType)
         {
             return capturedPieces[player].Contains(pieceType);
+        }
+
+        private bool CanAct(PlayerType player)
+        {
+            if (gameStateHolder == null || App.UI.GameSessionUI.BlocksGameplay) return false;
+            return (player == PlayerType.PlayerOne && gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn) ||
+                (player == PlayerType.PlayerTwo && gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn);
         }
 
         private bool IsSettable(int x, int y, IPiece piece, PlayerType player)
@@ -288,7 +318,7 @@ namespace App.Main.GameMaster
             Debug.Log("[ShogiBoard] Checking if settable at " + x + "," + y + " for piece " + piece.Type + " by " + player);
             if (board[x, y] != null) return false; // 既に駒がある場合は置けない
             Debug.Log("[ShogiBoard] No piece at target position.");
-            if (IsNifu(x, player)) return false; // 二歩の判定
+            if (piece.Type == PieceType.Fuhyo && IsNifu(x, player)) return false;
             Debug.Log("[ShogiBoard] Nifu check passed.");
             if (IsDeadEndPiece(x, y, piece)) return false; // 駒が詰む場合は置けない
             Debug.Log("[ShogiBoard] Dead end piece check passed.");
@@ -300,7 +330,7 @@ namespace App.Main.GameMaster
             // 二歩の判定ロジックをここに実装
             for (int y = 0; y < 9; y++)
             {
-                if (board[x, y] != null && board[x, y].Type == PieceType.Fuhyo && board[x, y].Player == player)
+                if (board[x, y] != null && board[x, y].Type == PieceType.Fuhyo && !board[x, y].IsPromoted && board[x, y].Player == player)
                 {
                     return true; // 同じ列に歩が既に存在する場合は二歩
                 }
@@ -358,6 +388,7 @@ namespace App.Main.GameMaster
 
         private bool IsValidMove(int fromX, int fromY, int toX, int toY, PlayerType player)
         {
+            if (fromX < 0 || fromX >= 9 || fromY < 0 || fromY >= 9) return false;
             // 盤外チェック
             if (toX < 0 || toX >= 9 || toY < 0 || toY >= 9)
                 return false;
@@ -500,6 +531,12 @@ namespace App.Main.GameMaster
                 gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
         }
 
+        private void OnDuelDraw()
+        {
+            // Both pieces keep their original squares; only the attempted move consumes a turn.
+            gameStateHolder.ChangeState(currentPlayer==PlayerType.PlayerOne?GameStateHolder.GameState.PlayerTwoTurn:GameStateHolder.GameState.PlayerOneTurn);
+        }
+
         private void AddToCapturedPieces(PlayerType player, PieceType pieceType)
         {
             capturedPieces[player].Add(pieceType);
@@ -510,6 +547,7 @@ namespace App.Main.GameMaster
             // イベントの購読解除
             gameStateHolder.UnsubscribeFromChangeToDuelPlayerOneWin(OnChangeToDuelPlayerOneWin);
             gameStateHolder.UnsubscribeFromChangeToDuelPlayerTwoWin(OnChangeToDuelPlayerTwoWin);
+            gameStateHolder.UnsubscribeFromDuelDraw(OnDuelDraw);
         }
     }
 }

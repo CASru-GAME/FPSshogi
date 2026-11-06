@@ -23,6 +23,8 @@ namespace App.Main.Player
         public Transform muzzleTransform;
 
         // 内部管理
+        public float CooldownRemaining => Mathf.Max(0f, cooldown - (Time.time - lastUseTime));
+        public float CooldownDuration => cooldown;
         private float lastUseTime = -999f;
 
         public void PrimaryAction(Player player, PlayerStatus playerStatus)
@@ -81,6 +83,7 @@ namespace App.Main.Player
 
             // インスタンス作成
             var arrowGO = UnityEngine.Object.Instantiate(arrowPrefab, origin, Quaternion.LookRotation(dir));
+            var lifetime=arrowGO.AddComponent<CombatVisualLifetime>();lifetime.owner=player;lifetime.remaining=arrowLifeTime;
 
             // ProjectileArrow コンポーネントを取得/追加して初期化
             var proj = arrowGO.GetComponent<ProjectileArrow>();

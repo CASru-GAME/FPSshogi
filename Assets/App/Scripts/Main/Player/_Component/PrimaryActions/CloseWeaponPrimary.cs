@@ -12,6 +12,8 @@ namespace App.Main.Player
 
         // クールダウン（秒）
         public float cooldown = 1.0f;
+        public float CooldownRemaining => Mathf.Max(0f, cooldown - (Time.time - lastUseTime));
+        public float CooldownDuration => cooldown;
         private float lastUseTime = -999f;
 
         // 攻撃対象レイヤー等（必要であれば調整）
@@ -49,6 +51,7 @@ namespace App.Main.Player
             if (attackDuration <= 0f) attackDuration = 0.1f;
 
             // 初期化
+            if(onPlayerHitHandler!=null)weapon.OnPlayerHit-=onPlayerHitHandler;
             hitTargets.Clear();
             lastUseTime = Time.time;
 
@@ -71,18 +74,19 @@ namespace App.Main.Player
                 var ts = target.playerStatus;
                 if (ts != null)
                 {
-                    try { ts.TakeDamage(damage); }
+                    try { ts.TakeDamage(damage, player.transform.position); }
                     catch (Exception) { }
                 }
             };
 
             weapon.OnPlayerHit += onPlayerHitHandler;
+            var handler=onPlayerHitHandler;
 
             // 当たり判定を有効化（アニメの長さを有効時間に使用）
             weapon.ActivateHitbox(attackDuration, () =>
             {
                 // 終了コールバック：イベント解除
-                try { weapon.OnPlayerHit -= onPlayerHitHandler; }
+                try { weapon.OnPlayerHit -= handler; }
                 catch (Exception) { }
                 hitTargets.Clear();
             });

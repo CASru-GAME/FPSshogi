@@ -1,0 +1,52 @@
+FPSshogi UI修正記録 (2026-11-06)
+
+対象: UI-REVIEW.txt の U01～U12。復元済み素材は保持。
+
+・FPS: 左右それぞれにプレイヤー、駒、武器、HPバー、照準を表示。
+  被弾の赤い表示と、攻撃・防御/ズーム・スキルの実際の待ち時間を追加。
+・将棋: 手番、選択元、カーソル、合法手、入力結果を表示。
+  持ち駒は読みやすいボタンと枚数に変更。選択中/配置中を明示。
+・持ち駒: 2Pの最後の駒を使った後に表示が残る問題を修正。
+  二歩判定が銀などにも適用されていた問題を修正。
+・タイトル: 初期フォーカスとゲームパッド操作を修正。
+  遊び方・駒の能力・感度設定・入力機器の接続表示を追加。
+・接続: ゲームパッド2台、またはキーボード/マウス+ゲームパッド1台。
+  対局中の切断は一時停止し、接続後に同じ対局へ戻れる。
+・進行: 対戦前カウントダウン、決闘の勝者通知、ポーズを追加。
+  結果は自動で消えず、再戦/タイトルを選択できる。
+・表示: 1920x1080を基準に拡縮。720pの終了ボタンの欠けを解消。
+  日本語フォントを同梱。
+
+Unityでの確認:
+  Open-FPSshogi.cmd から開き、Titleシーンで再生。
+  新UIは再生時に GameUiBootstrap が生成します。
+  元のCanvasは新UIの生成時に無効になります。
+  FPSshogi > Run UI regression で実シーン回帰テスト。
+  FPSshogi > Build Windows で Builds/FPSshogi/FPSshogi.exe を作成。
+
+実装: Assets/App/Scripts/UI/
+検証: Assets/Tests/Editor/UiRegressionRunner.cs
+画像: UIReview/After/1080/、UIReview/After/720/
+ビルド結果: Logs/ui-build-results.txt
+Windows版: Builds/FPSshogi/FPSshogi.exe（最終ビルド・起動確認済み）。
+実シーンテスト: 720p 50/50、1080p 52/52 成功、実行時エラー0。
+独立コードレビュー: UIReview/After/CODE-REVIEW.txt（追加指摘なし）。
+変更はローカルの fix/ui-usability ブランチに保存。
+
+フォント:
+  Noto Sans CJK JP Regular (Noto CJK Sans2.004)
+  https://github.com/notofonts/noto-cjk/tree/Sans2.004
+  SIL Open Font License 1.1: Assets/Resources/UI/OFL.txt
+
+検証の制限:
+  入力テストにはUnity Input Systemの仮想ゲームパッド/Keyboardを使用。
+  Windows実行版の画面操作はマウスで確認。
+  物理ゲームパッドでの操作感・機種ごとの入力は未確認。
+  720p/1080p以外の画面比率や長時間の連続対局は未検証。
+
+作業上の判断:
+  復元した素材を保持するため、同じUnityプロジェクト内で修正しました。
+  既存のゲーム処理を実際に動かすEditorテストを使用しました。
+  これにより実行環境も確認できますが、単体テストより実行に時間がかかります。
+  キー注入による実行版操作は確認できず、キーボード経路は仮想入力で検証。
+  元からある戦闘/物理挙動や、全入力組合せの品質を保証するものではありません。

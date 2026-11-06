@@ -15,6 +15,8 @@ namespace App.Main.Player
         public float buffDuration = 1f;
 
         // 実行状態
+        public float CooldownRemaining => Mathf.Max(0f, cooldownTimer);
+        public float CooldownDuration => cooldown;
         private float cooldownTimer = 0f;
         private bool buffActive = false;
         private float buffTimer = 0f;
@@ -23,14 +25,15 @@ namespace App.Main.Player
         {
             if (player == null || playerStatus == null) return;
 
-            this.player = player;
-            this.playerStatus = playerStatus;
             Debug.Log("SecondaryGuard activated.");
             // クールダウン中は何もしない
             if (cooldownTimer > 0f) return;
             Debug.Log("SecondaryGuard not on cooldown.");
             // 既にバフが有効なら重ねない（リフレッシュしたければここを変更）
             if (buffActive) return;
+
+            this.player = player;
+            this.playerStatus = playerStatus;
 
             // 直接 PlayerStatus を変更して防御力を上げる
             try
@@ -58,6 +61,7 @@ namespace App.Main.Player
             // ステート更新
             buffActive = true;
             buffTimer = buffDuration;
+            CombatVisuals.Aura(player,"Guard_Aura",new Color(.4f,.85f,1f,.9f),buffDuration);
             cooldownTimer = cooldown;
         }
 

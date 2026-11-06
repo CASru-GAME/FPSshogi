@@ -1,0 +1,24 @@
+PASS 座布団.001_LOD0: vertices=6383, triangles=10378, invalid_indices=0
+PASS 座布団.001_LOD1: vertices=6383, triangles=10378, invalid_indices=0
+PASS 座布団.001_LOD2: vertices=6383, triangles=10378, invalid_indices=0
+PASS 座布団_LOD0: vertices=6383, triangles=10378, invalid_indices=0
+PASS 座布団_LOD1: vertices=6383, triangles=10378, invalid_indices=0
+PASS 座布団_LOD2: vertices=6383, triangles=10378, invalid_indices=0
+PASS 本_LOD0: vertices=20928, triangles=6976, invalid_indices=0
+PASS 本_LOD1: vertices=9678, triangles=3226, invalid_indices=0
+PASS 本_LOD2: vertices=3579, triangles=1193, invalid_indices=0
+PASS 箪笥_LOD0: vertices=53364, triangles=17788, invalid_indices=0
+PASS 箪笥_LOD1: vertices=29589, triangles=9863, invalid_indices=0
+PASS 箪笥_LOD2: vertices=13587, triangles=4529, invalid_indices=0
+PASS Bow: vertices=7023, triangles=14000, invalid_indices=0
+PASS Gun_long: vertices=2605, triangles=2414, invalid_indices=0
+PASS Gun_short: vertices=2893, triangles=2384, invalid_indices=0
+PASS Gunbai0: vertices=73554, triangles=85889, invalid_indices=0
+PASS Katana: vertices=13755, triangles=13999, invalid_indices=0
+PASS knife: vertices=8557, triangles=7764, invalid_indices=0
+PASS Naginata_blue: vertices=3659, triangles=3075, invalid_indices=0
+PASS Naginata_red: vertices=3635, triangles=3069, invalid_indices=0
+PASS NockedArrow: vertices=3396, triangles=2470, invalid_indices=0
+PASS Spear: vertices=2026, triangles=1530, invalid_indices=0
+PASS TurretBody: vertices=4234, triangles=3838, invalid_indices=0
+TOTAL 23 meshes / 0 failures

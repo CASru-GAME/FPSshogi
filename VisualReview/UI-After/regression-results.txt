@@ -1,0 +1,53 @@
+PASS Two gamepads connected on title replace keyboard pairing
+PASS Title starts with an actionable selection
+PASS Keyboard Escape returns from help
+PASS Keyboard Enter activates focused Back
+PASS title text fits its containers
+PASS title controls remain inside screen
+PASS help text fits its containers
+PASS help controls remain inside screen
+PASS abilities text fits its containers
+PASS abilities controls remain inside screen
+PASS Gamepad cancel returns from help
+PASS settings text fits its containers
+PASS settings controls remain inside screen
+PASS Gamepad submit starts match
+PASS Both players have distinct devices
+PASS Board shows whose turn it is
+PASS Title submit does not select a board piece
+PASS Selected origin stays visible after cursor movement
+PASS board text fits its containers
+PASS board controls remain inside screen
+PASS Legal target validation rejects occupied and outside squares
+PASS Silver can be dropped on a file containing own pawn
+PASS Last consumed P2 piece disappears from tray
+PASS Captured count is visible
+PASS Pawn drop still rejects nifu
+PASS Captured button enters visible placement mode
+PASS Placing a captured piece consumes exactly one and changes turn
+PASS Duel begins with an input-blocking countdown
+PASS Duel has two HP displays and crosshairs
+PASS duel text fits its containers
+PASS duel controls remain inside screen
+PASS HP display reflects damage
+PASS Attack cooldown follows real gamepad action
+PASS Pause stops simulation
+PASS Pause freezes action cooldown
+PASS pause text fits its containers
+PASS pause controls remain inside screen
+PASS Resume preserves duel weapon and HP
+PASS Disconnect blocks gameplay
+PASS connection text fits its containers
+PASS connection controls remain inside screen
+PASS Reconnect resumes existing duel
+PASS Match result offers a rematch
+PASS result text fits its containers
+PASS result controls remain inside screen
+PASS Result waits for player choice
+PASS Rematch waits for missing controller
+PASS Rematch after reconnect starts a fresh match
+PASS Rematch returns to fresh board
+PASS Only one UI root after rematch
+PASS Confirmed return reaches usable title
+PASS No runtime errors or exceptions
+TOTAL 52 PASS / 0 FAIL

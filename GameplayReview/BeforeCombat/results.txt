@@ -1,0 +1,72 @@
+FAIL effects: normal configured defense reduces damage to 13 (HP=80)
+FAIL effects: promoted configured defense reduces damage to 9 (HP=100)
+PASS effects: first Slow is added
+PASS effects: repeated Slow refreshes the existing effect
+FAIL effects: repeated Slow stays at half speed (actual=2.5, expected=5)
+PASS effects: repeated Slow refreshes its duration (actual=5, expected=5)
+PASS effects: ending repeated Slow restores original speed (actual=10, expected=10)
+FAIL effects: ending Slow preserves an existing speed boost (actual=10, expected=15)
+FAIL effects: repeated FlashBang keeps one movement penalty (actual=0.4, expected=2)
+PASS effects: ending repeated FlashBang restores original speed (actual=10, expected=10)
+PASS effects: different slow kinds combine (actual=1, expected=1)
+FAIL effects: FlashBang expiry preserves remaining Slow (actual=10, expected=5)
+FAIL effects: Slow expiry preserves remaining FlashBang (actual=10, expected=2)
+PASS effects: zero multiplier stops movement (actual=0, expected=0)
+FAIL effects: ending zero multiplier preserves speed boost (actual=10, expected=15)
+FAIL effects: overlapping Hisya fields keep one slow strength (actual=3.6, expected=6)
+FAIL effects: leaving one Hisya field keeps the other active (actual=10, expected=6)
+PASS effects: leaving all Hisya fields removes the slow (actual=10, expected=10)
+FAIL effects: one collider leaving does not release a player still in the field (actual=10, expected=6)
+PASS effects: last collider leaving removes the field slow (actual=10, expected=10)
+PASS effects: Hisya field combines with another slow kind (actual=3, expected=3)
+FAIL effects: leaving Hisya field preserves another slow kind (actual=10, expected=5)
+FAIL effects: destroying one field preserves an overlapping field (actual=10, expected=6)
+PASS effects: remaining field releases after another was destroyed (actual=10, expected=10)
+FAIL effects: effect list exposes duel cleanup
+FAIL effects: guard cleanup targets the status it buffed (defense=1006)
+FAIL effects: rejected guard activation leaves other status untouched (defense=-999)
+PASS effects: cooldown blocks duplicate Gin Kin and guard buffs
+PASS effects: Gin expiry preserves Kin guard and base defense
+PASS effects: guard expiry preserves Kin and base defense
+PASS effects: all defense buffs expire back to base defense
+PASS Short gun damages once and respects cooldown
+PASS Short gun damages once and respects cooldown (immediate reuse blocked)
+FAIL Short gun passes through a slow-field trigger
+PASS Short gun passes through a slow-field trigger (immediate reuse blocked)
+FAIL Short gun ignores its owner's colliders
+PASS Short gun ignores its owner's colliders (immediate reuse blocked)
+PASS Short gun is stopped by a solid wall
+PASS Short gun is stopped by a solid wall (immediate reuse blocked)
+PASS Short gun retains linear distance falloff
+PASS Short gun retains linear distance falloff (immediate reuse blocked)
+PASS Short gun cannot hit beyond its range
+PASS Short gun cannot hit beyond its range (immediate reuse blocked)
+PASS Long gun damages once and respects cooldown
+PASS Long gun damages once and respects cooldown (immediate reuse blocked)
+FAIL Long gun passes through a slow-field trigger
+PASS Long gun passes through a slow-field trigger (immediate reuse blocked)
+FAIL Long gun ignores its owner's colliders
+PASS Long gun ignores its owner's colliders (immediate reuse blocked)
+PASS Long gun is stopped by a solid wall
+PASS Long gun is stopped by a solid wall (immediate reuse blocked)
+PASS Long gun retains linear distance falloff
+PASS Long gun retains linear distance falloff (immediate reuse blocked)
+PASS Long gun cannot hit beyond its range
+PASS Long gun cannot hit beyond its range (immediate reuse blocked)
+PASS Turret hits once per firing interval
+FAIL Turret passes through a slow-field trigger
+PASS Turret is stopped by a solid wall
+FAIL One arrow damages a multi-collider target only once
+PASS Arrow owner immunity does not consume the shot
+FAIL An arrow stopped by a wall cannot damage another collider in the same frame
+FAIL A slow-field trigger does not destroy an arrow
+PASS The live bow arrow prefab is available
+PASS Bow creates the configured Rigidbody projectile
+FAIL Rigidbody arrow falloff is measured from its launch point
+PASS Bow cooldown prevents a second projectile
+FAIL The live bow projectile leaves its owner and damages a nearby target exactly once
+FAIL Transform-only arrows sweep their movement and hit a target
+FAIL Transform-only arrows are consumed by a thin solid wall
+PASS A flash grenade applies its effect only once per player
+PASS Flash grenade retains its existing effect on the nearby thrower
+PASS No runtime errors or exceptions

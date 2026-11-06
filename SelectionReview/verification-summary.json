@@ -1,0 +1,38 @@
+[
+  {
+    "suite": "SelectionReview/AfterMouse1080",
+    "passed": 56,
+    "failed": 0,
+    "errorBytes": 0
+  },
+  {
+    "suite": "SelectionReview/Final720",
+    "passed": 56,
+    "failed": 0,
+    "errorBytes": 0
+  },
+  {
+    "suite": "SelectionReview/UI-Final1080",
+    "passed": 57,
+    "failed": 0,
+    "errorBytes": 0
+  },
+  {
+    "suite": "GameplayReview/PlayerSelection",
+    "passed": 199,
+    "failed": 0,
+    "errorBytes": 0
+  },
+  {
+    "suite": "VisualReview/PlayerSelection",
+    "passed": 132,
+    "failed": 0,
+    "errorBytes": 0
+  },
+  {
+    "suite": "SelectionReview/PlayerSmoke",
+    "passed": 23,
+    "failed": 0,
+    "errorBytes": 0
+  }
+]

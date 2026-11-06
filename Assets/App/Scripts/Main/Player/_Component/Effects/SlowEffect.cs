@@ -17,15 +17,21 @@ namespace App.Main.Player
             lastTime = duration;
             this.onEffectComplete = onEffectComplete;
             this.playerStatus = playerStatus;
-            playerStatus.MoveSpeed.Multiply(0.5f);
+            this.player = player;
+            playerStatus.MoveSpeed.SetMultiplier(this, 0.5f);
         }
         public void EndEffect()
         {
             if (!isActive) return;
 
-            playerStatus.MoveSpeed.Reset();
+            playerStatus.MoveSpeed.RemoveMultiplier(this);
             isActive = false;
-            onEffectComplete?.Invoke();
+            lastTime = 0f;
+            var complete = onEffectComplete;
+            onEffectComplete = null;
+            playerStatus = null;
+            player = null;
+            complete?.Invoke();
         }
 
         public void UpdateEffect()

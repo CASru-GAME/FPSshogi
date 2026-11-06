@@ -1,0 +1,58 @@
+FPSshogi 左メニューUI 実装記録
+2026-11-06
+
+起動
+・Windows版: Builds/FPSshogi/FPSshogi.exe
+・配布・移動するときは Builds/FPSshogi フォルダー全体を使用する。
+・Unity: 6000.2.12f1 でこのプロジェクトを開き、Assets/App/Scenes/Title.unity を Play。
+・新しいUIは実行時に生成される。停止中のシーンに残る旧Canvasは、実行時に無効化する。
+
+実装内容
+・タイトルは左に「対局 / 遊び方 / 設定 / 終了」。ゲーム名は「FPS将棋」のみ。
+・既存の和室・将棋盤を背景に、実際の駒モデル40枚を初期配置で表示。
+・プレイヤー選択は1Pが左、2Pが右。参加した機器、参加済み・準備完了を表示。
+・参加と準備完了は別の入力。2台のコントローラー、キーマウ＋コントローラーの両順序に対応。
+・ルール、機器別操作、8種類の駒の説明、成りの切替を用意。駒の図は既存モデルを描画し、移動図は実際の駒ルールから作成。
+・盤面では持ち駒と現在の操作を表示。二歩・行き場のない駒・空いていないマスなど、打てない理由を表示。
+・FPSではHPをハートとゲージで表示。攻撃・防御・スキルはアイコンと操作キー、再使用までの時間は実際のクールダウンを円で表示。
+・被弾方向、ガード、登れる状況を短く表示。決定・取消・無効操作・被弾・ガードの音を追加。
+・決闘前は両者の駒・武器・スキルとカウントダウン、決闘後は結果・獲得した駒・次の手番を表示。
+・設定は1P/2Pの視点感度、HP数値の併記、初期値へ戻す。HP数値は初期状態では非表示。
+・一時停止、設定、遊び方から戻ると呼び出し元の画面と選択位置へ復帰。
+・メニューを開いた機器が操作を担当。担当機器が切れたときは操作を引き継げる。
+・対局中の切断は即座に停止し、機器割当を保持。再接続後も両者が確認してから再開する。
+・開始・再接続・メニュー復帰時は、押しっぱなしの入力をゲームへ通さない。
+・読み込み中は実際の待ち時間だけ表示。失敗時はタイトルへ戻れる。
+・再戦は機器割当を保持し、両者の準備完了を再度要求する。
+
+維持したゲーム仕様
+王をFPSで倒すと勝利。王手・詰み判定はなく、成りは自動。
+弾数・リロードの仕組みは元のゲームにないため追加していない。
+クールダウン、HP、移動・射撃・駒の合法手の判定をUIの都合では変更していない。
+
+検証
+Unity上の回帰検証: 合計407 PASS / 0 FAIL
+・新UI・画面遷移: 92 PASS / 0 FAIL（VisualReview/RoomUI/Final/results.txt）
+・機器選択: 56 PASS / 0 FAIL（SelectionReview/RoomUI-Release/results.txt）
+・既存UI・盤面操作: 60 PASS / 0 FAIL（VisualReview/RoomUI/Final/ui-regression-results.txt）
+・将棋とFPS戦闘: 199 PASS / 0 FAIL（GameplayReview/RoomUI-Final/results.txt）
+Windows実行ファイル上の検証: 23 PASS / 0 FAIL（SelectionReview/PlayerSmoke/results.txt）
+通常Windowsビルド: Succeeded、エラー0、既存警告2（VisualReview/RoomUI/Final/windows-build.txt）。
+上記テストの実行時エラー記録は空。警告はKingTurretの旧APIとProjectileArrowの未使用フィールド。
+1920x1080、1280x720、2560x1080、1280x1024で文字・操作領域・FPS照準位置を検証。
+タイトル、参加、ルール、設定、駒説明、対局・被弾表示を画像でも確認。
+機器の試験はUnity Input Systemの仮想デバイスを用いたもの。物理コントローラー2台での実機試験は未実施。
+通常版ではマウスでタイトル→遊び方→駒の説明→戻る、設定→戻るを確認。自動操作ツールのEscはInput SystemへTEXTイベントだけが届き、キー押下のSTATイベントが届かなかったため、この方法による実キーボード操作の確認には使用していない。
+独立したコードレビューで、画面遷移・切断復帰・入力の押し残し・駒画像・被弾方向・打てない理由を確認し、指摘を修正済み。
+
+主な実装場所
+Assets/App/Scripts/UI/: 全画面のUI・ナビゲーション・表示用モデル・記号・音。
+Assets/Resources/UI/RoomUiAssets.asset: 既存8種類の駒プレハブへの参照。
+Assets/Resources/UI/BoardReference.jpg: 既存和室と盤を描画したルール説明用画像。
+Assets/Tests/Editor/RoomUiRegression.cs: 新UIの回帰検証。
+docs/superpowers/plans/2026-11-06-room-ui.md: 実装計画と実施記録。
+
+画像
+VisualReview/RoomUI/Final/ に各画面と各解像度の検証画像。
+SelectionReview/RoomUI-Release/ に最終の参加・準備・切断画面。
+SelectionReview/PlayerSmoke/ にWindows実行ファイルでの参加・FPS画面。

@@ -44,6 +44,19 @@ namespace App.Main.Player
                 effect.UpdateEffect();
             }
         }
+
+        public T GetEffect<T>() where T : class, IEffect
+        {
+            return effects.OfType<T>().FirstOrDefault();
+        }
+
+        public void ClearEffects()
+        {
+            // Ending an effect removes it through its completion callback.
+            foreach (var effect in effects.ToArray()) effect.EndEffect();
+            effects.Clear();
+        }
+
         private void OnEffectComplete(System.Type effectType)
         {
             effects.RemoveAll(e => e.GetType() == effectType);

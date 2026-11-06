@@ -52,6 +52,7 @@ namespace App.Main.Player
 
             // インスタンス化
             var go = UnityEngine.Object.Instantiate(prefab, spawnPos, Quaternion.identity);
+            var lifetime=go.AddComponent<CombatVisualLifetime>();lifetime.owner=player;lifetime.remaining=10f;
             go.name = "FlashbangProjectile";
 
             // Rigidbody を保証

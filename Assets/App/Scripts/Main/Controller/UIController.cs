@@ -25,13 +25,8 @@ namespace App.Main.Controller
 
         private void OnEndGame()
         {
-            Debug.Log("Game Ended. Showing Winner UI.");
-            winnerUI.GetComponent<ViewWinnerUI>().Show(
-                gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneWin
-            );
-
-            // 終了後にタイトルへ戻す（例: 5秒後）
-            StartReturnToTitle(5f);
+            // GameSessionUI owns the persistent result panel and explicit rematch/title actions.
+            StopReturnToTitle();
         }
 
         // 指定秒待ってタイトルシーンへ移動する (シーン名は "Title" を想定)
