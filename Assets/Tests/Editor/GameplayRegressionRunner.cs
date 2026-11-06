@@ -52,7 +52,8 @@ public static class GameplayRegressionRunner
     static IEnumerator Run()
     {
         one=InputSystem.AddDevice<Gamepad>("Gameplay test one");two=InputSystem.AddDevice<Gamepad>("Gameplay test two");yield return .3d;
-        SceneManager.LoadScene("Title");yield return .5d;App.UI.GameSessionUI.Instance.StartMatch();yield return 1d;
+        SceneManager.LoadScene("Title");yield return .5d;
+        var join=SelectionTestInput.TwoGamepads(one,two);while(join.MoveNext())yield return join.Current;
         foreach(string name in new[]{"GameplayBoardChecks","GameplayMovementChecks","GameplayEffectsChecks","GameplayProjectileChecks","GameplayMeleeChecks","GameplayDuelChecks"})
         {
             var type=typeof(GameplayRegressionRunner).Assembly.GetType(name);if(type==null)continue;

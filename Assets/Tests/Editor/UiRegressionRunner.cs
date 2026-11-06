@@ -111,7 +111,7 @@ public static class UiRegressionRunner
         pad1 = InputSystem.AddDevice<Gamepad>("UI Test One");
         pad2 = InputSystem.AddDevice<Gamepad>("UI Test Two");
         yield return .4;
-        Check("Two gamepads connected on title replace keyboard pairing",App.UI.GameSessionUI.Instance.Devices.IsGamepad(0) && App.UI.GameSessionUI.Instance.Devices.IsGamepad(1));
+        Check("Connected gamepads wait for explicit player selection",!App.UI.GameSessionUI.Instance.Devices.Connected(0) && !App.UI.GameSessionUI.Instance.Devices.Connected(1));
         SceneManager.LoadScene("Title");
         yield return .5;
         Check("Title starts with an actionable selection", EventSystem.current?.currentSelectedGameObject?.GetComponent<Button>()?.interactable == true);
@@ -143,8 +143,10 @@ public static class UiRegressionRunner
         yield return .2;
         InputSystem.QueueStateEvent(pad1, new GamepadState());
         yield return .5;
-        Check("Gamepad submit starts match", SceneManager.GetActiveScene().name == "Main");
-        if (SceneManager.GetActiveScene().name != "Main") SceneManager.LoadScene("Main");
+        Check("Gamepad submit opens player selection", SceneManager.GetActiveScene().name == "Title" && Visible("Player selection panel"));
+        CheckLayout("selection"); Capture("test-selection-empty");
+        var join=SelectionTestInput.TwoGamepads(pad1,pad2,false);while(join.MoveNext())yield return join.Current;
+        Check("Both players confirm before the match starts", SceneManager.GetActiveScene().name == "Main");
         yield return .6;
         var players = UnityEngine.Object.FindObjectsByType<PlayerInput>(FindObjectsSortMode.None);
         Check("Both players have distinct devices", players.Length == 2 && players.All(p => p.devices.Count > 0) && !players[0].devices.Intersect(players[1].devices).Any());
@@ -218,6 +220,7 @@ public static class UiRegressionRunner
         Check("Disconnect blocks gameplay", Time.timeScale == 0f && Visible("Connection message"));
         CheckLayout("connection"); Capture("test-connection"); yield return .3;
         pad2 = InputSystem.AddDevice<Gamepad>("UI Test Two Reconnected"); yield return .5;
+        CheckLayout("reconnected"); Capture("test-reconnected"); yield return .2;
         InvokeSession("Resume"); yield return .2;
         Check("Reconnect resumes existing duel", Time.timeScale == 1f && p1.WeaponObject == weapon);
 
@@ -235,11 +238,10 @@ public static class UiRegressionRunner
         Check("Result waits for player choice", SceneManager.GetActiveScene().name == "Main" && Visible("Rematch button"));
         InputSystem.RemoveDevice(pad2); pad2=null; yield return .2;
         GameObject.Find("Rematch button")?.GetComponent<Button>()?.onClick.Invoke(); yield return .6;
-        Check("Rematch waits for missing controller",Visible("Connection message") && Time.timeScale==0);
+        Check("Rematch selection waits for missing controller",Visible("Player selection panel") && Time.timeScale==0);
         pad2=InputSystem.AddDevice<Gamepad>("UI Test Rematch Reconnected"); yield return .4;
-        GameObject.Find("Connection ready button")?.GetComponent<Button>()?.onClick.Invoke(); yield return .6;
+        join=SelectionTestInput.TwoGamepads(pad1,pad2,false);while(join.MoveNext())yield return join.Current;
         Check("Rematch after reconnect starts a fresh match",Find<GameStateHolder>()?.CurrentState==GameStateHolder.GameState.PlayerOneTurn && Time.timeScale==1);
-        if(Find<GameStateHolder>()?.CurrentState!=GameStateHolder.GameState.PlayerOneTurn) { InvokeSession("StartMatch"); yield return .6; }
         Check("Rematch returns to fresh board", Find<GameStateHolder>()?.CurrentState == GameStateHolder.GameState.PlayerOneTurn && Time.timeScale == 1f);
         Check("Only one UI root after rematch", UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).Count(m => m.GetType().Name == "GameSessionUI") == 1);
         InvokeSession("OpenPause"); InvokeSession("ConfirmReturn"); yield return .2;

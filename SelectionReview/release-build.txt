@@ -1,0 +1,6 @@
+Result: Succeeded
+Errors: 0
+Warnings: 2
+Size: 155543530
+Time: 00:00:11.4692045
+Path: C:/Users/tubas/Documents/Codex/2026-11-06/fpsshogi/Builds/FPSshogi/FPSshogi.exe

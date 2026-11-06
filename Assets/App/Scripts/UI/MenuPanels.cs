@@ -10,13 +10,15 @@ namespace App.UI
         RectTransform panel;
         Text connection;
         Button readyButton;
+        PlayerSelectionPanel selection;
+        bool showAvailableDevices;
         public bool Visible => root.gameObject.activeSelf;
         public MenuPanels(RectTransform parent,GameSessionUI session)
         { this.session=session; root=UiTheme.Rect(parent,"Menus",0,0,1920,1080); }
         void Clear(bool shade=true)
         {
             foreach(Transform child in root) { child.gameObject.SetActive(false); Object.Destroy(child.gameObject); }
-            root.gameObject.SetActive(true); connection=null; readyButton=null;
+            root.gameObject.SetActive(true); connection=null; readyButton=null; selection=null; showAvailableDevices=false;
             if(shade) UiTheme.Box(root,"Menu shade",0,0,1920,1080,new Color(0,0,0,.68f),true);
         }
         RectTransform Standard(string title)
@@ -26,10 +28,11 @@ namespace App.UI
             UiTheme.Box(panel,"Heading rule",44,108,992,2,UiTheme.Gold); return panel;
         }
         void Focus(Button button) => session.Focus(button);
-        public void Hide() { root.gameObject.SetActive(false); connection=null; readyButton=null; }
+        public void Hide() { root.gameObject.SetActive(false); connection=null; readyButton=null; selection=null; }
         public void Title()
         {
             Clear(false);
+            showAvailableDevices=true;
             UiTheme.Box(root,"Title shade",0,0,1920,1080,new Color(.08f,.05f,.03f,.38f));
             panel=UiTheme.Box(root,"Title panel",600,120,720,840,UiTheme.Ink,true).rectTransform;
             UiTheme.Label(panel,"Game title","FPS 将棋",40,16,640,140,82,UiTheme.Gold,TextAnchor.MiddleCenter);
@@ -103,9 +106,11 @@ namespace App.UI
         }
         public void UpdateDevices()
         {
-            if(connection!=null) connection.text=$"1P　{session.Devices.Description(0)}\n2P　{session.Devices.Description(1)}";
+            selection?.Tick();
+            if(connection!=null) connection.text=showAvailableDevices ? $"コントローラー {UnityEngine.InputSystem.Gamepad.all.Count} 台接続中\n使う機器は、対局前に選択します" : $"1P　{session.Devices.Description(0).Replace("\n", " / ")}\n2P　{session.Devices.Description(1).Replace("\n", " / ")}";
             if(readyButton!=null) readyButton.interactable=session.Devices.Ready;
         }
+        public void Selection() { selection=new PlayerSelectionPanel(Standard("プレイヤー選択"),session); }
         public void Result(int winner)
         {
             Standard($"{winner}P の勝利");

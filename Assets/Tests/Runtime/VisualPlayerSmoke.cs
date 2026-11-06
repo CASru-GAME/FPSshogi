@@ -35,7 +35,9 @@ public sealed class VisualPlayerSmoke : MonoBehaviour
     {
         pad1=InputSystem.AddDevice<Gamepad>("Native visual one");pad2=InputSystem.AddDevice<Gamepad>("Native visual two");
         yield return new WaitForSeconds(.5f);SceneManager.LoadScene("Title");yield return new WaitForSeconds(.7f);
-        Shot("title");yield return new WaitForSeconds(.2f);App.UI.GameSessionUI.Instance.StartMatch();yield return new WaitForSeconds(1f);Shot("board");
+        Shot("title");yield return new WaitForSeconds(.2f);
+        var join=SelectionTestInput.TwoGamepads(pad1,pad2);while(join.MoveNext())yield return new WaitForSecondsRealtime((float)(double)join.Current);
+        Shot("board");
         foreach(string name in new[]{"Transparent","SlowField","Glow"})
         {
             var material=Resources.Load<Material>("Combat/"+name);

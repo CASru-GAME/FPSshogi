@@ -90,7 +90,8 @@ public static class VisualRepairChecks
     static IEnumerator Run()
     {
         pad1=InputSystem.AddDevice<Gamepad>("Visual repair one");pad2=InputSystem.AddDevice<Gamepad>("Visual repair two");yield return .4;
-        SceneManager.LoadScene("Title");yield return .6;App.UI.GameSessionUI.Instance.StartMatch();yield return 1.3;
+        SceneManager.LoadScene("Title");yield return .6;
+        var join=SelectionTestInput.TwoGamepads(pad1,pad2);while(join.MoveNext())yield return join.Current;
         var cells=Find<ViewPiece>().boardCellPositions;
         float spacing=Vector3.Distance(cells[0,0],cells[1,0]);
         Check(Enumerable.Range(1,8).All(i=>Mathf.Abs(Vector3.Distance(cells[i-1,0],cells[i,0])-spacing)<.01f),"Board cells equally spaced");
@@ -182,7 +183,8 @@ public static class VisualRepairChecks
     static IEnumerator RunArt()
     {
         pad1=InputSystem.AddDevice<Gamepad>("Visual art one");pad2=InputSystem.AddDevice<Gamepad>("Visual art two");yield return .4;
-        SceneManager.LoadScene("Title");yield return .6;App.UI.GameSessionUI.Instance.StartMatch();yield return 1.3;
+        SceneManager.LoadScene("Title");yield return .6;
+        var join=SelectionTestInput.TwoGamepads(pad1,pad2);while(join.MoveNext())yield return join.Current;
         Shot("board");yield return .3;
         var overview=Camera.main;
         if(overview!=null)

@@ -19,7 +19,7 @@ namespace App.UI
         public bool IsTitle { get; private set; }
         public bool ConnectionStartsMatch => IsTitle || pendingNewMatch;
         public static bool BlocksGameplay => Instance!=null && Instance.Blocked;
-        enum Page { None, Title, Pause, Help, Settings, Connection, Result, Confirm }
+        enum Page { None, Title, Pause, Help, Settings, Connection, Result, Confirm, Selection }
         Page page;
         MenuPanels menus;
         BoardHud boardHud;
@@ -36,6 +36,9 @@ namespace App.UI
         bool pendingNewMatch;
         string transitionCaption;
         Button defaultFocus;
+        bool selectionInputArmed;
+        float selectionStartAt=-1;
+        int keyboardSelectionFrame=-1;
         bool Blocked => !IsTitle && (page!=Page.None || transitionRemaining>0 || !Devices.Ready || releaseGate);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance=null; matchDevices=null; }
@@ -44,7 +47,7 @@ namespace App.UI
             Instance=this;
             IsTitle=SceneManager.GetActiveScene().name=="Title";
             if(IsTitle || matchDevices==null) matchDevices=new LocalMatchDevices();
-            Devices.Refresh(IsTitle); previousReady=Devices.Ready;
+            Devices.Refresh(); previousReady=Devices.Ready;
             foreach(var old in FindObjectsByType<Canvas>(FindObjectsInactive.Include,FindObjectsSortMode.None)) old.gameObject.SetActive(false);
             var canvas=gameObject.AddComponent<Canvas>(); canvas.renderMode=RenderMode.ScreenSpaceOverlay; canvas.sortingOrder=300;
             var scaler=gameObject.AddComponent<CanvasScaler>(); scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -67,7 +70,7 @@ namespace App.UI
             transition.gameObject.SetActive(false);
             menus=new MenuPanels(layout,this);
             if(IsTitle) { page=Page.Title; menus.Title(); }
-            else if(!Devices.Ready) { page=Page.Connection; menus.Connection(); }
+            else if(!Devices.Ready) StartMatch();
             else { page=Page.None; menus.Hide(); }
             ApplyBlock();
         }
@@ -108,10 +111,10 @@ namespace App.UI
         void GateRelease() { releaseGate=true; releaseAfter=Time.unscaledTime+.15f; }
         void Update()
         {
-            bool changed=Devices.Refresh(IsTitle);
+            bool changed=Devices.Refresh(!IsTitle && page==Page.Connection && !pendingNewMatch);
             if(changed) PairPlayers();
             menus.UpdateDevices();
-            if(!IsTitle && !Devices.Ready && previousReady && page!=Page.Result)
+            if(!IsTitle && !Devices.Ready && previousReady && page!=Page.Result && page!=Page.Selection)
             { page=Page.Connection; menus.Connection(); }
             previousReady=Devices.Ready;
             if(releaseGate && Time.unscaledTime>=releaseAfter && !ControlsHeld()) releaseGate=false;
@@ -126,19 +129,20 @@ namespace App.UI
                 transitionTitle.text=transitionCaption;
                 transitionDetail.text=countdown?$"{Mathf.CeilToInt(transitionRemaining)}\n左右の画面で対決します":"盤面を確認して、次の一手へ";
             }
+            if(page==Page.Selection && PollSelection()) return;
             bool cancelMenu=menus.Visible && Gamepad.all.Any(p=>p.buttonEast.wasPressedThisFrame);
-            if((MenuPressed() || cancelMenu) && Time.unscaledTime>menuNavigationAfter)
+            if(page!=Page.Selection && (MenuPressed() || cancelMenu) && Time.unscaledTime>menuNavigationAfter)
             {
                 if(IsTitle) { if(page!=Page.Title) Back(); }
                 else if(page==Page.None) OpenPause();
                 else if(page==Page.Pause) Resume();
                 else if(page!=Page.Result && page!=Page.Connection) Back();
             }
-            if((Keyboard.current?.f1Key.wasPressedThisFrame??false) && page!=Page.Result) OpenHelp();
+            if((Keyboard.current?.f1Key.wasPressedThisFrame??false) && page!=Page.Result && page!=Page.Selection) OpenHelp();
             if(EventSystem.current!=null)
             {
-                EventSystem.current.sendNavigationEvents=menus.Visible && Time.unscaledTime>menuNavigationAfter;
-                if(menus.Visible && EventSystem.current.currentSelectedGameObject==null && defaultFocus!=null && defaultFocus.interactable)
+                EventSystem.current.sendNavigationEvents=menus.Visible && page!=Page.Selection && Time.unscaledTime>menuNavigationAfter;
+                if(menus.Visible && page!=Page.Selection && EventSystem.current.currentSelectedGameObject==null && defaultFocus!=null && defaultFocus.interactable)
                     EventSystem.current.SetSelectedGameObject(defaultFocus.gameObject);
             }
             ApplyBlock();
@@ -186,19 +190,78 @@ namespace App.UI
         public void OpenHelp() { page=Page.Help; menus.Help(); ApplyBlock(); }
         public void OpenSettings() { page=Page.Settings; menus.Settings(); ApplyBlock(); }
         public void ConfirmReturn() { page=Page.Confirm; menus.ConfirmReturn(); ApplyBlock(); }
-        public void Back() { PlayerPrefs.Save(); if(IsTitle) {page=Page.Title;menus.Title();} else OpenPause(); }
+        public void Back() { if(page==Page.Selection) { CancelSelection(); return; } PlayerPrefs.Save(); if(IsTitle) {page=Page.Title;menus.Title();} else OpenPause(); }
         public void Resume()
         {
-            if(IsTitle || page==Page.Result) return;
+            if(IsTitle || page==Page.Result || page==Page.Selection) return;
             if(pendingNewMatch) { StartMatch(); return; }
             if(!Devices.Ready) { page=Page.Connection; menus.Connection(); ApplyBlock(); return; }
             page=Page.None; menus.Hide(); EventSystem.current.SetSelectedGameObject(null); GateRelease(); ApplyBlock();
         }
         public void StartMatch()
         {
+            if(page==Page.Selection) return;
+            Devices.BeginSelection(!IsTitle);
+            page=Page.Selection; pendingNewMatch=true; selectionInputArmed=false; selectionStartAt=-1;
+            menuNavigationAfter=Time.unscaledTime+.2f; keyboardSelectionFrame=-1;
+            menus.Selection();
+            EventSystem.current.sendNavigationEvents=false;
+            EventSystem.current.SetSelectedGameObject(null); defaultFocus=null;
+            ApplyBlock();
+        }
+        public void CancelSelection()
+        {
+            if(page!=Page.Selection) return;
+            Devices.BeginSelection(false); pendingNewMatch=false; selectionStartAt=-1;
+            if(IsTitle) { page=Page.Title; menus.Title(); ApplyBlock(); }
+            else ReturnTitle();
+        }
+        public void KeyboardSelectionAction()
+        {
+            int slot=Devices.PlayerFor(Keyboard.current);
+            SelectionAction(Keyboard.current,slot>=0 && Devices.IsPrepared(slot));
+        }
+        void SelectionAction(InputDevice device,bool cancel)
+        {
+            if(page!=Page.Selection || !selectionInputArmed || device==null) return;
+            if(device is Keyboard)
+            {
+                if(keyboardSelectionFrame==Time.frameCount) return;
+                keyboardSelectionFrame=Time.frameCount;
+            }
+            if(cancel)
+            {
+                if(!Devices.Cancel(device) && !Devices.HasParticipants) { CancelSelection(); return; }
+            }
+            else Devices.Confirm(device);
+            menus.UpdateDevices();
+        }
+        bool PollSelection()
+        {
+            if(!selectionInputArmed)
+            {
+                if(Time.unscaledTime>=menuNavigationAfter && !ControlsHeld()) selectionInputArmed=true;
+                return false;
+            }
+            foreach(var pad in Gamepad.all)
+            {
+                if(pad.buttonEast.wasPressedThisFrame) SelectionAction(pad,true);
+                else if(pad.buttonSouth.wasPressedThisFrame) SelectionAction(pad,false);
+            }
+            var keyboard=Keyboard.current;
+            if(keyboard!=null)
+            {
+                if(keyboard.escapeKey.wasPressedThisFrame) SelectionAction(keyboard,true);
+                else if(keyboard.enterKey.wasPressedThisFrame) SelectionAction(keyboard,false);
+            }
+            if(page!=Page.Selection) return false;
+            menus.UpdateDevices();
+            if(!Devices.AllPrepared) { selectionStartAt=-1; return false; }
+            if(selectionStartAt<0) selectionStartAt=Time.unscaledTime+1f;
+            if(Time.unscaledTime<selectionStartAt) return false;
             Devices.Refresh();
-            if(!Devices.Ready) { pendingNewMatch=true; page=Page.Connection; menus.Connection(); ApplyBlock(); return; }
-            PlayerPrefs.Save(); Time.timeScale=1; SceneManager.LoadScene("Main");
+            if(!Devices.AllPrepared) { selectionStartAt=-1; return false; }
+            pendingNewMatch=false; PlayerPrefs.Save(); Time.timeScale=1; SceneManager.LoadScene("Main"); return true;
         }
         public void ReturnTitle() { PlayerPrefs.Save(); Time.timeScale=1; SceneManager.LoadScene("Title"); }
         public void Quit()

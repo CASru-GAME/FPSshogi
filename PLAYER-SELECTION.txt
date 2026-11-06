@@ -1,0 +1,43 @@
+FPSshogi プレイヤー選択画面
+2026-11-06
+
+操作
+1. タイトルの「対局開始」でプレイヤー選択を開きます。
+2. 使うコントローラーのA、またはキーボードのEnterで参加します。参加順に1P（先手・左画面）、2P（後手・右画面）になります。
+3. 画面の機器と担当を確認し、同じ機器でA / Enterをもう一度押すと、そのプレイヤーだけ準備完了になります。
+4. 両者の準備がそろうと1秒後に対局が始まります。
+B / Escは準備取消、もう一度で参加解除。画面のボタンでもキーマウ側の参加・準備・取消ができます。
+
+対応
+コントローラー2台、およびキーボード・マウス＋コントローラー。キーマウは1Pにも2Pにも割り当てられます。
+余分なコントローラーは参加者の準備状態を変更できません。押しっぱなしでは参加と準備を同時に行いません。
+切断すると当人の準備を取り消し、開始を中止します。再戦は機器を引き継ぎ、両者が再度準備します。
+対局中の切断は従来どおり一時停止し、残ったプレイヤーの機器を保持します。
+
+実装
+Assets/App/Scripts/UI/LocalMatchDevices.cs: 機器の参加・準備・取消・再接続
+Assets/App/Scripts/UI/PlayerSelectionPanel.cs: 選択画面
+Assets/App/Scripts/UI/GameSessionUI.cs: 入力と開始条件
+Assets/App/Scripts/UI/MenuPanels.cs: タイトル・選択・再接続表示
+将棋とFPS戦闘のルールは変更していません。
+
+検証済み
+選択画面1080p:56/56（SelectionReview/AfterMouse1080）
+選択画面720p:56/56（SelectionReview/Final720。機器IDと解像度も記録）
+既存UI＋選択・再接続:57/57（SelectionReview/UI-Final1080）
+将棋・FPS戦闘の回帰確認:199/199（GameplayReview/PlayerSelection）
+見た目の回帰確認:132/132（VisualReview/PlayerSelection）
+Windows版の選択・機器割当・担当別視点入力・再戦:23/23（SelectionReview/PlayerSmoke）
+通常版ビルド成功:0エラー、既存警告2件。テスト専用クラス6種が通常版に含まれないことも確認。
+通常版のマウス操作でタイトル→参加→準備→取消→タイトルを確認。
+
+レビューと検証環境
+新しい文脈でのコードレビューを実施。指摘された混合入力テストの失敗を、機器IDを記録して切り分けました。
+実マウスの操作でMouse.currentがテスト用マウスからPCのマウスに切り替わり、実際のペアリングもそのIDになっていました（MouseIdentityRed720）。テストのキーボード参加前にテスト用マウスの入力を送るよう修正し、厳密な機器IDの検査は維持しています（Final720）。
+再接続時に機器名で文字があふれる問題は、再現テストを追加して修正しました。
+自動テストはUnity Input Systemの仮想機器を使います。実物のコントローラー2台による人の操作は未確認です。操作ツールのキー送信では文字入力のみが届き、Enterの押下イベントを確認できませんでした（SelectionReview/input-tool-diagnostic.txt）。キーボード参加と取消はEditorおよびWindows版へのInput Systemイベントで検証しています。
+未対応のレビュー指摘・保留した軽微な指摘はありません。
+
+起動先
+Unityプロジェクト: このフォルダー（Unity6000.2.12f1）
+通常Windows版: Builds/FPSshogi/FPSshogi.exe

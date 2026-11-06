@@ -69,7 +69,7 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         first = InputSystem.AddDevice<Gamepad>("Native gameplay one"); second = InputSystem.AddDevice<Gamepad>("Native gameplay two");
         yield return new WaitForSecondsRealtime(.4f);
         SceneManager.LoadScene("Title"); yield return new WaitForSecondsRealtime(.6f);
-        App.UI.GameSessionUI.Instance.StartMatch(); yield return new WaitForSecondsRealtime(.8f);
+        var join=SelectionTestInput.TwoGamepads(first,second);while(join.MoveNext())yield return new WaitForSecondsRealtime((float)(double)join.Current);
         Check(Find<ShogiBoard>().GetBoard().Cast<IPiece>().Count(piece => piece != null) == 40, "Native initial board contains forty pieces");
         StartDuel(new Kyosya(PlayerType.PlayerTwo)); yield return new WaitForSecondsRealtime(3.6f);
         var one = One(); var two = Two(); Shot("duel"); yield return new WaitForSecondsRealtime(.2f);

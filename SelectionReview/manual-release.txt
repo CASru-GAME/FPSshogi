@@ -1,0 +1,9 @@
+PASS Normal Windows release opens title.
+PASS Mouse Start opens unassigned player selection.
+PASS Mouse participation joins keyboard/mouse into1P without preparing.
+PASS Second click prepares only1P;2P remains waiting and no match starts.
+PASS Ready state remains waiting after more than1second with only one participant.
+PASS Mouse cancellation returns1P to joined/unprepared.
+PASS Back returns to a usable title with controller count0.
+Keyboard OS-send verification limit: see input-tool-diagnostic.txt. Actual Input System keyboard event handling is covered by the23 native smoke and56 editor cases.
+PASS Normal Windows release exits cleanly; process absent and Player.log shows Input System shutdown.

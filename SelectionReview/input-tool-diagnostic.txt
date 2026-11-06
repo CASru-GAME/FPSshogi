@@ -1,0 +1,6 @@
+keyboard=1 layout=Keyboard
+Keyboard event: STAT, device=1
+Keyboard event: STAT, device=1
+Keyboard event: TEXT, device=1
+Keyboard event: TEXT, device=1
+Observed while all Keyboard key controls were monitored each frame: computer-use Return/a sends TEXT (and STAT on Return), but no key control reports a pressed or released edge. The UI therefore receives no Enter button press from this tool route. Input System keyboard events in the editor/native suites do exercise and pass the actual join/ready handler. Production behavior was not changed to accept text events.

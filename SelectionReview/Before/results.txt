@@ -1,0 +1,3 @@
+FAIL Start opens player selection instead of loading a match
+FAIL Connected devices are not assigned until they participate
+PASS No runtime errors or exceptions
