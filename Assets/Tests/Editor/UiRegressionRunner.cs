@@ -27,6 +27,7 @@ public static class UiRegressionRunner
     static readonly List<string> results = new List<string>();
     static readonly List<string> runtimeErrors = new List<string>();
     static Gamepad pad1, pad2;
+    static Keyboard keyboard;
     static UiRegressionRunner()
     {
         EditorApplication.update += Update;
@@ -114,6 +115,17 @@ public static class UiRegressionRunner
         SceneManager.LoadScene("Title");
         yield return .5;
         Check("Title starts with an actionable selection", EventSystem.current?.currentSelectedGameObject?.GetComponent<Button>()?.interactable == true);
+        keyboard=InputSystem.AddDevice<Keyboard>("UI Test Keyboard");
+        InvokeSession("OpenHelp"); yield return .3;
+        InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Escape)); yield return .15;
+        InputSystem.QueueStateEvent(keyboard,new KeyboardState()); yield return .3;
+        Check("Keyboard Escape returns from help",Visible("Start button"));
+        InvokeSession("OpenHelp"); yield return .3;
+        InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Enter)); yield return .15;
+        InputSystem.QueueStateEvent(keyboard,new KeyboardState()); yield return .3;
+        Check("Keyboard Enter activates focused Back",Visible("Start button"));
+        InputSystem.RemoveDevice(keyboard); keyboard=null;
+        InvokeSession("Back"); yield return .3;
         Capture("test-title");
         yield return .3;
         CheckLayout("title");
@@ -243,6 +255,8 @@ public static class UiRegressionRunner
         if (pad1 != null && pad1.added) InputSystem.RemoveDevice(pad1);
         if (pad2 != null && pad2.added) InputSystem.RemoveDevice(pad2);
         pad1 = pad2 = null;
+        if(keyboard!=null && keyboard.added) InputSystem.RemoveDevice(keyboard);
+        keyboard=null;
         results.Add($"TOTAL {results.Count(s=>s.StartsWith("PASS"))} PASS / {results.Count(s=>s.StartsWith("FAIL")||s.StartsWith("ERROR"))} FAIL");
         File.WriteAllLines(Dir + "regression-results.txt", results);
         Time.timeScale = 1; EditorApplication.isPlaying = false;

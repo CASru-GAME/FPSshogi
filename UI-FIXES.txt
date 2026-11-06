@@ -28,6 +28,10 @@ Unityでの確認:
 検証: Assets/Tests/Editor/UiRegressionRunner.cs
 画像: UIReview/After/1080/、UIReview/After/720/
 ビルド結果: Logs/ui-build-results.txt
+Windows版: Builds/FPSshogi/FPSshogi.exe（最終ビルド・起動確認済み）。
+実シーンテスト: 720p 50/50、1080p 52/52 成功、実行時エラー0。
+独立コードレビュー: UIReview/After/CODE-REVIEW.txt（追加指摘なし）。
+変更はローカルの fix/ui-usability ブランチに保存。
 
 フォント:
   Noto Sans CJK JP Regular (Noto CJK Sans2.004)
@@ -35,5 +39,14 @@ Unityでの確認:
   SIL Open Font License 1.1: Assets/Resources/UI/OFL.txt
 
 検証の制限:
-  入力テストにはUnity Input Systemの仮想ゲームパッドを使用。
+  入力テストにはUnity Input Systemの仮想ゲームパッド/Keyboardを使用。
+  Windows実行版の画面操作はマウスで確認。
   物理ゲームパッドでの操作感・機種ごとの入力は未確認。
+  720p/1080p以外の画面比率や長時間の連続対局は未検証。
+
+作業上の判断:
+  復元した素材を保持するため、同じUnityプロジェクト内で修正しました。
+  既存のゲーム処理を実際に動かすEditorテストを使用しました。
+  これにより実行環境も確認できますが、単体テストより実行に時間がかかります。
+  キー注入による実行版操作は確認できず、キーボード経路は仮想入力で検証。
+  元からある戦闘/物理挙動や、全入力組合せの品質を保証するものではありません。
