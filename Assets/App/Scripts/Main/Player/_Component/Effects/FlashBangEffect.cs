@@ -36,7 +36,7 @@ namespace App.Main.Player
             if (targetCamera == null) targetCamera = Camera.main;
 
             // 移動を止める（既存実装に合わせる）
-            playerStatus.MoveSpeed.Multiply(0.2f);
+            playerStatus.MoveSpeed.SetMultiplier(this, 0.2f);
 
             // オーバーレイ生成（プレイヤーカメラに紐づける）
             CreateOverlay();
@@ -127,7 +127,7 @@ namespace App.Main.Player
             // リセット処理
             try
             {
-                playerStatus?.MoveSpeed.Reset();
+                playerStatus?.MoveSpeed.RemoveMultiplier(this);
             }
             catch (Exception)
             {
@@ -143,6 +143,7 @@ namespace App.Main.Player
             }
 
             isActive = false;
+            lastTime = 0f;
             onEffectComplete?.Invoke();
             onEffectComplete = null;
             playerStatus = null;

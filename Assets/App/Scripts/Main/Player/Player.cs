@@ -22,6 +22,7 @@ namespace App.Main.Player
         private PlayerInput pi;
         private Vector2 moveInput = Vector2.zero;
         private Vector2 lookInput = Vector2.zero;
+        private bool mouseLook;
         private float yaw = 0f;
         private float pitch = 0f;
         private float normalFieldOfView = 60f;
@@ -38,6 +39,8 @@ namespace App.Main.Player
         public void ResetDuelPresentation()
         {
             ResetInput(); ClearMovementOverride(); StopAllCoroutines();
+            playerStatus?.EffectList.ClearEffects();
+            playerStatus?.DefensePoint.Reset();
             CombatVisuals.Clear(this);
             yaw=transform.eulerAngles.y; pitch=0;
             if(cameraTransform!=null)
@@ -137,6 +140,7 @@ namespace App.Main.Player
 
         public void SetPlayerStatus(PlayerStatus status)
         {
+            playerStatus?.EffectList.ClearEffects();
             playerStatus = status;
         }
 
@@ -157,6 +161,7 @@ namespace App.Main.Player
 
         public void OnDestroy()
         {
+            playerStatus?.EffectList.ClearEffects();
             if (pi != null)
                 pi.onActionTriggered -= OnActionTriggered;
         }
@@ -180,6 +185,7 @@ namespace App.Main.Player
                     {
                         var device = context.control?.device;
                         bool isGamepad = device is Gamepad;
+                        mouseLook = device is Mouse;
                         var raw = context.ReadValue<Vector2>();
                         lookInput = isGamepad ? raw * gamepadLookMultiplier : raw;
                     }
@@ -265,8 +271,25 @@ namespace App.Main.Player
                 rb.linearVelocity = v;
             }
 
+            if (climbInput && !movementOverrideActive && !movementYOverrideActive && CanClimb(desired, forward))
+            {
+                var velocity=rb.linearVelocity;velocity.y=climbSpeed;rb.linearVelocity=velocity;
+            }
+
             currentSkill?.UpdateSkill();
             currentSecondaryAction?.UpdateSecondaryAction();
+        }
+
+        private bool CanClimb(Vector3 movement, Vector3 forward)
+        {
+            var body=GetComponent<Collider>();if(body==null)return false;
+            var bounds=body.bounds;
+            var direction=movement.sqrMagnitude>.01f?movement.normalized:forward;
+            if(direction.sqrMagnitude<.01f)return false;
+            var origin=bounds.center;origin.y=bounds.min.y+Mathf.Min(.2f,bounds.extents.y*.25f);
+            float reach=Mathf.Max(bounds.extents.x,bounds.extents.z)+climbDetectDistance;
+            return ShotPhysics.Raycast(new Ray(origin,direction),reach,~0,this,out var hit) &&
+                Mathf.Abs(hit.normal.y)<.6f && hit.collider.GetComponentInParent<Player>()==null;
         }
 
         public void SetMovementOverride(Vector3 velocity, float durationSeconds, bool preserveY = true)
@@ -295,9 +318,15 @@ namespace App.Main.Player
 
         void Update()
         {
+            if(playerStatus==null)return;
             playerStatus.EffectList.UpdateEffects();
-            float deltaX = lookInput.x * lookSensitivity * Time.deltaTime;
-            float deltaY = lookInput.y * lookSensitivity * Time.deltaTime;
+            // Mouse input is displacement per frame; a stick expresses a turn rate.
+            // .02 retains approximately the old mouse feel at 50 Hz without FPS dependence.
+            float lookStep=mouseLook ? .02f : Time.deltaTime;
+            if(Time.timeScale<=0)lookStep=0;
+            float deltaX = lookInput.x * lookSensitivity * lookStep;
+            float deltaY = lookInput.y * lookSensitivity * lookStep;
+            if(mouseLook)lookInput=Vector2.zero;
 
             yaw += deltaX;
             pitch -= deltaY;

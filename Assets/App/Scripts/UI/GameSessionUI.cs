@@ -170,6 +170,11 @@ namespace App.UI
                 transitionCaption=$"{(to==State.DuelPlayerOneWin?1:2)}P 決闘勝利";
                 transitionRemaining=2; countdown=false;
             }
+            if(to==State.DuelDraw)
+            {
+                transitionCaption="相打ち — 両方の駒が残ります";
+                transitionRemaining=2;countdown=false;
+            }
             if(to==State.PlayerOneWin || to==State.PlayerTwoWin)
             {
                 transitionRemaining=0; page=Page.Result;

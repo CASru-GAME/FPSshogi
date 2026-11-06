@@ -1,0 +1,182 @@
+PASS Initial board contains 20 pieces per player
+PASS Movement PlayerOne King promoted=0
+PASS Movement PlayerOne Hisya promoted=0
+PASS Movement PlayerOne Hisya promoted=1
+PASS Movement PlayerOne Kakugyo promoted=0
+PASS Movement PlayerOne Kakugyo promoted=1
+PASS Movement PlayerOne Kin promoted=0
+PASS Movement PlayerOne Gin promoted=0
+PASS Movement PlayerOne Gin promoted=1
+PASS Movement PlayerOne Keima promoted=0
+PASS Movement PlayerOne Keima promoted=1
+PASS Movement PlayerOne Kyosya promoted=0
+PASS Movement PlayerOne Kyosya promoted=1
+PASS Movement PlayerOne Fuhyo promoted=0
+PASS Movement PlayerOne Fuhyo promoted=1
+PASS Movement PlayerTwo King promoted=0
+PASS Movement PlayerTwo Hisya promoted=0
+PASS Movement PlayerTwo Hisya promoted=1
+PASS Movement PlayerTwo Kakugyo promoted=0
+PASS Movement PlayerTwo Kakugyo promoted=1
+PASS Movement PlayerTwo Kin promoted=0
+PASS Movement PlayerTwo Gin promoted=0
+PASS Movement PlayerTwo Gin promoted=1
+PASS Movement PlayerTwo Keima promoted=0
+PASS Movement PlayerTwo Keima promoted=1
+PASS Movement PlayerTwo Kyosya promoted=0
+PASS Movement PlayerTwo Kyosya promoted=1
+PASS Movement PlayerTwo Fuhyo promoted=0
+PASS Movement PlayerTwo Fuhyo promoted=1
+PASS PlayerOne Hisya captures blocker but cannot cross it
+PASS PlayerOne Kakugyo captures blocker but cannot cross it
+PASS PlayerOne Kyosya captures blocker but cannot cross it
+PASS PlayerOne knight jumps intervening piece
+PASS PlayerOne may drop pawn on file containing only own promoted pawn
+PASS PlayerOne cannot drop second unpromoted pawn
+PASS PlayerOne enemy pawn does not count as nifu
+PASS PlayerOne Fuhyo drop avoids dead rank
+PASS PlayerOne Kyosya drop avoids dead rank
+PASS PlayerOne Keima drop avoids dead rank
+PASS PlayerOne knight cannot drop on penultimate rank
+PASS PlayerOne cannot drop a captured king
+PASS PlayerTwo Hisya captures blocker but cannot cross it
+PASS PlayerTwo Kakugyo captures blocker but cannot cross it
+PASS PlayerTwo Kyosya captures blocker but cannot cross it
+PASS PlayerTwo knight jumps intervening piece
+PASS PlayerTwo may drop pawn on file containing only own promoted pawn
+PASS PlayerTwo cannot drop second unpromoted pawn
+PASS PlayerTwo enemy pawn does not count as nifu
+PASS PlayerTwo Fuhyo drop avoids dead rank
+PASS PlayerTwo Kyosya drop avoids dead rank
+PASS PlayerTwo Keima drop avoids dead rank
+PASS PlayerTwo knight cannot drop on penultimate rank
+PASS PlayerTwo cannot drop a captured king
+PASS Friendly target and off-board coordinates rejected
+PASS PlayerOne auto-promotes entering enemy camp
+PASS PlayerOne drop consumes one piece and remains unpromoted
+PASS PlayerOne capture starts duel before changing board
+PASS PlayerOne attackerWins=True kingTarget=False resolves correct board hand and next state
+PASS PlayerOne capture starts duel before changing board
+PASS PlayerOne attackerWins=True kingTarget=True resolves correct board hand and next state
+PASS PlayerOne capture starts duel before changing board
+PASS PlayerOne attackerWins=False kingTarget=False resolves correct board hand and next state
+PASS PlayerOne capture starts duel before changing board
+PASS PlayerOne attackerWins=False kingTarget=True resolves correct board hand and next state
+PASS PlayerTwo auto-promotes entering enemy camp
+PASS PlayerTwo drop consumes one piece and remains unpromoted
+PASS PlayerTwo capture starts duel before changing board
+PASS PlayerTwo attackerWins=True kingTarget=False resolves correct board hand and next state
+PASS PlayerTwo capture starts duel before changing board
+PASS PlayerTwo attackerWins=True kingTarget=True resolves correct board hand and next state
+PASS PlayerTwo capture starts duel before changing board
+PASS PlayerTwo attackerWins=False kingTarget=False resolves correct board hand and next state
+PASS PlayerTwo capture starts duel before changing board
+PASS PlayerTwo attackerWins=False kingTarget=True resolves correct board hand and next state
+PASS Wrong-turn move is rejected without mutation
+PASS Wrong-turn drop is rejected without spending hand
+PASS Invalid drop during duel does not change saved attacker
+PASS Board cannot move during duel
+PASS Paused board rejects mutation
+PASS Climb input raises player beside a solid board piece
+PASS Releasing climb stops climbing impulse
+PASS Climb cannot fly without a nearby obstacle
+PASS Mouse displacement is consumed once at 30 fps
+PASS Mouse displacement is consumed once at 120 fps
+PASS Equal mouse travel turns equally at 30 and 120 fps (0.800/0.800)
+PASS Duel reset clears active effect speed changes
+PASS Duel reset restores defense after discarding active skill
+PASS Duel reset removes temporary flash overlay
+PASS effects: normal configured defense reduces damage to 13 (HP=87)
+PASS effects: promoted configured defense reduces damage to 9 (HP=111)
+PASS effects: first Slow is added
+PASS effects: repeated Slow refreshes the existing effect
+PASS effects: repeated Slow stays at half speed (actual=5, expected=5)
+PASS effects: repeated Slow refreshes its duration (actual=5, expected=5)
+PASS effects: ending repeated Slow restores original speed (actual=10, expected=10)
+PASS effects: ending Slow preserves an existing speed boost (actual=15, expected=15)
+PASS effects: repeated FlashBang keeps one movement penalty (actual=2, expected=2)
+PASS effects: ending repeated FlashBang restores original speed (actual=10, expected=10)
+PASS effects: different slow kinds combine (actual=1, expected=1)
+PASS effects: FlashBang expiry preserves remaining Slow (actual=5, expected=5)
+PASS effects: Slow expiry preserves remaining FlashBang (actual=2, expected=2)
+PASS effects: zero multiplier stops movement (actual=0, expected=0)
+PASS effects: ending zero multiplier preserves speed boost (actual=15, expected=15)
+PASS effects: overlapping Hisya fields keep one slow strength (actual=6, expected=6)
+PASS effects: leaving one Hisya field keeps the other active (actual=6, expected=6)
+PASS effects: leaving all Hisya fields removes the slow (actual=10, expected=10)
+PASS effects: one collider leaving does not release a player still in the field (actual=6, expected=6)
+PASS effects: last collider leaving removes the field slow (actual=10, expected=10)
+PASS effects: Hisya field combines with another slow kind (actual=3, expected=3)
+PASS effects: leaving Hisya field preserves another slow kind (actual=5, expected=5)
+PASS effects: destroying one field preserves an overlapping field (actual=6, expected=6)
+PASS effects: remaining field releases after another was destroyed (actual=10, expected=10)
+PASS effects: effect list exposes duel cleanup
+PASS effects: duel cleanup ends every active effect
+PASS effects: duel cleanup restores speed (actual=10, expected=10)
+PASS effects: repeated duel cleanup is harmless (actual=10, expected=10)
+PASS effects: guard cleanup targets the status it buffed (defense=7)
+PASS effects: rejected guard activation leaves other status untouched (defense=0)
+PASS effects: cooldown blocks duplicate Gin Kin and guard buffs
+PASS effects: Gin expiry preserves Kin guard and base defense
+PASS effects: guard expiry preserves Kin and base defense
+PASS effects: all defense buffs expire back to base defense
+PASS Short gun damages once and respects cooldown
+PASS Short gun damages once and respects cooldown (immediate reuse blocked)
+PASS Short gun passes through a slow-field trigger
+PASS Short gun passes through a slow-field trigger (immediate reuse blocked)
+PASS Short gun ignores its owner's colliders
+PASS Short gun ignores its owner's colliders (immediate reuse blocked)
+PASS Short gun is stopped by a solid wall
+PASS Short gun is stopped by a solid wall (immediate reuse blocked)
+PASS Short gun retains linear distance falloff
+PASS Short gun retains linear distance falloff (immediate reuse blocked)
+PASS Short gun cannot hit beyond its range
+PASS Short gun cannot hit beyond its range (immediate reuse blocked)
+PASS Long gun damages once and respects cooldown
+PASS Long gun damages once and respects cooldown (immediate reuse blocked)
+PASS Long gun passes through a slow-field trigger
+PASS Long gun passes through a slow-field trigger (immediate reuse blocked)
+PASS Long gun ignores its owner's colliders
+PASS Long gun ignores its owner's colliders (immediate reuse blocked)
+PASS Long gun is stopped by a solid wall
+PASS Long gun is stopped by a solid wall (immediate reuse blocked)
+PASS Long gun retains linear distance falloff
+PASS Long gun retains linear distance falloff (immediate reuse blocked)
+PASS Long gun cannot hit beyond its range
+PASS Long gun cannot hit beyond its range (immediate reuse blocked)
+PASS Turret hits once per firing interval
+PASS Turret passes through a slow-field trigger
+PASS Turret is stopped by a solid wall
+PASS One arrow damages a multi-collider target only once
+PASS Arrow owner immunity does not consume the shot
+PASS An arrow stopped by a wall cannot damage another collider in the same frame
+PASS A slow-field trigger does not destroy an arrow
+PASS The live bow arrow prefab is available
+PASS Bow creates the configured Rigidbody projectile
+PASS Bow cooldown prevents a second projectile
+PASS Rigidbody arrow falloff is measured from its launch point
+PASS The live bow projectile leaves its owner and damages a nearby target exactly once (owner HP=1000, target HP=980, arrow alive=False)
+PASS Transform-only arrows sweep their movement and hit a target
+PASS Transform-only arrows are consumed by a thin solid wall
+PASS A flash grenade applies its effect only once per player
+PASS Flash grenade retains its existing effect on the nearby thrower
+PASS Melee trigger fixture overlaps only the enemy weapon, not the body
+PASS Melee initial overlap ignores the opponent weapon trigger
+FAIL Melee entering overlap ignores the opponent weapon trigger
+PASS Melee initial overlap damages a clear body once (HP=980)
+FAIL Melee initial overlap cannot damage a body behind a thin solid wall (HP=980)
+PASS Melee entering overlap damages a clear body once (HP=980)
+FAIL Melee entering overlap cannot damage a body behind a thin solid wall (HP=980)
+PASS Melee can damage a body through an ability trigger volume (HP=980)
+PASS Cancelling a melee attack closes its hitbox and damage callback
+PASS Paused duel defers death resolution
+PASS Resuming resolves pending death and returns to next turn
+PASS PlayerOne simultaneous deaths preserve both pieces
+PASS PlayerOne simultaneous deaths award no captured piece
+PASS PlayerOne simultaneous deaths end attacker turn
+PASS PlayerOne draw returns to usable board
+PASS PlayerTwo simultaneous deaths preserve both pieces
+PASS PlayerTwo simultaneous deaths award no captured piece
+PASS PlayerTwo simultaneous deaths end attacker turn
+PASS PlayerTwo draw returns to usable board
+PASS No runtime errors or exceptions

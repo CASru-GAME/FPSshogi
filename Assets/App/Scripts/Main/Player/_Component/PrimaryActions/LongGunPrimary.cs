@@ -84,7 +84,7 @@ namespace App.Main.Player
 
             // ヒットスキャン（即時）
             Ray ray = new Ray(cam.transform.position, cam.transform.forward);
-            if (Physics.Raycast(ray, out RaycastHit hit, maxRange, hitLayers.value))
+            if (ShotPhysics.Raycast(ray, maxRange, hitLayers, player, out RaycastHit hit))
             {
                 // プレイヤーに当たったか確認
                 var targetPlayer = hit.collider.GetComponentInParent<Player>();

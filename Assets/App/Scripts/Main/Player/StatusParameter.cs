@@ -21,11 +21,11 @@ namespace App.Main.Player
         {
             if (isUra)
             {
-                return new PlayerStatus(hpMaxUra, attackPointDefaultUra, moveSpeedDefaultUra, player);
+                return new PlayerStatus(hpMaxUra, attackPointDefaultUra, moveSpeedDefaultUra, player, defensePointDefaultUra);
             }
             else
             {
-                return new PlayerStatus(hpMax, attackPointDefault, moveSpeedDefault, player);
+                return new PlayerStatus(hpMax, attackPointDefault, moveSpeedDefault, player, defensePointDefault);
             }
         }
 

@@ -146,6 +146,7 @@ namespace App.Main.Player
                 var target = c.GetComponentInParent<Player>();
                 if (target == null) continue;
                 if (target == owner) continue;
+                if (!HasClearPathTo(c, target)) continue;
 
                 try
                 {
@@ -161,6 +162,7 @@ namespace App.Main.Player
         void OnTriggerEnter(Collider other)
         {
             if (hitCollider == null || !hitCollider.enabled) return;
+            if (other == null || other.isTrigger) return;
 
             // レイヤーフィルタ
             if ((hitLayers.value & (1 << other.gameObject.layer)) == 0) return;
@@ -168,6 +170,7 @@ namespace App.Main.Player
             var target = other.GetComponentInParent<Player>();
             if (target == null) return;
             if (target == owner) return; // 所有者はヒットしない
+            if (!HasClearPathTo(other, target)) return;
 
             // 当たり判定は通知のみ。外部でダメージや重複制御を行う。
             try
@@ -178,6 +181,19 @@ namespace App.Main.Player
             {
                 // 安全に無視
             }
+        }
+
+        private bool HasClearPathTo(Collider targetCollider, Player target)
+        {
+            // An animated blade can overlap a body on the far side of cover.
+            // Check from its wielder so starting the query beyond the wall cannot bypass it.
+            Vector3 origin = owner != null ? owner.transform.position : transform.position;
+            Vector3 direction = targetCollider.ClosestPoint(origin) - origin;
+            float distance = direction.magnitude;
+            if (distance <= Mathf.Epsilon) return true;
+
+            return !ShotPhysics.Raycast(new Ray(origin, direction / distance), distance, hitLayers,
+                owner, out RaycastHit hit, transform) || hit.collider.GetComponentInParent<Player>() == target;
         }
 
         // 所有者を設定するユーティリティ

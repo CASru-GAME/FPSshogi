@@ -19,7 +19,8 @@ namespace App.Main.GameMaster
             DuelPlayerTwoWin,
             Paused,
             PlayerOneWin,
-            PlayerTwoWin
+            PlayerTwoWin,
+            DuelDraw
         }
 
         [SerializeField] private GameState currentState = GameState.Starting;
@@ -36,6 +37,7 @@ namespace App.Main.GameMaster
         private event Action OnChangeToDuel;
         private event Action OnChangeToDuelPlayerOneWin;
         private event Action OnChangeToDuelPlayerTwoWin;
+        private event Action OnChangeToDuelDraw;
         private event Action OnChangeToPaused;
         private event Action OnChangeToPlayerOneWin;
         private event Action OnChangeToPlayerTwoWin;
@@ -145,7 +147,10 @@ namespace App.Main.GameMaster
                     return to == GameState.PlayerOneTurn || to == GameState.Duel || to == GameState.Paused;
 
                 case GameState.Duel:
-                    return to == GameState.DuelPlayerOneWin || to == GameState.DuelPlayerTwoWin || to == GameState.Paused;
+                    return to == GameState.DuelPlayerOneWin || to == GameState.DuelPlayerTwoWin || to == GameState.DuelDraw || to == GameState.Paused;
+
+                case GameState.DuelDraw:
+                    return to == GameState.PlayerOneTurn || to == GameState.PlayerTwoTurn;
 
                 case GameState.DuelPlayerOneWin:
                     return to == GameState.PlayerOneWin || to == GameState.PlayerOneTurn || to == GameState.PlayerTwoTurn;
@@ -192,6 +197,9 @@ namespace App.Main.GameMaster
                     break;
                 case GameState.DuelPlayerTwoWin:
                     OnChangeToDuelPlayerTwoWin?.Invoke();
+                    break;
+                case GameState.DuelDraw:
+                    OnChangeToDuelDraw?.Invoke();
                     break;
                 case GameState.Paused:
                     OnChangeToPaused?.Invoke();
@@ -376,6 +384,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToDuelPlayerOneWin += onExitDuel;
             OnChangeToDuelPlayerTwoWin += onExitDuel;
+            OnChangeToDuelDraw += onExitDuel;
             OnChangeToPaused += onExitDuel;
         }
 
@@ -383,6 +392,7 @@ namespace App.Main.GameMaster
         {
             OnChangeToDuelPlayerOneWin -= onExitDuel;
             OnChangeToDuelPlayerTwoWin -= onExitDuel;
+            OnChangeToDuelDraw -= onExitDuel;
             OnChangeToPaused -= onExitDuel;
         }
 
@@ -490,6 +500,9 @@ namespace App.Main.GameMaster
             OnChangeToDuelPlayerTwoWin -= onChangeToDuelPlayerTwoWin;
         }
 
+        public void SubscribeToDuelDraw(Action callback) => OnChangeToDuelDraw += callback;
+        public void UnsubscribeFromDuelDraw(Action callback) => OnChangeToDuelDraw -= callback;
+
         private void OnDestroy()
         {
             // メモリリーク防止のため、すべてのイベントを解除
@@ -504,6 +517,7 @@ namespace App.Main.GameMaster
             OnChangeToDuel = null;
             OnChangeToDuelPlayerOneWin = null;
             OnChangeToDuelPlayerTwoWin = null;
+            OnChangeToDuelDraw = null;
             OnChangeToPaused = null;
             OnChangeToPlayerOneWin = null;
             OnChangeToPlayerTwoWin = null;

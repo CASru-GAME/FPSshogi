@@ -1,0 +1,19 @@
+PASS Native initial board contains forty pieces
+PASS Native board move starts the duel
+PASS Native countdown enables split-screen combat
+PASS Native gamepad fires the real bow through a trigger and hits only the opponent
+PASS Native arrow does not apply damage twice
+PASS Native second gamepad fires the gun through a trigger
+PASS Native left stick moves the player
+PASS Native right stick turns the camera
+PASS Native neutral stick stops camera rotation
+PASS Native climb button raises the real player beside solid cover
+PASS Native pause defers a pending death
+PASS Native resume resolves the capture and changes turn
+PASS Native duel end removes slow and restores board presentation
+PASS Native board move starts the duel
+PASS Native simultaneous deaths preserve both pieces without captures
+PASS Native draw ends the attacker turn and resumes the board
+PASS Native board move starts the duel
+PASS Native king defeat ends the match with the correct winner
+PASS No native runtime errors

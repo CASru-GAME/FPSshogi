@@ -60,7 +60,7 @@ namespace App.UI
             UiTheme.Button(panel,"Abilities tab","駒と能力",545,130,491,58,()=>Help(true),abilities);
             if(!abilities)
             {
-                UiTheme.Label(panel,"Rule instructions","1. 自分の駒を選び、光っているマスへ動かします。\n2. 相手の駒に進むと、左右に分かれたFPSの決闘が始まります。\n3. 決闘で倒した相手の駒は持ち駒に。空きマスへ打てます。\n4. 相手の王を決闘で倒すと勝利。成れる駒は自動で成ります。",44,215,992,180,26);
+                UiTheme.Label(panel,"Rule instructions","1. 自分の駒を選び、光っているマスへ動かします。\n2. 相手の駒に進むと、左右に分かれたFPSの決闘が始まります。\n3. 決闘で倒した相手の駒は持ち駒に。空きマスへ打てます。\n4. 王を決闘で倒すと勝利。成りは自動です（王手・詰み判定なし）。\n5. 相打ちは両方の駒を残し、攻めた側の手番が終わります。",44,215,992,194,26);
                 UiTheme.Label(panel,"Keyboard instructions","キーボード / マウス\n将棋：WASD 移動 / F 決定 / C 取消 / E 持ち駒\nFPS：WASD 移動 / マウス 視点\n左クリック 攻撃 / 右クリック 防御・ズーム\nE スキル / Space 登る / Esc メニュー",44,410,992,184,25);
                 UiTheme.Label(panel,"Gamepad instructions","ゲームパッド（Xbox表記）\n将棋：十字キー・左スティック 移動 / A 決定 / B 取消 / X 持ち駒\nFPS：左スティック 移動 / 右スティック 視点 / RT 攻撃\nLT 防御・ズーム / B スキル / A 登る / START メニュー",44,599,992,145,24,UiTheme.Muted);
             }

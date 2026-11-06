@@ -48,6 +48,7 @@ namespace App.Main.Player
 
         void Update()
         {
+            if (Time.timeScale <= 0f || App.UI.GameSessionUI.BlocksGameplay) return;
             if (Time.time < nextFireTime) return;
 
             // ターゲットを取得（最も近い敵プレイヤー）
@@ -74,7 +75,7 @@ namespace App.Main.Player
 
             // 即時ヒットスキャン
             Ray ray = new Ray(muzzle.position, aimDir);
-            if (Physics.Raycast(ray, out RaycastHit hit, range, hitLayers.value))
+            if (ShotPhysics.Raycast(ray, range, hitLayers, owner, out RaycastHit hit, transform))
             {
                 var hitPlayer = hit.collider.GetComponentInParent<Player>();
                 if (hitPlayer != null && hitPlayer != owner)

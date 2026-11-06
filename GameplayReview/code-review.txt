@@ -1,0 +1,24 @@
+Independent final code review — 2026-11-06
+Base: 20dc748; reviewed the gameplay working tree on fix/gameplay-integrity.
+Reviewer: separate gameplay_final_review agent with fresh context, read-only.
+
+Initial review reproduced three important issues using additional regressions:
+1. Disabled/destroyed field contacts retained slow (5 failures).
+2. Due turret shot fired during pause and consumed its pending shot (2 failures).
+3. Same-frame lethal hits at different Update orders did not draw (1 failure).
+The new help copy also overflowed its text container (189 required /180 available).
+
+Final review: no remaining blocking findings, ready for integration of reviewed code.
+- HisyaFieldArea ignores triggers and prunes invalid body contacts.
+- KingTurret blocks damage and cooldown updates during pause/UI blocking.
+- DuelManager resolves after damage in LateUpdate.
+- Help text container enlarged to194; 1080p UI regression subsequently52 PASS.
+- AfterReview1080:199 PASS,0 FAIL,empty error log.
+- Actual Rigidbody arrow thin-cover test passes; no CCD change needed.
+
+Parent rulings on excluded topics:
+- Unrelated restoration/assets/package/project settings: preserved outside this commit.
+- Ordinary check/checkmate and optional promotion: excluded by explicit user rule choice.
+- Numeric balance and existing area-skill targeting semantics: preserve current design.
+- Legacy direct Paused state API: not used by normal UI; tested the actual UI pause flow.
+- Native runtime and UI were reserved for parent verification; see delivery report for results.

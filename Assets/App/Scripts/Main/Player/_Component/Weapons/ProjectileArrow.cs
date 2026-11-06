@@ -17,6 +17,7 @@ namespace App.Main.Player
         float lifeTimer = 8f;
         Rigidbody rb;
         bool launched = false;
+        bool consumed = false;
 
         public void Initialize(Player owner, PlayerStatus ownerStatus, float damageMultiplier, float falloffStart, float maxRange, float minDamageMultiplier, LayerMask hitLayers)
         {
@@ -50,6 +51,7 @@ namespace App.Main.Player
 
         public void SetAutoDestroy(float seconds)
         {
+            launchPosition = transform.position;
             lifeTimer = Mathf.Max(0.01f, seconds);
             launched = true;
             StartCoroutine(AutoDestroyAfter(lifeTimer));
@@ -63,9 +65,18 @@ namespace App.Main.Player
 
         System.Collections.IEnumerator MoveByTransform(Vector3 velocity)
         {
-            while (true)
+            while (!consumed)
             {
-                transform.position += velocity * Time.deltaTime;
+                Vector3 movement = velocity * Time.deltaTime;
+                float distance = movement.magnitude;
+                if (distance > 0f && ShotPhysics.Raycast(new Ray(transform.position, movement / distance),
+                    distance, hitLayers, owner, out RaycastHit hit, transform))
+                {
+                    transform.position = hit.point;
+                    HandleHit(hit.collider);
+                    yield break;
+                }
+                transform.position += movement;
                 yield return null;
             }
         }
@@ -82,7 +93,7 @@ namespace App.Main.Player
 
         private void HandleHit(Collider col)
         {
-            if (col == null) return;
+            if (consumed || col == null || col.isTrigger) return;
 
             // レイヤーフィルタ
             if ((hitLayers.value & (1 << col.gameObject.layer)) == 0) return;
@@ -96,6 +107,10 @@ namespace App.Main.Player
             }
 
             if (owner != null && target == owner) return; // 所有者は無視
+
+            // Destroy is deferred until the end of the frame. Consume first so
+            // another body collider cannot apply this projectile's damage twice.
+            consumed = true;
 
             // ダメージ計算
             int baseAtk = 0;
@@ -134,6 +149,7 @@ namespace App.Main.Player
 
         private void TryDestroy()
         {
+            consumed = true;
             try { Destroy(gameObject); } catch { }
         }
     }

@@ -123,7 +123,14 @@ namespace App.Main.Player
         public float slowMultiplier = 0.6f;
         public LayerMask affectLayers = ~0;
 
-        private Dictionary<Player, HisyaFieldSlowEffect> applied = new Dictionary<Player, HisyaFieldSlowEffect>();
+        private sealed class FieldContact
+        {
+            public HisyaFieldSlowEffect effect;
+            public readonly HashSet<Collider> colliders = new HashSet<Collider>();
+        }
+
+        private readonly Dictionary<Player, FieldContact> applied = new Dictionary<Player, FieldContact>();
+        private readonly List<Player> unavailableContacts = new List<Player>();
         private float lifeTimer;
 
         void Start()
@@ -133,6 +140,7 @@ namespace App.Main.Player
 
         void Update()
         {
+            PruneUnavailableContacts();
             lifeTimer -= Time.deltaTime;
             if (lifeTimer <= 0f)
             {
@@ -142,37 +150,71 @@ namespace App.Main.Player
 
         void OnTriggerEnter(Collider other)
         {
+            if (IsUnavailableBody(other)) return;
             if ((affectLayers.value & (1 << other.gameObject.layer)) == 0) return;
 
             var p = other.GetComponentInParent<Player>();
             if (p == null) return;
-            if (applied.ContainsKey(p)) return;
-
             var ps = p.playerStatus;
             if (ps == null) return;
 
-            var effect = new HisyaFieldSlowEffect(slowMultiplier);
-            try
+            if (applied.TryGetValue(p, out var contact))
             {
-                ps.EffectList.AddEffect(effect);
-            }
-            catch (Exception)
-            {
-                // EffectList に問題がある場合は直接起動
-                effect.Effect(p, ps, null);
+                if (contact.effect.isActive && contact.effect.playerStatus == ps)
+                {
+                    contact.colliders.Add(other);
+                    return;
+                }
+                contact.effect.RemoveField(this);
+                applied.Remove(p);
             }
 
-            applied[p] = effect;
+            // All overlapping fields share the registered effect; each field
+            // keeps a source reference until its last player collider leaves.
+            var effect = ps.EffectList.GetEffect<HisyaFieldSlowEffect>();
+            if (effect == null)
+            {
+                effect = new HisyaFieldSlowEffect(slowMultiplier);
+                ps.EffectList.AddEffect(effect);
+            }
+            effect.AddField(this, slowMultiplier);
+            contact = new FieldContact { effect = effect };
+            contact.colliders.Add(other);
+            applied[p] = contact;
         }
 
         void OnTriggerExit(Collider other)
         {
             var p = other.GetComponentInParent<Player>();
             if (p == null) return;
-            if (!applied.TryGetValue(p, out var eff)) return;
+            if (!applied.TryGetValue(p, out var contact)) return;
+            if (!contact.colliders.Remove(other) || contact.colliders.Count > 0) return;
 
-            try { eff.EndEffect(); } catch (Exception) { }
+            contact.effect.RemoveField(this);
             applied.Remove(p);
+        }
+
+        private static bool IsUnavailableBody(Collider collider)
+        {
+            return collider == null || !collider.enabled || collider.isTrigger || !collider.gameObject.activeInHierarchy;
+        }
+
+        private void PruneUnavailableContacts()
+        {
+            // Unity does not send OnTriggerExit when a collider is disabled or
+            // destroyed. Only live body colliders can keep this field applied.
+            foreach (var pair in applied)
+            {
+                pair.Value.colliders.RemoveWhere(IsUnavailableBody);
+                if (pair.Key == null || pair.Value.colliders.Count == 0)
+                    unavailableContacts.Add(pair.Key);
+            }
+            foreach (var player in unavailableContacts)
+            {
+                applied[player].effect.RemoveField(this);
+                applied.Remove(player);
+            }
+            unavailableContacts.Clear();
         }
 
         private void DestroySelf()
@@ -184,9 +226,9 @@ namespace App.Main.Player
         private void ReleaseEffects()
         {
             // 残存効果を解除
-            foreach (var kv in new List<KeyValuePair<Player, HisyaFieldSlowEffect>>(applied))
+            foreach (var contact in new List<FieldContact>(applied.Values))
             {
-                try { kv.Value.EndEffect(); } catch (Exception) { }
+                contact.effect.RemoveField(this);
             }
             applied.Clear();
 
@@ -204,7 +246,8 @@ namespace App.Main.Player
         public PlayerStatus playerStatus { get; private set; }
         public Player player { get; private set; }
 
-        private float multiplier = 1f;
+        private readonly float multiplier;
+        private readonly Dictionary<HisyaFieldArea, float> fields = new Dictionary<HisyaFieldArea, float>();
 
         public HisyaFieldSlowEffect(float multiplier)
         {
@@ -220,13 +263,31 @@ namespace App.Main.Player
             isActive = true;
             lastTime = duration;
 
-            try
+            UpdateMultiplier();
+        }
+
+        internal void AddField(HisyaFieldArea field, float fieldMultiplier)
+        {
+            fields[field] = Mathf.Clamp01(fieldMultiplier);
+            UpdateMultiplier();
+        }
+
+        internal void RemoveField(HisyaFieldArea field)
+        {
+            if (!fields.Remove(field)) return;
+            if (fields.Count == 0) EndEffect();
+            else UpdateMultiplier();
+        }
+
+        private void UpdateMultiplier()
+        {
+            float factor = multiplier;
+            if (fields.Count > 0)
             {
-                playerStatus.MoveSpeed.Multiply(multiplier);
+                factor = 1f;
+                foreach (float fieldMultiplier in fields.Values) factor = Mathf.Min(factor, fieldMultiplier);
             }
-            catch (Exception)
-            {
-            }
+            playerStatus?.MoveSpeed.SetMultiplier(this, factor);
         }
 
         public void UpdateEffect()
@@ -245,15 +306,11 @@ namespace App.Main.Player
         {
             if (!isActive && playerStatus == null) return;
 
-            try
-            {
-                playerStatus.MoveSpeed.Reset();
-            }
-            catch (Exception)
-            {
-            }
+            playerStatus?.MoveSpeed.RemoveMultiplier(this);
+            fields.Clear();
 
             isActive = false;
+            lastTime = 0f;
             onEffectComplete?.Invoke();
             onEffectComplete = null;
             playerStatus = null;

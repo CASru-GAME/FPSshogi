@@ -10,11 +10,11 @@ namespace App.Main.Player
         public MoveSpeed MoveSpeed { get; private set; }
         public EffectList EffectList { get; private set; }
 
-        public PlayerStatus(int hpMax, int attackPointDefault, float moveSpeedDefault, Player player)
+        public PlayerStatus(int hpMax, int attackPointDefault, float moveSpeedDefault, Player player, int defensePointDefault = 0)
         {
             Hp = new Hp(hpMax);
             AttackPoint = new AttackPoint(attackPointDefault);
-            DefensePoint = new DefensePoint();
+            DefensePoint = new DefensePoint(defensePointDefault);
             MoveSpeed = new MoveSpeed(moveSpeedDefault);
             EffectList = new EffectList(player, this);
         }

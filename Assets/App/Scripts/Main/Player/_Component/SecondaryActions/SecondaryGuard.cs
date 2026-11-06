@@ -24,14 +24,15 @@ namespace App.Main.Player
         {
             if (player == null || playerStatus == null) return;
 
-            this.player = player;
-            this.playerStatus = playerStatus;
             Debug.Log("SecondaryGuard activated.");
             // クールダウン中は何もしない
             if (cooldownTimer > 0f) return;
             Debug.Log("SecondaryGuard not on cooldown.");
             // 既にバフが有効なら重ねない（リフレッシュしたければここを変更）
             if (buffActive) return;
+
+            this.player = player;
+            this.playerStatus = playerStatus;
 
             // 直接 PlayerStatus を変更して防御力を上げる
             try
