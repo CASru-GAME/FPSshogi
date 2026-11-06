@@ -12,7 +12,9 @@ namespace App.UI
     {
         readonly RectTransform root, selected, cursor;
         readonly Image[,] cells = new Image[9,9];
-        readonly Text turn, feedback, pieceInfo;
+        readonly Text turn, feedback, pieceInfo, controls;
+        readonly RectTransform feedbackBacking;
+        readonly Text[] emptyTrays=new Text[2];
         readonly Text[] trayTitles = new Text[2];
         readonly Button[,] heldButtons = new Button[2,7];
         readonly Text[,] heldLabels = new Text[2,7];
@@ -24,6 +26,7 @@ namespace App.UI
         readonly GameSessionUI session;
         readonly Camera camera;
         readonly Vector3 gridCenter, gridX, gridY;
+        int lastInvalidFeedback;
         public BoardHud(RectTransform parent, GameSessionUI owner)
         {
             session = owner;
@@ -52,25 +55,28 @@ namespace App.UI
             }
             selected=UiTheme.Frame(root,"Selected tile",UiTheme.Gold);
             cursor=UiTheme.Frame(root,"Cursor tile",UiTheme.Blue);
-            UiTheme.Box(root,"Turn backing",480,22,960,118,UiTheme.Ink);
-            turn=UiTheme.Label(root,"Turn label","",500,30,920,55,38,UiTheme.Gold,TextAnchor.MiddleCenter);
-            pieceInfo=UiTheme.Label(root,"Piece info","",500,85,920,42,24,UiTheme.Paper,TextAnchor.MiddleCenter);
-            for(int p=0;p<2;p++) BuildTray(p,p==0?1455:45);
-            UiTheme.Box(root,"Feedback backing",430,942,1060,48,UiTheme.Ink);
-            feedback=UiTheme.Label(root,"Board feedback","",445,947,1030,38,24,UiTheme.Paper,TextAnchor.MiddleCenter);
-            UiTheme.Box(root,"Controls backing",45,1000,1830,58,UiTheme.Ink);
-            UiTheme.Label(root,"Board controls","移動 WASD / 十字キー　決定 F / A　取消 C / B　持ち駒 E / X　　Esc / START：メニュー",65,1006,1790,42,25,UiTheme.Paper,TextAnchor.MiddleCenter);
+            UiTheme.Box(root,"Turn backing",40,30,390,75,UiTheme.Panel);
+            turn=UiTheme.Label(root,"Turn label","",60,36,350,63,34);
+            UiTheme.Box(root,"Selected piece backing",40,780,350,145,UiTheme.Panel);
+            pieceInfo=UiTheme.Label(root,"Piece info","",60,795,310,115,28);
+            for(int p=0;p<2;p++) BuildTray(p,p==0?40:1530);
+            feedbackBacking=UiTheme.Box(root,"Feedback backing",500,925,920,60,UiTheme.Panel).rectTransform;
+            feedback=UiTheme.Label(feedbackBacking,"Board feedback","",15,5,890,50,26,UiTheme.Ink,TextAnchor.MiddleCenter);
+            UiTheme.Box(root,"Controls backing",40,1000,1490,58,UiTheme.Panel);
+            controls=UiTheme.Label(root,"Board controls","",60,1006,1450,42,25);
             UiTheme.Button(root,"Board menu button","メニュー",1640,35,235,64,session.OpenPause);
+            UiTheme.Button(root,"Board guide button","駒の説明",1550,1000,325,58,session.OpenPieces);
         }
         void BuildTray(int player,float x)
         {
-            var panel=UiTheme.Box(root,$"P{player+1} captured tray",x,290,420,430,UiTheme.Panel).rectTransform;
-            trayTitles[player]=UiTheme.Label(panel,$"P{player+1} tray heading","",22,18,376,46,29,UiTheme.Gold);
-            UiTheme.Label(panel,"Tray hint","駒を選ぶと、打てるマスが光ります",22,69,376,36,21,UiTheme.Muted);
+            var panel=UiTheme.Box(root,$"P{player+1} captured tray",x,300,350,395,UiTheme.Panel).rectTransform;
+            UiTheme.Box(panel,"Player stripe",0,0,5,395,UiTheme.PlayerColor(player));
+            trayTitles[player]=UiTheme.Label(panel,$"P{player+1} tray heading","",22,18,306,46,28,UiTheme.PlayerColor(player));
+            emptyTrays[player]=UiTheme.Label(panel,$"P{player+1} no captured pieces","なし",22,97,306,60,27,UiTheme.Muted);
             for(int i=0;i<types.Length;i++)
             {
                 int index=i, p=player;
-                var btn=UiTheme.Button(panel,$"P{player+1} captured {types[i]}","",22+(i%2)*193,120+(i/2)*70,182,58,()=>
+                var btn=UiTheme.Button(panel,$"P{player+1} captured {types[i]}","",22+(i%2)*158,95+(i/2)*70,148,58,()=>
                 {
                     if(GameSessionUI.BlocksGameplay || (int)pointer.ActivePlayer != p) return;
                     pointer.ChooseCaptured(types[index]);
@@ -95,12 +101,18 @@ namespace App.UI
             root.gameObject.SetActive(visible);
             captured.SetVisible(false);
             if(!visible) return;
-            turn.text=$"{(pointer.ActivePlayer==PlayerType.PlayerOne?"1P / 先手":"2P / 後手")} の手番"+(pointer.IsCapturedMode?"　｜　持ち駒を選択":pointer.IsPlacingCaptured?"　｜　持ち駒を打つ":"");
+            int activePlayer=(int)pointer.ActivePlayer;
+            turn.text=$"{activePlayer+1}P の手番";turn.color=UiTheme.PlayerColor(activePlayer);
             feedback.text=pointer.Feedback;
+            if(pointer.InvalidFeedbackVersion!=lastInvalidFeedback){lastInvalidFeedback=pointer.InvalidFeedbackVersion;UiFeedback.Invalid();}
+            feedbackBacking.gameObject.SetActive(!string.IsNullOrWhiteSpace(feedback.text));
+            controls.text=session.Devices.IsGamepad(activePlayer)?"十字キー / 左スティック　選択　　 A　決定　　 B　取消　　 X　持ち駒　　 START　メニュー":"WASD　選択　　 F　決定　　 C　取消　　 E　持ち駒　　 Esc　メニュー";
             var origin=pointer.SelectedPosition; var pos=pointer.CursorPosition;
             var piece=board.GetPieceAt(origin.x>=0?origin.x:pos.x,origin.y>=0?origin.y:pos.y);
             PieceType type=pointer.IsPlacingCaptured||pointer.IsCapturedMode?pointer.CapturedType:piece?.Type??PieceType.None;
-            pieceInfo.text=type==PieceType.None?"自分の駒を選んでください":$"{PiecePresentation.Name(type)}　｜　{PiecePresentation.Weapon(type)}　｜　{PiecePresentation.Skill(type)}";
+            var target=board.GetPieceAt(pos.x,pos.y);
+            string action=pointer.IsCapturedMode?"持ち駒を選ぶ":pointer.IsPlacingCaptured?"持ち駒を打つ":origin.x>=0&&target!=null&&target.Player!=pointer.ActivePlayer?"決闘する":origin.x>=0?"移動先を選ぶ":"駒を選ぶ";
+            pieceInfo.text=type==PieceType.None?action:PiecePresentation.Name(type,piece!=null&&piece.IsPromoted&&!pointer.IsCapturedMode&&!pointer.IsPlacingCaptured)+"\n"+action;
             Vector2 size=new Vector2(Mathf.Abs(Center(1,0).x-Center(0,0).x),Mathf.Abs(Center(0,1).y-Center(0,0).y))*.92f;
             for(int x=0;x<9;x++) for(int y=0;y<9;y++)
             {
@@ -114,18 +126,22 @@ namespace App.UI
             for(int p=0;p<2;p++)
             {
                 bool active=(int)pointer.ActivePlayer==p;
-                trayTitles[p].text=$"{p+1}P の持ち駒"+(active&&pointer.IsCapturedMode?"　◀ 選択中":"");
-                trayTitles[p].color=active?UiTheme.Gold:UiTheme.Muted;
+                trayTitles[p].text=$"{p+1}P 持ち駒"+(active&&pointer.IsCapturedMode?"・選択中":"");
+                trayTitles[p].color=UiTheme.PlayerColor(p);
                 Dictionary<PieceType,int> counts=board.GetCapturedPieces((PlayerType)p);
+                int shown=0;
                 for(int i=0;i<7;i++)
                 {
                     counts.TryGetValue(types[i],out int count);
+                    heldButtons[p,i].gameObject.SetActive(count>0);if(count<=0)continue;
+                    heldButtons[p,i].GetComponent<RectTransform>().anchoredPosition=new Vector2(22+(shown%2)*158,-95-(shown/2)*70);shown++;
                     heldLabels[p,i].text=$"{PiecePresentation.Name(types[i])} ×{count}";
                     bool chosen=active&&(pointer.IsCapturedMode||pointer.IsPlacingCaptured)&&pointer.CapturedType==types[i];
-                    heldButtons[p,i].image.color=chosen?UiTheme.Gold:UiTheme.Ink;
-                    heldLabels[p,i].color=chosen?UiTheme.Ink:count>0?UiTheme.Paper:UiTheme.Muted;
+                    var colors=heldButtons[p,i].colors;colors.normalColor=chosen?UiTheme.FocusColor:UiTheme.Paper;colors.disabledColor=UiTheme.Panel;heldButtons[p,i].colors=colors;
+                    heldLabels[p,i].color=active?UiTheme.Ink:UiTheme.Muted;
                     heldButtons[p,i].interactable=active&&count>0&&!GameSessionUI.BlocksGameplay;
                 }
+                emptyTrays[p].gameObject.SetActive(shown==0);
             }
         }
     }

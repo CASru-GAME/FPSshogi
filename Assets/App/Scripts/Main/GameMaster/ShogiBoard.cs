@@ -287,10 +287,18 @@ namespace App.Main.GameMaster
 
         public bool CanDrop(int x, int y, PieceType type, PlayerType player)
         {
-            if (type == PieceType.King || x < 0 || x >= 9 || y < 0 || y >= 9 || !IsCaptured(player, type)) return false;
+            return GetDropProblem(x,y,type,player)==DropProblem.None;
+        }
+        public enum DropProblem { None, Outside, Unavailable, Occupied, Nifu, DeadEnd }
+        public DropProblem GetDropProblem(int x,int y,PieceType type,PlayerType player)
+        {
+            if(x<0||x>=9||y<0||y>=9)return DropProblem.Outside;
+            if(type==PieceType.King||!IsCaptured(player,type))return DropProblem.Unavailable;
             var piece = FindPieceFromPieceType(type, player);
-            return piece != null && board[x, y] == null &&
-                (type != PieceType.Fuhyo || !IsNifu(x, player)) && !IsDeadEndPiece(x, y, piece);
+            if(piece==null)return DropProblem.Unavailable;
+            if(board[x,y]!=null)return DropProblem.Occupied;
+            if(type==PieceType.Fuhyo&&IsNifu(x,player))return DropProblem.Nifu;
+            return IsDeadEndPiece(x,y,piece)?DropProblem.DeadEnd:DropProblem.None;
         }
 
         private bool IsCaptured(PlayerType player, PieceType pieceType)

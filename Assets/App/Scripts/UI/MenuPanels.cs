@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using App.Main.ShogiThings;
 
 namespace App.UI
 {
@@ -7,124 +9,140 @@ namespace App.UI
     {
         readonly RectTransform root;
         readonly GameSessionUI session;
-        RectTransform panel;
-        Text connection;
-        Button readyButton;
         PlayerSelectionPanel selection;
-        bool showAvailableDevices;
-        public bool Visible => root.gameObject.activeSelf;
-        public MenuPanels(RectTransform parent,GameSessionUI session)
-        { this.session=session; root=UiTheme.Rect(parent,"Menus",0,0,1920,1080); }
+        readonly Text[] connectionStates=new Text[2];
+        Text connection;
+        PieceGuidePanel guide;
+        public bool Visible=>root.gameObject.activeSelf;
+        public MenuPanels(RectTransform parent,GameSessionUI session){this.session=session;root=UiTheme.Rect(parent,"Menus",0,0,1920,1080);}
         void Clear(bool shade=true)
         {
-            foreach(Transform child in root) { child.gameObject.SetActive(false); Object.Destroy(child.gameObject); }
-            root.gameObject.SetActive(true); connection=null; readyButton=null; selection=null; showAvailableDevices=false;
-            if(shade) UiTheme.Box(root,"Menu shade",0,0,1920,1080,new Color(0,0,0,.68f),true);
+            foreach(Transform child in root){child.gameObject.SetActive(false);Object.Destroy(child.gameObject);}
+            root.gameObject.SetActive(true);selection=null;connection=null;connectionStates[0]=connectionStates[1]=null;
+            if(shade)UiTheme.Box(root,"Menu shade",0,0,1920,1080,new Color(.08f,.1f,.06f,.22f),true);
         }
-        RectTransform Standard(string title)
+        RectTransform Modal(string title,float height=540,float width=700)
         {
-            Clear(); panel=UiTheme.Box(root,"Menu panel",420,125,1080,830,UiTheme.Ink,true).rectTransform;
-            UiTheme.Label(panel,"Menu title",title,44,28,992,72,46,UiTheme.Gold);
-            UiTheme.Box(panel,"Heading rule",44,108,992,2,UiTheme.Gold); return panel;
+            Clear();var panel=UiTheme.Box(root,"Menu panel",(1920-width)*.5f,(1080-height)*.5f,width,height,UiTheme.Panel,true).rectTransform;
+            UiTheme.Label(panel,"Menu title",title,44,28,width-88,72,42);return panel;
         }
-        void Focus(Button button) => session.Focus(button);
-        public void Hide() { root.gameObject.SetActive(false); connection=null; readyButton=null; selection=null; }
+        void Header(string title,string backName="Back button",UnityEngine.Events.UnityAction back=null)
+        {
+            var label=UiTheme.Box(root,"Page title backing",60,45,450,78,UiTheme.Panel).rectTransform;
+            UiTheme.Label(label,"Menu title",title,20,4,410,70,42);
+            session.Focus(UiTheme.Button(root,backName,"戻る",1650,51,210,65,back??session.Back));
+        }
+        void Owner(RectTransform panel,float y,float width=612){UiTheme.Label(panel,"Menu owner",session.MenuOwnerLabel,0,y,width,40,23,UiTheme.Muted,TextAnchor.MiddleCenter);}
+        public void Hide(){root.gameObject.SetActive(false);selection=null;connection=null;}
+        public void FocusNamed(string name)
+        {
+            if(string.IsNullOrEmpty(name))return;
+            foreach(var selectable in root.GetComponentsInChildren<Selectable>())if(selectable.name==name&&selectable.interactable){session.Focus(selectable);return;}
+        }
         public void Title()
         {
-            Clear(false);
-            showAvailableDevices=true;
-            UiTheme.Box(root,"Title shade",0,0,1920,1080,new Color(.08f,.05f,.03f,.38f));
-            panel=UiTheme.Box(root,"Title panel",600,120,720,840,UiTheme.Ink,true).rectTransform;
-            UiTheme.Label(panel,"Game title","FPS 将棋",40,16,640,140,82,UiTheme.Gold,TextAnchor.MiddleCenter);
-            UiTheme.Label(panel,"Tagline","駒を取る、その瞬間が決闘。",40,158,640,50,30,UiTheme.Paper,TextAnchor.MiddleCenter);
-            UiTheme.Label(panel,"Rules preview","将棋で仕掛け、FPSで勝ち取る。\n相手の王を倒せば勝利。ローカル2人対戦。",55,225,610,85,26,UiTheme.Muted,TextAnchor.MiddleCenter);
-            connection=UiTheme.Label(panel,"Connection message","",55,327,610,76,24,UiTheme.Paper,TextAnchor.MiddleCenter);
-            var start=UiTheme.Button(panel,"Start button","対局開始",60,428,600,84,session.StartMatch,true);
-            UiTheme.Button(panel,"Help button","遊び方",60,536,290,70,session.OpenHelp);
-            UiTheme.Button(panel,"Settings button","設定",370,536,290,70,session.OpenSettings);
-            UiTheme.Button(panel,"Exit button","終了",60,630,600,64,session.Quit);
-            UiTheme.Label(panel,"Menu controls","↑↓ / 十字キーで選択　Enter / Aで決定\nマウスでも操作できます",40,735,640,70,22,UiTheme.Muted,TextAnchor.MiddleCenter);
-            Focus(start); UpdateDevices();
+            Clear(false);var shade=UiTheme.Rect(root,"Title shade",0,0,1050,1080).gameObject.AddComponent<UiSymbol>();shade.Shape=UiSymbol.Kind.LeftShade;shade.color=new Color(UiTheme.Panel.r,UiTheme.Panel.g,UiTheme.Panel.b,.86f);shade.raycastTarget=false;
+            UiTheme.Heading(root,"Game title","FPS将棋",85,86,650,140,96);
+            string[] names={"Start button","Help button","Settings button","Exit button"},labels={"対局","遊び方","設定","終了"};
+            UnityEngine.Events.UnityAction[] actions={session.StartMatch,session.OpenHelp,session.OpenSettings,session.ConfirmQuit};var buttons=new Button[4];
+            for(int i=0;i<4;i++){
+                var button=UiTheme.Button(root,names[i],labels[i],84,285+i*100,350,84,actions[i]);var colors=button.colors;colors.normalColor=Color.clear;colors.highlightedColor=UiTheme.Panel;colors.selectedColor=UiTheme.Panel;button.colors=colors;
+                var text=button.GetComponentInChildren<Text>();text.alignment=TextAnchor.MiddleLeft;text.fontSize=39;text.rectTransform.anchoredPosition=new Vector2(25,-4);buttons[i]=button;
+            }
+            UiTheme.VerticalNavigation(buttons);UiTheme.Key(root,"Title confirm","A / Enter",84,970,135,42);UiTheme.Label(root,"Menu controls","決定",235,970,300,42,26);session.Focus(buttons[0]);
         }
         public void Pause()
         {
-            Standard("一時停止");
-            UiTheme.Label(panel,"Pause hint","対局の状態を保持しています。",44,126,992,48,27,UiTheme.Muted);
-            var resume=UiTheme.Button(panel,"Resume button","対局に戻る",180,225,720,78,session.Resume,true);
-            UiTheme.Button(panel,"Help button","遊び方",180,332,720,72,session.OpenHelp);
-            UiTheme.Button(panel,"Settings button","設定",180,433,720,72,session.OpenSettings);
-            UiTheme.Button(panel,"Return title button","タイトルへ戻る",180,534,720,72,session.ConfirmReturn);
-            UiTheme.Label(panel,"Pause controls","Esc / START：再開",44,713,992,52,25,UiTheme.Muted,TextAnchor.MiddleCenter); Focus(resume);
+            var panel=Modal("一時停止",625,700);
+            var a=UiTheme.Button(panel,"Resume button","再開",44,135,612,75,session.Resume,true);
+            var b=UiTheme.Button(panel,"Settings button","設定",44,229,612,72,session.OpenSettings);
+            var c=UiTheme.Button(panel,"Help button","操作・遊び方",44,320,612,72,session.OpenHelp);
+            var d=UiTheme.Button(panel,"Return title button","タイトルへ戻る",44,411,612,72,session.ConfirmReturn);
+            Owner(panel,531,700);UiTheme.VerticalNavigation(a,b,c,d);session.Focus(a);
         }
-        public void Help(bool abilities=false)
+        public void Help(bool controls=false)
         {
-            Standard("遊び方");
-            UiTheme.Button(panel,"Basics tab","基本操作・ルール",44,130,475,58,()=>Help(false),!abilities);
-            UiTheme.Button(panel,"Abilities tab","駒と能力",545,130,491,58,()=>Help(true),abilities);
-            if(!abilities)
-            {
-                UiTheme.Label(panel,"Rule instructions","1. 自分の駒を選び、光っているマスへ動かします。\n2. 相手の駒に進むと、左右に分かれたFPSの決闘が始まります。\n3. 決闘で倒した相手の駒は持ち駒に。空きマスへ打てます。\n4. 王を決闘で倒すと勝利。成りは自動です（王手・詰み判定なし）。\n5. 相打ちは両方の駒を残し、攻めた側の手番が終わります。",44,215,992,194,26);
-                UiTheme.Label(panel,"Keyboard instructions","キーボード / マウス\n将棋：WASD 移動 / F 決定 / C 取消 / E 持ち駒\nFPS：WASD 移動 / マウス 視点\n左クリック 攻撃 / 右クリック 防御・ズーム\nE スキル / Space 登る / Esc メニュー",44,410,992,184,25);
-                UiTheme.Label(panel,"Gamepad instructions","ゲームパッド（Xbox表記）\n将棋：十字キー・左スティック 移動 / A 決定 / B 取消 / X 持ち駒\nFPS：左スティック 移動 / 右スティック 視点 / RT 攻撃\nLT 防御・ズーム / B スキル / A 登る / START メニュー",44,599,992,145,24,UiTheme.Muted);
+            Clear();Header("遊び方");
+            UiTheme.Button(root,"Basics tab","ルール",60,150,210,65,()=>session.SetHelpTab(false),!controls);
+            UiTheme.Button(root,"Controls tab","操作",290,150,210,65,()=>session.SetHelpTab(true),controls);
+            UiTheme.Button(root,"Abilities tab","駒の説明",520,150,270,65,session.OpenPieces);
+            if(!controls){
+                var photo=UiTheme.Rect(root,"Board reference",60,270,900,506).gameObject.AddComponent<RawImage>();photo.texture=Resources.Load<Texture2D>("UI/BoardReference");photo.raycastTarget=false;
+                var panel=UiTheme.Box(root,"Rules",1010,270,850,660,UiTheme.Panel).rectTransform;
+                string[] titles={"1. 駒を動かす","2. 駒が重なるとFPSで対戦","3. 王を倒すと勝利"};
+                string[] details={"自分の駒を選び、移動先を決めます。","倒した駒は持ち駒になり、空きマスへ打てます。","盤面とFPSを繰り返して対局します。"};
+                for(int i=0;i<3;i++){UiTheme.Label(panel,"Rule "+i,titles[i],32,22+i*135,786,56,33);UiTheme.Label(panel,"Rule detail "+i,details[i],32,81+i*135,786,58,26,UiTheme.Muted);}
+                UiTheme.Label(panel,"Rule exceptions","王手・詰み判定はなく、成りは自動です。\n相打ちは両方の駒を残し、攻めた側の手番が終わります。\n二歩・行き場のない駒は置けません。",32,446,786,178,25,UiTheme.Muted);
+            }else for(int p=0;p<2;p++){
+                bool assigned=session.Devices.Connected(p);bool pad=assigned?session.Devices.IsGamepad(p):session.Devices.HasParticipants||p==0;
+                var sheet=UiTheme.Box(root,"Controls sheet "+p,190+p*800,265,740,685,UiTheme.Panel).rectTransform;
+                UiTheme.Symbol(sheet,"Device",pad?UiSymbol.Kind.Gamepad:UiSymbol.Kind.Keyboard,26,24,60);
+                UiTheme.Label(sheet,"Player controls title",(assigned?$"{p+1}P　":"")+(pad?"コントローラー":"キーボード＋マウス"),105,25,610,70,30);
+                UiTheme.Label(sheet,"Board controls heading","盤面",30,125,680,50,30);
+                UiTheme.Label(sheet,"Board controls",pad?"十字キー / 左スティック　選択\nA　決定　　B　取消　　X　持ち駒":"WASD　選択\nF　決定　　C　取消　　E　持ち駒",30,185,680,110,27);
+                UiTheme.Label(sheet,"FPS controls heading","FPS",30,315,680,50,30);
+                UiTheme.Label(sheet,"FPS controls",pad?"左スティック　移動 / 右スティック　視点\nRT　攻撃　　LT　防御・ズーム\nB　スキル　　A　登る\nSTART　メニュー":"WASD　移動 / マウス　視点\n左クリック　攻撃 / 右クリック　防御・ズーム\nE　スキル　　Space　登る\nEsc　メニュー",30,375,680,224,26);
+                if(pad)UiTheme.Label(sheet,"Button convention","Xbox表記",30,620,680,36,23,UiTheme.Muted);
             }
-            else
-            {
-                string[] rows={"歩　｜　近接武器　｜　前へ跳び込む", "香車　｜　短銃　｜　閃光弾で視界を奪う", "桂馬　｜　近接武器　｜　突進して周囲を攻撃", "銀　｜　近接武器　｜　一時的に強力な防御", "金　｜　近接武器　｜　一定時間、防御を強化", "角　｜　長銃　｜　上昇して滞空", "飛車　｜　弓　｜　相手を遅くする範囲を作る", "王　｜　近接武器　｜　砲台を展開して援護"};
-                for(int i=0;i<rows.Length;i++) UiTheme.Label(panel,"Ability row "+i,rows[i],56,215+i*55,968,48,27);
-                UiTheme.Label(panel,"Cooldown explanation","攻撃・防御・スキルは、再使用までの時間が画面下に表示されます。",44,678,992,55,24,UiTheme.Muted);
-            }
-            Focus(UiTheme.Button(panel,"Back button","戻る",390,748,300,58,session.Back));
+        }
+        public void Pieces()
+        {
+            Clear();Header("駒の説明");guide=new PieceGuidePanel(root,session,session.GuidePiece,session.GuidePromoted);
         }
         public void Settings()
         {
-            Standard("設定");
-            UiTheme.Label(panel,"Sensitivity explanation","左右の視点の速さを、プレイヤーごとに調整できます。",44,145,992,70,27,UiTheme.Muted);
-            for(int p=0;p<2;p++)
-            {
-                int index=p; float y=255+p*180;
-                var value=UiTheme.Label(panel,"Sensitivity value "+p,"",70,y,940,48,30);
-                var track=UiTheme.Box(panel,"Sensitivity slider "+p,85,y+80,900,18,new Color(.35f,.29f,.2f),true).rectTransform;
-                var slider=track.gameObject.AddComponent<Slider>();
-                var handle=UiTheme.Box(track,"Handle",0,-11,32,40,UiTheme.Gold,true).rectTransform;
-                slider.handleRect=handle; slider.targetGraphic=handle.GetComponent<Image>(); slider.direction=Slider.Direction.LeftToRight;
-                slider.minValue=.5f; slider.maxValue=5; slider.value=session.Sensitivity(p);
-                value.text=$"{p+1}P 視点感度　{slider.value:0.0}";
+            var panel=Modal("設定",650,790);
+            for(int p=0;p<2;p++){
+                int index=p;float y=135+p*150;var value=UiTheme.Label(panel,"Sensitivity value "+p,$"{p+1}P 視点感度　{session.Sensitivity(p):0.0}",44,y,702,48,29);
+                var track=UiTheme.Box(panel,"Sensitivity slider "+p,54,y+70,680,16,UiTheme.Track,true).rectTransform;
+                var slider=track.gameObject.AddComponent<Slider>();var handle=UiTheme.Box(track,"Handle",0,-12,28,40,UiTheme.Gold,true).rectTransform;
+                slider.handleRect=handle;slider.targetGraphic=handle.GetComponent<Image>();slider.minValue=.5f;slider.maxValue=5;slider.value=session.Sensitivity(p);
                 slider.onValueChanged.AddListener(v=>{session.SetSensitivity(index,v);value.text=$"{index+1}P 視点感度　{v:0.0}";});
             }
-            UiTheme.Label(panel,"Settings controls","スライダーを選択し、左右キー / スティックで調整。設定は保存されます。",44,651,992,60,25,UiTheme.Muted);
-            Focus(UiTheme.Button(panel,"Back button","戻る",390,748,300,58,session.Back));
+            var hp=UiTheme.Button(panel,"HP number setting","",44,435,702,65,null);
+            void SetLabel()=>hp.GetComponentInChildren<Text>().text="HPの数値表示　"+(session.ShowHpNumbers?"オン":"オフ");SetLabel();
+            hp.onClick.AddListener(()=>{session.ShowHpNumbers=!session.ShowHpNumbers;SetLabel();});
+            var back=UiTheme.Button(panel,"Back button","戻る",44,540,310,65,session.Back,true);
+            UiTheme.Button(panel,"Reset settings button","初期値に戻す",376,540,370,65,()=>{session.ResetSettings();Settings();});session.Focus(back);
         }
+        public void Selection(){Clear();Header("プレイヤー選択","Selection back button",session.CancelSelection);selection=new PlayerSelectionPanel(root,session);}
         public void Connection()
         {
-            Standard("プレイヤーの接続");
-            UiTheme.Label(panel,"Connection explanation","ゲームパッド2台、または\nキーボード・マウス + ゲームパッド1台で遊べます。",44,155,992,120,30);
-            connection=UiTheme.Label(panel,"Connection message","",44,310,992,150,34,UiTheme.Gold,TextAnchor.MiddleCenter);
-            UiTheme.Label(panel,"Reconnect hint",session.ConnectionStartsMatch?"2人分の入力機器を接続すると、新しい対局を始められます。":"対局は一時停止中です。接続を確認してから再開できます。",44,505,992,90,26,UiTheme.Muted,TextAnchor.MiddleCenter);
-            readyButton=UiTheme.Button(panel,"Connection ready button",session.ConnectionStartsMatch?"対局開始":"対局に戻る",180,620,720,74,session.ConnectionStartsMatch?(UnityEngine.Events.UnityAction)session.StartMatch:session.Resume,true);
-            var back=UiTheme.Button(panel,"Connection back button","タイトルへ",390,736,300,58,session.IsTitle?(UnityEngine.Events.UnityAction)session.ReturnTitle:session.ConfirmReturn);
-            UpdateDevices(); Focus(readyButton.interactable?readyButton:back);
+            var panel=Modal("接続確認",700,900);
+            connection=UiTheme.Label(panel,"Connection message","",44,117,812,102,30);
+            for(int p=0;p<2;p++){
+                UiTheme.Box(panel,"Player stripe "+p,44,250+p*135,5,110,UiTheme.PlayerColor(p));
+                connectionStates[p]=UiTheme.Label(panel,"P"+(p+1)+" reconnect state","",66,243+p*135,746,110,28);
+            }
+            var keyboard=UiTheme.Button(panel,"Reconnect keyboard button","キーマウ：再開OK",44,535,490,65,()=>session.ConfirmReconnect(Keyboard.current));
+            keyboard.interactable=session.Devices.PlayerFor(Keyboard.current)>=0;
+            UiTheme.Button(panel,"Connection back button","タイトルへ",556,535,300,65,session.ConfirmReturn);
+            UiTheme.Label(panel,"Reconnect controls","A / Enter：再開OK　　B / Esc：取消",44,625,812,42,25,UiTheme.Muted);UpdateDevices();
         }
         public void UpdateDevices()
         {
-            selection?.Tick();
-            if(connection!=null) connection.text=showAvailableDevices ? $"コントローラー {UnityEngine.InputSystem.Gamepad.all.Count} 台接続中\n使う機器は、対局前に選択します" : $"1P　{session.Devices.Description(0).Replace("\n", " / ")}\n2P　{session.Devices.Description(1).Replace("\n", " / ")}";
-            if(readyButton!=null) readyButton.interactable=session.Devices.Ready;
+            selection?.Tick();if(connection==null)return;
+            connection.text=session.Devices.Ready?"接続を確認しました。\n両者の確認後に再開します。":"コントローラーの接続を確認してください。\n対局は一時停止しています。";
+            for(int p=0;p<2;p++)if(connectionStates[p]!=null)connectionStates[p].text=$"{p+1}P　"+(!session.Devices.Connected(p)?"未接続":session.Devices.IsPrepared(p)?"再開OK":"接続済み　"+(session.Devices.IsGamepad(p)?"A":"Enter")+"で確認");
         }
-        public void Selection() { selection=new PlayerSelectionPanel(Standard("プレイヤー選択"),session); }
         public void Result(int winner)
         {
-            Standard($"{winner}P の勝利");
-            UiTheme.Label(panel,"Win reason","相手の王を決闘で倒しました。",44,218,992,110,36,UiTheme.Paper,TextAnchor.MiddleCenter);
-            UiTheme.Label(panel,"Result instructions","次の対局を始めるか、タイトルへ戻れます。",44,350,992,70,27,UiTheme.Muted,TextAnchor.MiddleCenter);
-            var rematch=UiTheme.Button(panel,"Rematch button","もう一局",180,495,720,85,session.StartMatch,true);
-            UiTheme.Button(panel,"Result title button","タイトルへ",180,615,720,74,session.ReturnTitle); Focus(rematch);
+            var panel=Modal($"{winner}P 勝利",610,720);UiTheme.Portrait(panel,"Winning king",session.Presentation.Portrait(PieceType.King),260,115,200);
+            UiTheme.Label(panel,"Win reason","王を倒しました",44,320,632,55,29,UiTheme.Muted,TextAnchor.MiddleCenter);
+            var a=UiTheme.Button(panel,"Rematch button","もう一局",44,410,632,70,session.StartMatch,true);var b=UiTheme.Button(panel,"Result title button","タイトルへ",44,503,632,65,session.ReturnTitle);UiTheme.VerticalNavigation(a,b);session.Focus(a);
         }
-        public void ConfirmReturn()
+        public void ConfirmReturn(bool quit=false)
         {
-            Standard("対局を終了しますか？");
-            UiTheme.Label(panel,"Return warning","この対局を終了して、タイトルへ戻ります。",44,250,992,110,32,UiTheme.Paper,TextAnchor.MiddleCenter);
-            var cancel=UiTheme.Button(panel,"Cancel return button","対局に戻る",180,465,720,82,session.Resume,true);
-            UiTheme.Button(panel,"Confirm return button","終了してタイトルへ",180,585,720,74,session.ReturnTitle); Focus(cancel);
+            var panel=Modal(quit?"ゲームを終了しますか？":"対局を終了しますか？",380,900);
+            if(!quit)UiTheme.Label(panel,"Return warning","この対局の途中経過は保存されません。",44,135,812,80,29);
+            var cancel=UiTheme.Button(panel,"Cancel return button","キャンセル",44,260,390,70,session.Back,true);
+            UiTheme.Button(panel,"Confirm return button",quit?"終了":"タイトルへ",466,260,390,70,quit?(UnityEngine.Events.UnityAction)session.Quit:session.ReturnTitle);session.Focus(cancel);
+        }
+        public void Loading(string error=null)
+        {
+            Clear(false);
+            if(error==null){var p=UiTheme.Box(root,"Loading",1480,960,380,65,UiTheme.Panel).rectTransform;UiTheme.Label(p,"Loading status","読み込み中",18,4,344,57,30);}
+            else{var p=Modal("読み込めませんでした",430,900);UiTheme.Label(p,"Load error",error,44,135,812,130,25);session.Focus(UiTheme.Button(p,"Load return button","タイトルへ",44,310,812,65,session.ReturnTitle,true));}
         }
     }
 }

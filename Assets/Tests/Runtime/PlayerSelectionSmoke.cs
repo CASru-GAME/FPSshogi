@@ -26,6 +26,7 @@ public sealed class PlayerSelectionSmoke : MonoBehaviour
     static void Launch()=>DontDestroyOnLoad(new GameObject("PlayerSelectionSmoke").AddComponent<PlayerSelectionSmoke>());
     void Awake()
     {
+        Application.runInBackground=true;
         output=Path.GetFullPath(Path.Combine(Application.dataPath,"../../../SelectionReview/PlayerSmoke"));Directory.CreateDirectory(output);
         if(File.Exists(Path.Combine(output,"complete.txt")))File.Delete(Path.Combine(output,"complete.txt"));
         began=Time.realtimeSinceStartup;Application.logMessageReceived+=Log;

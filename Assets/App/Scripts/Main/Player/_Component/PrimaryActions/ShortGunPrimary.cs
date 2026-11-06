@@ -22,6 +22,7 @@ namespace App.Main.Player
 
         // 実行管理
         public float CooldownRemaining => Mathf.Max(0f, cooldown - (Time.time - lastUseTime));
+        public float CooldownDuration => cooldown;
         private float lastUseTime = -999f;
 
         public void PrimaryAction(Player player, PlayerStatus playerStatus)
@@ -124,7 +125,7 @@ namespace App.Main.Player
                         var ts = targetPlayer.playerStatus;
                         if (ts != null)
                         {
-                            ts.TakeDamage(damage);
+                            ts.TakeDamage(damage, player.transform.position);
                         }
                     }
                     catch (Exception ex)

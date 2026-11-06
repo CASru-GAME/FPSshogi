@@ -136,7 +136,7 @@ namespace App.Main.Player
                 // ダメージを適用（PlayerStatus.TakeDamage を使う）
                 try
                 {
-                    targetStatus.TakeDamage(damage);
+                    targetStatus.TakeDamage(damage, player.transform.position);
                     Debug.Log("[KeimaSkill] Applied " + damage + " damage to " + p.name);
                 }
                 catch (Exception)

@@ -32,6 +32,8 @@ namespace App.Main.ShogiPointer
         public bool IsPlacingCaptured => isCapturedPiecesSelected;
         public PieceType CapturedType => capturedPiecesPanelIndex.GetCapturedPiecesType();
         public string Feedback { get; private set; } = "駒を選んでください";
+        public int InvalidFeedbackVersion { get; private set; }
+        void Reject(string reason){Feedback=reason;InvalidFeedbackVersion++;}
         public PlayerType ActivePlayer => gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn ? PlayerType.PlayerTwo : PlayerType.PlayerOne;
         public bool IsBoardTurn => gameStateHolder != null && (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn || gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn);
 
@@ -94,22 +96,24 @@ namespace App.Main.ShogiPointer
                 Feedback = "光っているマスへ移動できます。決定で移動 / 取消で解除";
                 return;
             }
-            if (selectedPiecePosition[0] < 0) { Feedback = "自分の駒を選んでください"; return; }
+            if (selectedPiecePosition[0] < 0) { Reject("自分の駒を選んでください"); return; }
             var result = shogiBoard.MovePiece(selectedPiecePosition[0], selectedPiecePosition[1], pointerPosition[0], pointerPosition[1], ActivePlayer);
-            if (result == ShogiBoard.MoveResult.InvalidMove) Feedback = "そこへは移動できません。光っているマスを選んでください";
+            if (result == ShogiBoard.MoveResult.InvalidMove) Reject("そこへは移動できません。光っているマスを選んでください");
         }
         public void SetCapturedPieceOnBoard()
         {
             if (!IsBoardTurn) return;
             var result = shogiBoard.SetPiece(pointerPosition[0], pointerPosition[1], CapturedType, ActivePlayer);
-            if (result == ShogiBoard.MoveResult.InvalidMove) Feedback = "ここには打てません。空きマス・二歩・行き場を確認してください";
+            if (result == ShogiBoard.MoveResult.InvalidMove) Reject(shogiBoard.GetDropProblem(pointerPosition[0],pointerPosition[1],CapturedType,ActivePlayer) switch {
+                ShogiBoard.DropProblem.Nifu=>"同じ筋に歩があります（二歩）",ShogiBoard.DropProblem.Occupied=>"駒のないマスを選んでください",ShogiBoard.DropProblem.DeadEnd=>"その位置では、次に動けなくなります",ShogiBoard.DropProblem.Unavailable=>"その持ち駒はありません",ShogiBoard.DropProblem.Outside=>"盤の中を選んでください",_=>"今は持ち駒を打てません"
+            });
             else { isCapturedPiecesSelected = isOpenCapturedPiecesPanel = false; }
         }
         public void ChooseCaptured(PieceType type)
         {
             if (!IsBoardTurn) return;
             var counts = shogiBoard.GetCapturedPieces(ActivePlayer);
-            if (!counts.TryGetValue(type, out int count) || count <= 0) { Feedback = "その持ち駒はありません"; return; }
+            if (!counts.TryGetValue(type, out int count) || count <= 0) { Reject("その持ち駒はありません"); return; }
             capturedPiecesPanelIndex.SetCapturedPiecesPanelIndex((int)type);
             isCapturedPiecesSelected = true;
             isOpenCapturedPiecesPanel = false;
@@ -121,7 +125,7 @@ namespace App.Main.ShogiPointer
             if (!IsBoardTurn) return;
             if (IsCapturedMode || IsPlacingCaptured) { Deselect(); return; }
             var counts = shogiBoard.GetCapturedPieces(ActivePlayer);
-            if (counts.Count == 0) { Feedback = "持ち駒はまだありません"; return; }
+            if (counts.Count == 0) { Reject("持ち駒はまだありません"); return; }
             isOpenCapturedPiecesPanel = true;
             selectedPiecePosition = new[] { -1, -1 };
             capturedPiecesPanelIndex.SetCapturedPiecesPanelIndex(0);

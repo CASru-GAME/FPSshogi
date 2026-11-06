@@ -16,6 +16,7 @@ namespace App.UI
         public bool HasParticipants => slots.Any(slot => slot != null);
         public bool Connected(int slot) => slots[slot] != null && slots[slot].Length > 0 && slots[slot].All(d => d != null && d.added && d.enabled);
         public bool IsGamepad(int slot) => schemes[slot] == "Gamepad";
+        public InputDevice[] DevicesFor(int slot) => slots[slot]?.ToArray() ?? System.Array.Empty<InputDevice>();
         public bool IsPrepared(int slot) => Connected(slot) && prepared[slot];
         public string Description(int slot) => !Connected(slot) ? (slots[slot] == null ? "参加待ち" : "接続が切れました") : IsGamepad(slot) ? "コントローラー\n" + slots[slot][0].displayName : "キーボード + マウス";
         public int PlayerFor(InputDevice device)

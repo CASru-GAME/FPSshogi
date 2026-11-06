@@ -16,6 +16,7 @@ namespace App.Main.Player
 
         // 実行状態
         public float CooldownRemaining => Mathf.Max(0f, cooldownTimer);
+        public float CooldownDuration => cooldown;
         private float cooldownTimer = 0f;
         private bool zoomActive = false;
         private float zoomTimer = 0f;

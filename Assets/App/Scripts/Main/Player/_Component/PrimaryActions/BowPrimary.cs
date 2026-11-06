@@ -24,6 +24,7 @@ namespace App.Main.Player
 
         // 内部管理
         public float CooldownRemaining => Mathf.Max(0f, cooldown - (Time.time - lastUseTime));
+        public float CooldownDuration => cooldown;
         private float lastUseTime = -999f;
 
         public void PrimaryAction(Player player, PlayerStatus playerStatus)

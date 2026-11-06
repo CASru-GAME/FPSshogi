@@ -13,6 +13,7 @@ namespace App.Main.Player
         // クールダウン（秒）
         public float cooldown = 1.0f;
         public float CooldownRemaining => Mathf.Max(0f, cooldown - (Time.time - lastUseTime));
+        public float CooldownDuration => cooldown;
         private float lastUseTime = -999f;
 
         // 攻撃対象レイヤー等（必要であれば調整）
@@ -73,7 +74,7 @@ namespace App.Main.Player
                 var ts = target.playerStatus;
                 if (ts != null)
                 {
-                    try { ts.TakeDamage(damage); }
+                    try { ts.TakeDamage(damage, player.transform.position); }
                     catch (Exception) { }
                 }
             };

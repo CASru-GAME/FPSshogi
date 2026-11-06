@@ -1,0 +1,171 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using App.Main.GameMaster;
+using App.Main.Player;
+using App.Main.ShogiThings;
+using App.UI;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+// Runs the real scenes and input system. The important regressions are lost lobby
+// state on Back, a second player's menu input, premature reconnect and HUD drift.
+[InitializeOnLoad]
+public static class RoomUiRegression
+{
+    const string Trigger=".utmp/room-ui/run.txt";
+    static IEnumerator routine;
+    static string dir;
+    static double next;
+    static Gamepad one,two;
+    static Keyboard keyboard;
+    static Mouse mouse;
+    static readonly List<string> results=new(),errors=new();
+    static readonly BindingFlags All=BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic;
+    static EditorWindow gameView;
+    static int oldSize=-1;
+    static float sensitivity0,sensitivity1;
+    static bool hpNumbers;
+    static bool expectedLoadFailure;
+    static GameSessionUI Session=>GameSessionUI.Instance;
+    static RoomUiRegression()
+    {
+        EditorApplication.update+=Tick;
+        EditorApplication.playModeStateChanged+=state=>{
+            if(state==PlayModeStateChange.EnteredPlayMode&&SessionState.GetBool("RoomUiChecks",false)){
+                SessionState.SetBool("RoomUiChecks",false);dir="VisualReview/RoomUI/"+SessionState.GetString("RoomUiChecksDir","After")+"/";
+                Directory.CreateDirectory(dir);results.Clear();errors.Clear();Application.logMessageReceived+=Log;routine=Run();next=EditorApplication.timeSinceStartup+1;
+            }
+            if(state==PlayModeStateChange.ExitingPlayMode&&routine!=null)Finish();
+        };
+    }
+    static void Tick()
+    {
+        if(EditorApplication.isCompiling)return;
+        if(File.Exists(Trigger)&&!EditorApplication.isPlayingOrWillChangePlaymode&&routine==null){
+            SessionState.SetString("RoomUiChecksDir",File.ReadAllText(Trigger).Trim());File.Delete(Trigger);SessionState.SetBool("RoomUiChecks",true);
+            EditorSceneManager.OpenScene("Assets/App/Scenes/Title.unity");EditorApplication.isPlaying=true;
+        }
+        if(routine==null||EditorApplication.timeSinceStartup<next)return;
+        try{if(!routine.MoveNext()){Finish();return;}next=EditorApplication.timeSinceStartup+(routine.Current is double delay?delay:.06);}
+        catch(Exception e){errors.Add(e.ToString());Check("Room UI suite completes",false);Finish();}
+    }
+    static void Log(string message,string trace,LogType type){if(expectedLoadFailure&&message.Contains("__RoomUI_MissingScene__"))return;if(type==LogType.Error||type==LogType.Exception||type==LogType.Assert)errors.Add(message+"\n"+trace);}
+    static void Check(string name,bool pass){results.Add((pass?"PASS ":"FAIL ")+name);File.WriteAllLines(dir+"results.txt",results);}
+    static T Find<T>() where T:UnityEngine.Object=>UnityEngine.Object.FindFirstObjectByType<T>();
+    static bool Visible(string name)=>GameObject.Find(name)!=null;
+    static void Shot(string name){ScreenCapture.CaptureScreenshot(dir+name+".png");Layout(name);}
+    static void Layout(string name)
+    {
+        Canvas.ForceUpdateCanvases();var texts=Session.GetComponentsInChildren<Text>().Where(t=>t.isActiveAndEnabled);
+        var clipped=texts.Where(t=>!t.resizeTextForBestFit&&t.preferredHeight>t.rectTransform.rect.height+1).Select(t=>$"{t.name}: needs {t.preferredHeight}, has {t.rectTransform.rect.height}").ToArray();
+        File.WriteAllLines(dir+name+"-layout.txt",clipped);Check(name+" text fits",clipped.Length==0);
+        var corners=new Vector3[4];bool inside=true;
+        foreach(var b in Session.GetComponentsInChildren<Selectable>().Where(b=>b.isActiveAndEnabled)){
+            b.GetComponent<RectTransform>().GetWorldCorners(corners);if(corners.Any(c=>c.x<-.5||c.y<-.5||c.x>Screen.width+.5||c.y>Screen.height+.5))inside=false;
+        }
+        Check(name+" controls fit",inside);
+    }
+    static void Resolution(int width,int height)
+    {
+        var asm=typeof(Editor).Assembly;var viewType=asm.GetType("UnityEditor.GameView");gameView=EditorWindow.GetWindow(viewType);
+        var selected=viewType.GetProperty("selectedSizeIndex",All);if(oldSize<0)oldSize=(int)selected.GetValue(gameView);
+        var sizesType=asm.GetType("UnityEditor.GameViewSizes");var single=typeof(ScriptableSingleton<>).MakeGenericType(sizesType);
+        var sizes=single.GetProperty("instance",BindingFlags.Public|BindingFlags.Static|BindingFlags.FlattenHierarchy).GetValue(null);
+        var groupType=asm.GetType("UnityEditor.GameViewSizeGroupType");var group=sizesType.GetMethod("GetGroup",All).Invoke(sizes,new[]{Enum.Parse(groupType,"Standalone")});
+        var sizeType=asm.GetType("UnityEditor.GameViewSize");var kind=asm.GetType("UnityEditor.GameViewSizeType");
+        var size=Activator.CreateInstance(sizeType,All,null,new[]{Enum.Parse(kind,"FixedResolution"),(object)width,height,"Room UI "+width+"x"+height},null);
+        group.GetType().GetMethod("AddCustomSize",All).Invoke(group,new[]{size});int index=(int)group.GetType().GetMethod("GetTotalCount",All).Invoke(group,null)-1;
+        selected.SetValue(gameView,index);gameView.Repaint();
+    }
+    static IEnumerator Tap(Gamepad pad,GamepadButton button)
+    {InputSystem.QueueStateEvent(pad,new GamepadState().WithButton(button));yield return .14d;InputSystem.QueueStateEvent(pad,new GamepadState());yield return .22d;}
+    static IEnumerator Run()
+    {
+        one=InputSystem.AddDevice<Gamepad>("Room First");two=InputSystem.AddDevice<Gamepad>("Room Second");keyboard=InputSystem.AddDevice<Keyboard>("Room Keyboard");mouse=InputSystem.AddDevice<Mouse>("Room Mouse");
+        sensitivity0=Session.Sensitivity(0);sensitivity1=Session.Sensitivity(1);hpNumbers=Session.ShowHpNumbers;Session.ShowHpNumbers=false;
+        Resolution(1920,1080);yield return .5d;Shot("01-title");yield return .15d;yield return .2d;
+        Check("Title stages all forty real pieces",GameObject.Find("Title board pieces")?.transform.childCount==40);
+        var shade=GameObject.Find("Title shade").GetComponent<UiSymbol>();Check("Title shade has rendered geometry",shade.canvasRenderer!=null&&shade.canvasRenderer.GetMesh()?.vertexCount>0);
+        var titleStart=GameObject.Find("Start button").GetComponent<RectTransform>();Check("Title action is on left",titleStart.position.x<Screen.width*.3f);
+        Session.ConfirmQuit();yield return .2d;Shot("02-quit");yield return .15d;Session.Back();yield return .3d;
+        var ownerTest=Tap(one,GamepadButton.Select);while(ownerTest.MoveNext())yield return ownerTest.Current;
+        InputSystem.DisableDevice(one);yield return .3d;ownerTest=Tap(two,GamepadButton.East);while(ownerTest.MoveNext())yield return ownerTest.Current;
+        Check("Title help remains usable when its owner disconnects",Visible("Start button"));InputSystem.EnableDevice(one);yield return .2d;
+        expectedLoadFailure=true;typeof(GameSessionUI).GetMethod("LoadScene",All).Invoke(Session,new object[]{"__RoomUI_MissingScene__"});yield return .35d;expectedLoadFailure=false;
+        Check("Failed load has actionable return",Visible("Load return button")&&EventSystem.current.sendNavigationEvents);Shot("02-load-error");yield return .15d;
+        Session.OpenHelp();yield return .2d;Session.Back();yield return .2d;Check("Error survives help and back",Visible("Load return button"));
+        InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Enter));yield return .15d;InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return .7d;Check("Keyboard exits failed load",Session.IsTitle&&Visible("Start button"));
+        Session.StartMatch();yield return .4d;Shot("03-selection");yield return .15d;
+        var tap=Tap(one,GamepadButton.South);while(tap.MoveNext())yield return tap.Current;
+        tap=Tap(two,GamepadButton.South);while(tap.MoveNext())yield return tap.Current;
+        tap=Tap(one,GamepadButton.South);while(tap.MoveNext())yield return tap.Current;
+        tap=Tap(one,GamepadButton.Select);while(tap.MoveNext())yield return tap.Current;
+        Check("View opens help from selection",Visible("Basics tab"));Shot("04-rules");yield return .15d;
+        Session.SetHelpTab(true);yield return .25d;Shot("05-controls");yield return .15d;
+        Session.OpenPieces();yield return .3d;Shot("06-pieces");yield return .15d;
+        var portrait=GameObject.Find("Guide portrait").GetComponent<RawImage>().texture as Texture2D;
+        Check("Piece guide shows a rendered model",portrait!=null&&portrait.GetPixels32().Count(p=>p.a>20)>500);
+        GameObject.Find("Guide promoted").GetComponent<Button>().onClick.Invoke();yield return .25d;Shot("07-promoted");yield return .15d;
+        Check("Promotion changes model and movement",Session.GuidePromoted&&GameObject.Find("Guide piece name").GetComponent<Text>().text=="龍王");
+        Session.Back();yield return .25d;Check("Guide returns to caller controls tab",Visible("Controls sheet 0"));
+        Session.Back();yield return .4d;Check("Help returns to lobby with assignments and preparation",Visible("Player selection panel")&&Session.Devices.PlayerFor(one)==0&&Session.Devices.PlayerFor(two)==1&&Session.Devices.IsPrepared(0)&&!Session.Devices.IsPrepared(1));
+        tap=Tap(two,GamepadButton.South);while(tap.MoveNext())yield return tap.Current;yield return 1.5d;
+        Check("Both prepared players load a match",SceneManager.GetActiveScene().name=="Main");Shot("08-board");yield return .15d;
+        tap=Tap(one,GamepadButton.Start);while(tap.MoveNext())yield return tap.Current;
+        Check("Opening player owns pause",Visible("Resume button")&&GameObject.Find("Menu owner").GetComponent<Text>().text.Contains("1P"));Shot("09-pause");yield return .15d;
+        tap=Tap(two,GamepadButton.East);while(tap.MoveNext())yield return tap.Current;Check("Other player cannot dismiss pause",Visible("Resume button")&&Time.timeScale==0);
+        Session.OpenSettings();yield return .25d;Shot("10-settings");yield return .15d;Session.SetSensitivity(0,4);Session.ShowHpNumbers=true;Session.ResetSettings();
+        Check("Reset restores both sensitivity and HP preference",Session.Sensitivity(0)==2&&Session.Sensitivity(1)==2&&!Session.ShowHpNumbers);
+        Session.Back();yield return .25d;Check("Settings returns to pause",Visible("Resume button"));
+        Session.ConfirmReturn();yield return .25d;Shot("11-return-confirm");yield return .15d;Session.Back();yield return .25d;Check("Cancelled return restores pause",Visible("Resume button"));
+        Session.OpenHelp();yield return .25d;InputSystem.DisableDevice(two);yield return .4d;
+        Check("Disconnect in nested menu blocks immediately",Visible("Connection message")&&Time.timeScale==0);Shot("12-disconnected");yield return .15d;
+        InputSystem.EnableDevice(two);yield return .4d;Session.Resume();yield return .2d;
+        Check("Connection alone cannot resume",Visible("Connection message")&&Time.timeScale==0&&!Session.Devices.IsPrepared(0)&&!Session.Devices.IsPrepared(1));
+        Session.ConfirmReturn();yield return .2d;Session.Back();yield return .4d;Check("Cancel exit returns to reconnect",Visible("Connection message"));
+        InputSystem.DisableDevice(two);yield return .4d;InputSystem.EnableDevice(two);InputSystem.QueueStateEvent(two,new GamepadState().WithButton(GamepadButton.South));yield return .35d;
+        Check("Held button on reconnect does not confirm",!Session.Devices.IsPrepared(1));InputSystem.QueueStateEvent(two,new GamepadState());yield return .35d;
+        tap=Tap(one,GamepadButton.South);while(tap.MoveNext())yield return tap.Current;Check("Reconnect waits for second confirmation",Visible("Connection message")&&Session.Devices.IsPrepared(0));Shot("13-reconnected");yield return .15d;
+        tap=Tap(two,GamepadButton.South);while(tap.MoveNext())yield return tap.Current;yield return .3d;Check("Both confirmations resume existing board",!GameSessionUI.BlocksGameplay&&Visible("Turn label"));
+        var board=Find<ShogiBoard>();board.MovePiece(0,2,0,3,PlayerType.PlayerOne);board.MovePiece(0,6,0,5,PlayerType.PlayerTwo);board.MovePiece(0,3,0,4,PlayerType.PlayerOne);board.MovePiece(0,5,0,4,PlayerType.PlayerTwo);yield return .3d;Shot("14-countdown");yield return .15d;
+        Check("Countdown blocks gameplay",GameSessionUI.BlocksGameplay&&Visible("Countdown"));yield return 3.5d;
+        Shot("15-duel");yield return .15d;var p1=Find<PlayerManager>().PlayerOne.GetComponent<Player>();var damageCamera=p1.GetComponentInChildren<Camera>();p1.playerStatus.TakeDamage(20,damageCamera.transform.position+damageCamera.transform.right*5);yield return .12d;
+        Check("Damage feedback points toward the actual source",GameObject.Find("P1 damage edge 1").GetComponent<Image>().color.a>0&&GameObject.Find("P1 damage edge 0").GetComponent<Image>().color.a==0);
+        Check("HP gauge follows damage without numeric text",Mathf.Abs(GameObject.Find("P1 health bar").GetComponent<RectTransform>().sizeDelta.x-212)<1&&!Visible("P1 HP"));Shot("16-damage");yield return .15d;
+        InputSystem.QueueStateEvent(one,new GamepadState{rightTrigger=1});yield return .14d;InputSystem.QueueStateEvent(one,new GamepadState());yield return .12d;
+        Check("Cooldown arc reflects the actual attack",p1.PrimaryCooldown>0&&GameObject.Find("P1 cooldown 0").GetComponent<UiSymbol>().Fill>0);Shot("17-cooldown");yield return .15d;
+        Session.OpenPause();yield return .2d;float remaining=p1.PrimaryCooldown;yield return .3d;Check("Pause freezes cooldown",Mathf.Approximately(p1.PrimaryCooldown,remaining));
+        InputSystem.QueueStateEvent(one,new GamepadState{leftStick=Vector2.up});yield return .1d;Session.Resume();yield return .3d;
+        Check("Held movement remains blocked after resume",GameSessionUI.BlocksGameplay);InputSystem.QueueStateEvent(one,new GamepadState());yield return .4d;Check("Neutral movement releases gameplay gate",!GameSessionUI.BlocksGameplay);
+        foreach(var resolution in new[]{new Vector2Int(1280,720),new Vector2Int(2560,1080),new Vector2Int(1280,1024)}){
+            Resolution(resolution.x,resolution.y);yield return .4d;Canvas.ForceUpdateCanvases();
+            for(int p=0;p<2;p++){var cross=GameObject.Find($"P{p+1} Crosshair").GetComponent<RectTransform>();Check($"Crosshair {p+1} centered at {resolution}",Mathf.Abs(cross.position.x-Screen.width*(p==0?.25f:.75f))<2&&Mathf.Abs(cross.position.y-Screen.height*.5f)<2);}
+            Shot("18-duel-"+resolution.x+"x"+resolution.y);yield return .15d;
+        }
+        Resolution(1920,1080);yield return .3d;p1.playerStatus.Hp.Subtract(100000);yield return .3d;Shot("19-duel-result");yield return .15d;yield return 2.4d;
+        SceneManager.LoadScene("Main");yield return .7d;board=Find<ShogiBoard>();board.GetBoard()[0,4]=board.GetBoard()[4,0];board.GetBoard()[4,0]=null;board.GetBoard()[0,5]=board.GetBoard()[4,8];board.GetBoard()[4,8]=null;board.MovePiece(0,4,0,5,PlayerType.PlayerOne);yield return 3.5d;
+        Find<PlayerManager>().PlayerTwo.GetComponent<Player>().playerStatus.Hp.Subtract(100000);yield return .4d;Shot("20-result");yield return .15d;Check("King defeat offers rematch",Visible("Rematch button"));
+        Session.ReturnTitle();yield return .8d;Check("Return loads usable title",Session.IsTitle&&Visible("Start button"));
+        Resolution(1280,720);yield return .3d;Shot("21-title-720");yield return .15d;Session.OpenSettings();yield return .2d;Shot("22-settings-720");yield return .15d;Session.Back();Session.StartMatch();yield return .3d;Shot("23-selection-720");yield return .15d;
+        Check("No runtime errors",errors.Count==0);
+    }
+    static void Finish()
+    {
+        routine=null;Application.logMessageReceived-=Log;File.WriteAllLines(dir+"errors.txt",errors);
+        File.WriteAllText(dir+"complete.txt",$"{DateTime.Now:O}\n{results.Count(x=>x.StartsWith("PASS"))} PASS / {results.Count(x=>x.StartsWith("FAIL"))} FAIL");
+        if(Session!=null){Session.SetSensitivity(0,sensitivity0);Session.SetSensitivity(1,sensitivity1);Session.ShowHpNumbers=hpNumbers;PlayerPrefs.Save();}
+        foreach(var d in new InputDevice[]{one,two,keyboard,mouse})if(d!=null&&d.added)InputSystem.RemoveDevice(d);
+        if(gameView!=null&&oldSize>=0)gameView.GetType().GetProperty("selectedSizeIndex",All).SetValue(gameView,oldSize);oldSize=-1;
+        Time.timeScale=1;EditorApplication.isPlaying=false;
+    }
+}

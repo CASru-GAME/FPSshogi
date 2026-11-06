@@ -31,6 +31,12 @@ namespace App.Main.Player
         public float PrimaryCooldown => currentPrimaryAction?.CooldownRemaining ?? 0f;
         public float SecondaryCooldown => currentSecondaryAction?.CooldownRemaining ?? 0f;
         public float SkillCooldown => Mathf.Max(0f, currentSkill?.cooldownTimer ?? 0f);
+        public float PrimaryCooldownDuration => currentPrimaryAction?.CooldownDuration ?? 0f;
+        public float SecondaryCooldownDuration => currentSecondaryAction?.CooldownDuration ?? 0f;
+        public float SkillCooldownDuration => currentSkill?.cooldownTime ?? 0f;
+        public bool ClimbAvailable {
+            get { var facing=Quaternion.Euler(0,yaw,0);return !movementOverrideActive&&!movementYOverrideActive&&CanClimb(facing*new Vector3(moveInput.x,0,moveInput.y),facing*Vector3.forward); }
+        }
         public string SecondaryName => currentSecondaryAction?.secondaryActionName == "SecondaryZoom" ? "ズーム" : "防御";
         public App.Main.ShogiThings.PieceType PieceType { get; set; }
         public int BodyLayer { get; set; }
