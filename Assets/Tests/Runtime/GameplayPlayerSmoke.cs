@@ -63,10 +63,10 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         player.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
         Physics.SyncTransforms();
     }
-    void StartDuel(IPiece defender)
+    void StartDuel(IPiece defender, IPiece attacker = null)
     {
         var board = Find<ShogiBoard>(); var grid = board.GetBoard(); Array.Clear(grid, 0, grid.Length);
-        grid[4,4] = new Hisya(PlayerType.PlayerOne); grid[4,5] = defender;
+        grid[4,4] = attacker ?? new Hisya(PlayerType.PlayerOne); grid[4,5] = defender;
         Check(board.MovePiece(4,4,4,5,PlayerType.PlayerOne) == ShogiBoard.MoveResult.DuelMove, "Native board move starts the duel");
     }
     IEnumerator Start()
@@ -137,8 +137,34 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         yield return new WaitForSecondsRealtime(2.4f);
         Check(Find<GameStateHolder>().CurrentState == State.PlayerTwoTurn && !App.UI.GameSessionUI.BlocksGameplay, "Native draw ends the attacker turn and resumes the board");
 
-        SceneManager.LoadScene("Main"); yield return new WaitForSecondsRealtime(.8f); StartDuel(new King(PlayerType.PlayerTwo)); yield return new WaitForSecondsRealtime(3.6f);
-        Two().playerStatus.TakeDamage(10000); yield return new WaitForSecondsRealtime(.3f); Shot("king-victory"); yield return new WaitForSecondsRealtime(.2f);
+        SceneManager.LoadScene("Main"); yield return new WaitForSecondsRealtime(.8f);
+        StartDuel(new King(PlayerType.PlayerTwo), new Fuhyo(PlayerType.PlayerOne)); yield return new WaitForSecondsRealtime(3.6f);
+        var pawn = One(); var king = Two();
+        Place(king, origin, 0); Place(pawn, origin + Vector3.forward * 12f, 180);
+        int startingHp = pawn.playerStatus.Hp.Current;
+        yield return Tap(king, GamepadButton.East);
+        Check(UnityEngine.Object.FindObjectsByType<KingTurret>(FindObjectsSortMode.None).Length == 3, "Native king deploys its three support turrets");
+        yield return new WaitForSecondsRealtime(3.8f);
+        int supportDamage = startingHp - pawn.playerStatus.Hp.Current;
+        Check(supportDamage > 0 && supportDamage <= 72 && pawn.playerStatus.Hp.Current > 0,
+            $"Native unguarded pawn survives the whole turret deployment ({supportDamage} damage)");
+
+        Place(pawn, origin, 0);
+        yield return null; yield return new WaitForEndOfFrame();
+        var spear = pawn.WeaponObject.GetComponent<BoxCollider>();
+        var contact = spear.transform.TransformPoint(spear.center);
+        Place(king, new Vector3(contact.x, origin.y, contact.z), 180);
+        var kingHp = king.playerStatus.Hp;
+        Check(kingHp.Current == 160, "Native king starts the spear exchange at full health");
+        for (int hit = 1; hit <= 5; hit++)
+        {
+            Input(pawn, new GamepadState { rightTrigger = 1 });
+            yield return new WaitForSecondsRealtime(.45f);
+            Input(pawn, new GamepadState());
+            Check(kingHp.Current == 160 - 32 * hit, $"Native spear thrust {hit} leaves the king at {kingHp.Current} HP");
+            yield return new WaitForSecondsRealtime(.65f);
+        }
+        Shot("king-victory"); yield return new WaitForSecondsRealtime(.2f);
         Check(Find<GameStateHolder>().CurrentState == State.PlayerOneWin, "Native king defeat ends the match with the correct winner");
         SceneManager.LoadScene("Title"); yield return new WaitForSecondsRealtime(.6f); Shot("title"); yield return new WaitForSecondsRealtime(.2f);
         Finish();

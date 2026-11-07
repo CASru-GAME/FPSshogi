@@ -12,12 +12,12 @@ namespace App.Main.Player
         public Player player{get;private set;}
         public GameObject turretPrefab;
         public GameObject gunbaiPrefab;
-        public float skillDuration=6f;
-        public float turretFireInterval=.6f;
-        public float turretRange=40f;
-        public float turretFalloffStart=20f;
+        public float skillDuration=3.5f;
+        public float turretFireInterval=1f;
+        public float turretRange=32f;
+        public float turretFalloffStart=14f;
         public float turretMinDamageMul=.5f;
-        public float turretDamageMultiplier=1f;
+        public float turretDamageMultiplier=.25f;
         public LayerMask turretHitLayers=~0;
         public void UseSkill(Player player,PlayerStatus playerStatus)
         {

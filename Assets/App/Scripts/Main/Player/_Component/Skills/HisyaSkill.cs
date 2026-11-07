@@ -16,9 +16,9 @@ namespace App.Main.Player
 
         // フィールド設定（Inspector で調整可）
         public float spawnDistance = 999f;
-        public float radius = 7f;
-        public float duration = 6f;
-        public float slowMultiplier = 0.6f; // 移動速度を掛ける倍率 (0..1)
+        public float radius = 5.5f;
+        public float duration = 4f;
+        public float slowMultiplier = 0.7f; // 移動速度を掛ける倍率 (0..1)
         public LayerMask affectLayers = ~0;
 
         public void UseSkill(Player player, PlayerStatus playerStatus)

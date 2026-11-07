@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Kakugyo
   m_EditorClassIdentifier: 
   pieceTypeIndex: 2
-  hpMax: 90
-  attackPointDefault: 50
+  hpMax: 110
+  attackPointDefault: 56
   defensePointDefault: 0
   moveSpeedDefault: 6
-  hpMaxUra: 120
-  attackPointDefaultUra: 90
+  hpMaxUra: 128
+  attackPointDefaultUra: 64
   defensePointDefaultUra: 0
   moveSpeedDefaultUra: 6

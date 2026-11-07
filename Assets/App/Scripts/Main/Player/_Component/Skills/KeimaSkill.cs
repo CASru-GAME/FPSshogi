@@ -19,8 +19,8 @@ namespace App.Main.Player
         // 移動・攻撃パラメータ
         public float moveDistance = 10f;     // 前方に移動する距離
         public float moveSpeed = 50f;       // 水平方向の速度（m/s）
-        public float attackRadius = 10f;   // 到達地点での攻撃半径
-        public float damageMultiplier = 1.5f; // 自身の AttackPoint に対する倍率
+        public float attackRadius = 3.5f;  // 到達地点での攻撃半径
+        public float damageMultiplier = 1.35f; // 自身の AttackPoint に対する倍率
         public LayerMask targetMask = ~0;   // 当たり判定で検出するレイヤー（必要なら調整）
 
         // 実行状態

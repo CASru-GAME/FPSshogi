@@ -7,7 +7,7 @@ namespace App.Main.Player
     public class KyosyaSkill : ISkill
     {
         public string skillName { get; } = "KyosyaSkill";
-        public float cooldownTime { get; } = 5f;
+        public float cooldownTime { get; } = 8f;
         public bool isOnCooldown { get; private set; } = false;
         public PlayerStatus playerStatus { get; private set; }
         public Player player { get; private set; }

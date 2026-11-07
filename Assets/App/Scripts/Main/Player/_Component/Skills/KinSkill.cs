@@ -10,7 +10,7 @@ namespace App.Main.Player
         public PlayerStatus playerStatus { get; private set; }
         public Player player { get; private set; }
         int amount = 10;
-        float duration = 5f;
+        float duration = 4f;
         float timer;
 
         public void UseSkill(Player player, PlayerStatus playerStatus)

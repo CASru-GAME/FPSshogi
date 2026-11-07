@@ -14,9 +14,9 @@ namespace App.Main.Player
         public float cooldownTimer { get; private set; } = 0f;
 
         // 距離／時間で制御するパラメータ
-        public float ascendHeight = 20f;      // 上昇する高さ（メートル）
+        public float ascendHeight = 10f;      // 上昇する高さ（メートル）
         public float ascendDuration = 0.3f;   // 上昇にかける時間（秒）
-        public float hoverDuration = 5.0f;    // 滞空時間（秒）
+        public float hoverDuration = 2f;      // 滞空時間（秒）
         public float hoverYVelocity = 0f;     // 滞空中に維持する垂直速度（通常 0）
 
         // 実行状態

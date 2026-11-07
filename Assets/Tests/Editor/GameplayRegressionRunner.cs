@@ -54,7 +54,7 @@ public static class GameplayRegressionRunner
         one=InputSystem.AddDevice<Gamepad>("Gameplay test one");two=InputSystem.AddDevice<Gamepad>("Gameplay test two");yield return .3d;
         SceneManager.LoadScene("Title");yield return .5d;
         var join=SelectionTestInput.TwoGamepads(one,two);while(join.MoveNext())yield return join.Current;
-        foreach(string name in new[]{"GameplayBoardChecks","GameplayMovementChecks","GameplayEffectsChecks","GameplayProjectileChecks","GameplayMeleeChecks","GameplayDuelChecks"})
+        foreach(string name in new[]{"GameplayBoardChecks","GameplayMovementChecks","GameplayEffectsChecks","GameplayProjectileChecks","GameplayMeleeChecks","GameplayDuelChecks","GameplayBalanceChecks"})
         {
             var type=typeof(GameplayRegressionRunner).Assembly.GetType(name);if(type==null)continue;
             File.WriteAllText(dir+"progress.txt",name);

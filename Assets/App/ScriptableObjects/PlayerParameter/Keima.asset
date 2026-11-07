@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Keima
   m_EditorClassIdentifier: 
   pieceTypeIndex: 5
-  hpMax: 100
-  attackPointDefault: 30
+  hpMax: 110
+  attackPointDefault: 28
   defensePointDefault: 0
-  moveSpeedDefault: 6
-  hpMaxUra: 120
-  attackPointDefaultUra: 60
+  moveSpeedDefault: 7
+  hpMaxUra: 125
+  attackPointDefaultUra: 32
   defensePointDefaultUra: 0
-  moveSpeedDefaultUra: 12
+  moveSpeedDefaultUra: 7.8

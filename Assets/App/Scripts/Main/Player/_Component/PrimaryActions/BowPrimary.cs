@@ -11,12 +11,12 @@ namespace App.Main.Player
         public PlayerStatus playerStatus { get; private set; }
 
         // 調整パラメータ
-        public float cooldown = 3f;
+        public float cooldown = 1.7f;
         public float arrowSpeed = 40f;
         public float arrowLifeTime = 8f;
-        public float maxRange = 200f;
-        public float falloffStart = 100f; // maxRange と同値だと無効化されるためデフォルトを調整
-        public float minDamageMultiplier = 0.5f;
+        public float maxRange = 100f;
+        public float falloffStart = 28f;
+        public float minDamageMultiplier = 0.55f;
         public float damageMultiplier = 1.0f;
         public LayerMask hitLayers = ~0;
 
