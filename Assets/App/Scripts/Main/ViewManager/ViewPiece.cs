@@ -72,6 +72,16 @@ namespace App.Main.ViewManager
             return boardCellPositions[x, y];
         }
 
+        public void SetDuelPiecesVisible(bool visible)
+        {
+            // A move and the duel transition can happen before this view's next Update.
+            changeUI();
+            var from = shogiBoard.DuelFrom;
+            var to = shogiBoard.DuelTo;
+            pieceObjects[from.x, from.y]?.SetActive(visible);
+            pieceObjects[to.x, to.y]?.SetActive(visible);
+        }
+
         public void CreateBoardCellPositions()
         {
             // Centres of the model's nine equal cells (the old hand-placed markers drifted).
@@ -156,6 +166,7 @@ namespace App.Main.ViewManager
                         // 以前の位置にオブジェクトがあれば削除
                         if (pieceObjects[x, y] != null)
                         {
+                            pieceObjects[x, y].SetActive(false);
                             Destroy(pieceObjects[x, y]);
                             pieceObjects[x, y] = null;
                         }

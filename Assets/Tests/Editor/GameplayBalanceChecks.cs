@@ -6,6 +6,7 @@ using System.Reflection;
 using App.Main.GameMaster;
 using App.Main.Player;
 using App.Main.ShogiThings;
+using App.Main.ViewManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -53,7 +54,7 @@ public static class GameplayBalanceChecks
     public static IEnumerator Run(Action<string, bool> check)
     {
         var profiles = new List<(PieceType type, bool promoted, int hp, int damage, float interval, float speed)>();
-        var openingShots = new List<(PieceType type, bool promoted, int damage)>();
+        var cornerShots = new List<int>();
         foreach (PieceType type in Enum.GetValues(typeof(PieceType)))
         {
             if (type == PieceType.None) continue;
@@ -79,6 +80,10 @@ public static class GameplayBalanceChecks
                 var two = manager.PlayerTwo.GetComponent<Player>();
                 var status = one.playerStatus;
                 string name = type + (promoted ? "+" : "");
+                var cells = Object.FindFirstObjectByType<ViewPiece>().boardCellPositions;
+                float expectedGap = Vector3.Distance(cells[4,4], cells[4+delta[0],4+delta[1]]);
+                check($"balance: {name} starts at its capture distance of {expectedGap:F2} m",
+                    Mathf.Abs(Vector3.Distance(one.transform.position, two.transform.position) - expectedGap) < .05f);
                 // Exercise the movement step with the actual duel loadout on both seats.
                 float Walk(Player fighter, Vector2 input)
                 {
@@ -108,13 +113,13 @@ public static class GameplayBalanceChecks
                     damage > 0 && damage == status.AttackPoint.Current && one.PrimaryCooldownDuration > 0);
                 profiles.Add((type, promoted, status.Hp.Max, damage, one.PrimaryCooldownDuration, speed));
                 if (Primary.GetValue(two) is CloseWeaponPrimary) continue;
-                float openingDistance = Vector3.Distance(one.transform.position, two.transform.position);
-                int atSpawn = 0;
-                var far = MeasureHit(two, openingDistance, value => atSpawn = value);
+                float longestOpening = Vector3.Distance(cells[0,0], cells[8,8]);
+                int atCorners = 0;
+                var far = MeasureHit(two, longestOpening, value => atCorners = value);
                 while (far.MoveNext()) yield return far.Current;
-                check($"balance: {name} at opening distance {openingDistance:F1}m deals {atSpawn}",
-                    type == PieceType.Kyosya ? atSpawn == 0 : atSpawn > 0 && atSpawn < damage);
-                openingShots.Add((type, promoted, atSpawn));
+                check($"balance: {name} across the board diagonal ({longestOpening:F1} m) deals {atCorners}",
+                    type == PieceType.Kyosya ? atCorners == 0 : atCorners > 0 && atCorners < damage);
+                cornerShots.Add(atCorners);
             }
         }
         check("balance: covered all 14 playable forms", profiles.Count == 14);
@@ -138,7 +143,7 @@ public static class GameplayBalanceChecks
             }
         }
         check("balance: pawn can defeat a full-health king in five clear thrusts", pawn.damage * 4 < king.hp && pawn.damage * 5 >= king.hp);
-        check("balance: pawn survives two opening shots from any ranged form", openingShots.All(shot => shot.damage * 2 < pawn.hp));
+        check("balance: pawn survives two ordinary ranged shots across the full board diagonal", cornerShots.All(damage => damage * 2 < pawn.hp));
         var support = new KingSkill();
         int salvo = 3 * Mathf.CeilToInt(king.damage * support.turretDamageMultiplier);
         int volleys = Mathf.CeilToInt(support.skillDuration / support.turretFireInterval);

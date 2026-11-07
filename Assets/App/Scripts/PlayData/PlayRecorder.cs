@@ -27,6 +27,8 @@ namespace App.PlayData
     internal sealed class DuelRecord
     {
         public int number, move, attackingSeat;
+        public string fromSquare, toSquare;
+        public double openingDistance;
         public string result = "unfinished";
         public double seconds;
         public FighterRecord[] seats;
@@ -92,6 +94,8 @@ namespace App.PlayData
             fighters[0] = one; fighters[1] = two;
             duel = new DuelRecord {
                 number = match.duels.Count + 1, move = match.moves, attackingSeat = lastMover,
+                fromSquare = SquareName(board.DuelFrom), toSquare = SquareName(board.DuelTo),
+                openingDistance = Vector3.Distance(one.transform.position, two.transform.position),
                 seats = new FighterRecord[2]
             };
             for (int i = 0; i < 2; i++)
@@ -107,6 +111,8 @@ namespace App.PlayData
             match.duels.Add(duel);
             Save();
         }
+
+        static string SquareName(Vector2Int square) => (9 - square.x).ToString(CultureInfo.InvariantCulture) + "九八七六五四三二一"[square.y];
 
         int Seat(PlayerStatus status)
         {

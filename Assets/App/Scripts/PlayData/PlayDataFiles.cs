@@ -66,7 +66,8 @@ namespace App.PlayData
                     Row(matches, "対局ID","開始UTC","終了UTC","対局結果","プレイ秒","手数","駒打ち回数","決闘数","1P機器","2P機器","ゲーム版","ビルドID");
                     Row(duels, "対局ID","決闘番号","手数","攻撃側","席","機器","駒","成り","相手の駒","相手の成り","決闘結果","この席の結果","決闘秒",
                         "最大HP","最終HP","攻撃力","通常攻撃回数","通常命中数","通常命中率(%)","通常与ダメージ","平均攻撃時距離(m)","平均命中距離(m)",
-                        "スキル使用数","スキル直接命中数","スキル直接与ダメージ","砲台発射数","砲台命中数","砲台与ダメージ","被ダメージ","完全防御数");
+                        "スキル使用数","スキル直接命中数","スキル直接与ダメージ","砲台発射数","砲台命中数","砲台与ダメージ","被ダメージ","完全防御数",
+                        "攻め駒の移動元","守り駒のマス","開始距離(m)");
                     foreach (string file in files)
                     {
                         MatchRecord match;
@@ -113,7 +114,8 @@ namespace App.PlayData
                 s.piece, s.promoted ? 1 : 0, opponent.piece, opponent.promoted ? 1 : 0, Result(duel.result), outcome, duel.seconds,
                 s.hpMax, s.hpLeft, s.attack, s.attacks, s.hits, Average(100d*s.hits,s.attacks), s.primaryDamage,
                 Average(s.attackDistanceSum,s.attacks), Average(s.hitDistanceSum,s.hits), s.skillUses, s.skillHits, s.skillDamage,
-                s.turretShots, s.turretHits, s.turretDamage, s.damageTaken, s.hitsBlocked);
+                s.turretShots, s.turretHits, s.turretDamage, s.damageTaken, s.hitsBlocked,
+                duel.fromSquare, duel.toSquare, duel.openingDistance > 0 ? duel.openingDistance.ToString("0.###", Numbers) : "");
         }
 
         static string Average(double sum, int count) => count == 0 ? "" : (sum/count).ToString("0.###", Numbers);

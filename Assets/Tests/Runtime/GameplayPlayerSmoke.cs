@@ -29,7 +29,7 @@ public sealed partial class GameplayPlayerSmoke : MonoBehaviour
 
     void Awake()
     {
-        output = Path.GetFullPath(Path.Combine(Application.dataPath, "../../../GameplayReview", matchupRun ? "Matchups" : "PlayerSmoke"));
+        output = Path.GetFullPath(Path.Combine(Application.dataPath, "../../../GameplayReview", openingRun ? "DuelOpenings" : matchupRun ? "Matchups" : "PlayerSmoke"));
         Directory.CreateDirectory(output);
         if (File.Exists(Path.Combine(output, "complete.txt"))) File.Delete(Path.Combine(output, "complete.txt"));
         began = Time.realtimeSinceStartup;
@@ -77,6 +77,12 @@ public sealed partial class GameplayPlayerSmoke : MonoBehaviour
         SceneManager.LoadScene("Title"); yield return new WaitForSecondsRealtime(.6f);
         var join=SelectionTestInput.TwoGamepads(first,second);while(join.MoveNext())yield return new WaitForSecondsRealtime((float)(double)join.Current);
         Check(Find<ShogiBoard>().GetBoard().Cast<IPiece>().Count(piece => piece != null) == 40, "Native initial board contains forty pieces");
+        if (openingRun)
+        {
+            yield return CheckDuelOpenings();
+            Finish();
+            yield break;
+        }
         if (matchupRun)
         {
             yield return CheckMatchups();

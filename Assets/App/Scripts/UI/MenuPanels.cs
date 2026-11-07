@@ -78,8 +78,8 @@ namespace App.UI
             if(!controls){
                 var photo=UiTheme.Rect(root,"Board reference",60,270,900,506).gameObject.AddComponent<RawImage>();photo.texture=Resources.Load<Texture2D>("UI/BoardReference");photo.raycastTarget=false;
                 var panel=UiTheme.Rect(root,"Rules",1010,270,850,660);
-                string[] titles={"1. 駒を動かす","2. 駒が重なるとFPSで対戦","3. 王を倒すと勝利"};
-                string[] details={"自分の駒を選び、移動先を決めます。","倒した駒は持ち駒になり、空きマスへ打てます。","盤面とFPSを繰り返して対局します。"};
+                string[] titles={"1. 駒を動かす","2. 相手の駒を取りに行く","3. 決闘に勝つ"};
+                string[] details={"自分の駒を動かすか、持ち駒を空きマスに打ちます。","互いの駒がいたマスから、向かい合って決闘します。","倒した駒は持ち駒になります。王を倒せば対局の勝ちです。"};
                 for(int i=0;i<3;i++){UiTheme.Label(panel,"Rule "+i,titles[i],32,22+i*135,786,56,33);UiTheme.Label(panel,"Rule detail "+i,details[i],32,81+i*135,786,58,26,UiTheme.Muted);}
                 UiTheme.Label(panel,"Rule exceptions","王手・詰み判定はなく、成りは自動です。\n相打ちは両方の駒を残し、攻めた側の手番が終わります。\n二歩・行き場のない駒は置けません。",32,446,786,178,25,UiTheme.Muted);
             }else for(int p=0;p<2;p++){
