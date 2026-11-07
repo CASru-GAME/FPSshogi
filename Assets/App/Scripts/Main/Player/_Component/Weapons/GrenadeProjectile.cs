@@ -8,6 +8,9 @@ namespace App.Main.Player
     {
         // The tetuhau mesh has a local radius of 0.01 at a uniform prefab scale of 52.592438.
         const float ProjectileRadius = .526f;
+        const float LevelThrowAngle = 20f;
+        // Bring a 48 m/s throw back down within the length of the duel board.
+        const float GravityMultiplier = 6f;
         static RaycastHit[] sweepHits = new RaycastHit[8];
 
         public Player owner;
@@ -30,11 +33,21 @@ namespace App.Main.Player
             return blocked ? aim.position : hand;
         }
 
+        internal static Vector3 LobVelocity(Transform view, float speed)
+        {
+            float elevation = view.forward.y;
+            // Keep raised throws below the angle of maximum range so looking higher still reaches farther.
+            float limit = elevation >= 0f ? 42f : -50f;
+            float angle = Mathf.Lerp(LevelThrowAngle, limit, Mathf.Abs(elevation)) * Mathf.Deg2Rad;
+            Vector3 heading = Vector3.Cross(view.right, Vector3.up).normalized;
+            return speed * (heading * Mathf.Cos(angle) + Vector3.up * Mathf.Sin(angle));
+        }
+
         // The guide and the live throw advance in identical fixed steps, including the last partial fuse step.
         internal static Vector3 Step(Player owner, Vector3 position, ref Vector3 velocity, float delta,
             out bool hit, out Vector3 normal)
         {
-            Vector3 gravity = Physics.gravity;
+            Vector3 gravity = Physics.gravity * GravityMultiplier;
             Vector3 displacement = (velocity + .5f * gravity * delta) * delta;
             velocity += gravity * delta;
             return Sweep(owner, position, displacement, out hit, out normal);

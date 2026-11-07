@@ -314,7 +314,19 @@ public static class WeaponMotionChecks
             {
                 check(p.IsAimingFlashbang && skill.cooldownTimer == 0, "Lance can hold the grenade before starting its throw motion");
                 yield return .12d;
+                var guide = p.transform.Find("Flashbang aim/Trajectory").GetComponent<LineRenderer>();
+                var path = new Vector3[guide.positionCount];
+                guide.GetPositions(path);
+                check(path.Max(point => point.y) > path[0].y + .65f, "The grenade guide rises above the hand in the actual board duel");
                 shot("Kyosya-aim");
+                yield return .1d;
+                Set(p,"pitch",17f);
+                yield return .12d;
+                var near = guide.GetPosition(guide.positionCount - 1);
+                check(Vector3.Dot(path[path.Length-1] - near, p.transform.forward) > 3f, "Lowering the view moves the grenade marker nearer on the board");
+                shot("Kyosya-aim-near");
+                yield return .1d;
+                Set(p,"pitch",4f);
                 yield return .1d;
                 InputSystem.QueueStateEvent(one,new GamepadState { rightTrigger = 1 });
                 yield return .05d;

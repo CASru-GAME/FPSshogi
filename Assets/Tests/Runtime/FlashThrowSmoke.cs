@@ -26,6 +26,79 @@ public sealed partial class GameplayPlayerSmoke
         yield return new WaitForSecondsRealtime(.08f);
     }
 
+    IEnumerator CheckLobAiming(Player caster)
+    {
+        Vector3 center = ArenaOrigin + Vector3.left * 110f;
+        Place(caster, center, 0f);
+        float ground = caster.GetComponent<Collider>().bounds.min.y;
+        var floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        floor.transform.position = new Vector3(center.x, ground - .5f, center.z);
+        floor.transform.localScale = new Vector3(150f, 1f, 150f);
+        Physics.SyncTransforms();
+        yield return Tap(caster, GamepadButton.East);
+        var line = FlashLine(caster, "Trajectory");
+        Vector3 End() => line.GetPosition(line.positionCount - 1);
+        float Reach(Vector3 point) => Vector3.ProjectOnPlane(point - center, Vector3.up).magnitude;
+        bool AtFloor(Vector3 point) => Mathf.Abs(point.y - ground - .526f) < .08f;
+
+        Vector3 level = End();
+        var points = new Vector3[line.positionCount];
+        line.GetPositions(points);
+        float rise = points.Max(point => point.y) - points[0].y;
+        Check(rise > 1.5f && AtFloor(level), $"A level throw rises above the hand and falls to the floor (rise {rise:F1} m)");
+
+        Set(caster, "pitch", 20f);
+        yield return SettleHud();
+        Vector3 near = End();
+        Set(caster, "pitch", -30f);
+        yield return SettleHud();
+        Vector3 far = End();
+        Set(caster, "pitch", -78f);
+        yield return SettleHud();
+        Vector3 highest = End();
+        Check(AtFloor(near) && AtFloor(far) && AtFloor(highest) && Reach(near) < Reach(level) - 5f &&
+            Reach(far) > Reach(level) + 5f && Reach(highest) > Reach(far),
+            $"Looking down, level, up and steeply up selects progressively farther landings ({Reach(near):F1}, {Reach(level):F1}, {Reach(far):F1}, {Reach(highest):F1} m)");
+
+        Set(caster, "pitch", 0f);
+        Set(caster, "yaw", -90f);
+        yield return SettleHud();
+        Vector3 left = End() - center;
+        Set(caster, "yaw", 90f);
+        yield return SettleHud();
+        Vector3 right = End() - center;
+        Check(left.x < -10f && right.x > 10f && Mathf.Abs(left.z) < 1f && Mathf.Abs(right.z) < 1f &&
+            Mathf.Abs(Reach(level) - right.x) < .15f && Mathf.Abs(left.x + right.x) < .15f,
+            "Turning left or right rotates the complete lob and retains its range");
+
+        var cover = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        float coverHeight = points[0].y + .8f - ground;
+        cover.transform.position = new Vector3(center.x + 8f, ground + coverHeight * .5f, center.z);
+        cover.transform.localScale = new Vector3(.25f, coverHeight, 6f);
+        Physics.SyncTransforms();
+        yield return SettleHud();
+        Vector3 behindCover = End();
+        Check(AtFloor(behindCover) && behindCover.x > cover.transform.position.x + 5f,
+            "The marked lob clears a barrier above the hand and lands on its far side");
+        Input(caster, Shoot);
+        yield return new WaitForSecondsRealtime(.07f);
+        Input(caster, new GamepadState());
+        Set(caster, "yaw", 180f);
+        float peak = points[0].y, deadline = Time.time + 2.2f;
+        GameObject burst;
+        while ((burst = GameObject.Find("FlashbangBurst")) == null && Time.time < deadline)
+        {
+            var projectile = Find<GrenadeProjectile>();
+            if (projectile != null) peak = Mathf.Max(peak, projectile.transform.position.y);
+            yield return null;
+        }
+        float miss = burst != null ? Vector3.Distance(burst.transform.position, behindCover) : float.PositiveInfinity;
+        Check(peak > points[0].y + 1.5f && miss < .12f && burst.transform.position.x > cover.transform.position.x + 5f,
+            $"The released grenade arcs over cover to its marker after the player turns away (error {miss:F2} m)");
+        Destroy(cover);
+        Destroy(floor);
+    }
+
     IEnumerator CheckFlashThrows()
     {
         var promoted = new Kyosya(PlayerType.PlayerTwo);
@@ -152,6 +225,8 @@ public sealed partial class GameplayPlayerSmoke
             Vector3.Distance(airEnd, burst.transform.position) < .12f && caster.playerStatus.EffectList.GetEffect<FlashBangEffect>() == null,
             "The fuse bursts at the airborne marker after two seconds and a remote trigger cannot blind its owner");
         Destroy(trigger.gameObject);
+        while (caster.SkillCooldown > 0f) yield return null;
+        yield return CheckLobAiming(caster);
         while (caster.SkillCooldown > 0f) yield return null;
         yield return Tap(caster, GamepadButton.East);
         One().playerStatus.TakeDamage(10000);

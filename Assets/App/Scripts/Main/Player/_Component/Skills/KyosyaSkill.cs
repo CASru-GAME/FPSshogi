@@ -19,7 +19,7 @@ namespace App.Main.Player
 
         private FlashbangAimPreview preview;
         internal bool IsAiming => preview != null;
-        private Vector3 LaunchVelocity => player.DuelCamera.transform.forward * throwSpeed;
+        private Vector3 LaunchVelocity => GrenadeProjectile.LobVelocity(player.DuelCamera.transform, throwSpeed);
 
         public void UseSkill(Player player, PlayerStatus playerStatus)
         {
