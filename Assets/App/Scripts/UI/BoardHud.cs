@@ -26,7 +26,6 @@ namespace App.UI
         readonly GameSessionUI session;
         readonly Camera camera;
         readonly Vector3 gridCenter, gridX, gridY;
-        int lastInvalidFeedback;
         float lastCanvasHeight;
         public BoardHud(RectTransform parent, GameSessionUI owner)
         {
@@ -54,7 +53,7 @@ namespace App.UI
                 var img=UiTheme.Box(root,$"Square {x},{y}",0,0,70,70,Color.clear,true);
                 var btn=img.gameObject.AddComponent<Button>(); btn.targetGraphic=img; btn.transition=Selectable.Transition.None;
                 btn.navigation=new Navigation{mode=Navigation.Mode.None};
-                btn.onClick.AddListener(()=> { if(GameSessionUI.BlocksGameplay) return; pointer.SetCursor(cx,cy); pointer.Select(); });
+                btn.onClick.AddListener(()=> { if(GameSessionUI.BlocksGameplay) return; pointer.SetCursor(cx,cy,false); pointer.Select(); });
                 cells[x,y]=img;
             }
             selected=UiTheme.Frame(root,"Selected tile",UiTheme.Gold);
@@ -114,7 +113,6 @@ namespace App.UI
             int activePlayer=(int)pointer.ActivePlayer;
             turn.text=$"{activePlayer+1}P の手番";turn.color=UiTheme.PlayerColor(activePlayer);
             feedback.text=pointer.Feedback;
-            if(pointer.InvalidFeedbackVersion!=lastInvalidFeedback){lastInvalidFeedback=pointer.InvalidFeedbackVersion;UiFeedback.Invalid();}
             feedbackBacking.gameObject.SetActive(!string.IsNullOrWhiteSpace(feedback.text));
             controls.text=session.Devices.IsGamepad(activePlayer)?"十字キー / 左スティック　選択　　 A　決定　　 B　取消　　 X　持ち駒　　 START　メニュー":"WASD　選択　　 F　決定　　 C　取消　　 E　持ち駒　　 Esc　メニュー";
             var origin=pointer.SelectedPosition; var pos=pointer.CursorPosition;

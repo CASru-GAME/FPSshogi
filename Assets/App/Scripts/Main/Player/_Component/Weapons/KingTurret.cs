@@ -1,3 +1,4 @@
+using App.Audio;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -103,6 +104,8 @@ namespace App.Main.Player
             }
 
             CombatVisuals.ShotFrom(owner,muzzle.position,hit.collider!=null?hit.point:muzzle.position+aimDir*range,hit.collider!=null);
+            GameAudio.Play(SoundCue.TurretShot,owner,muzzle.position);
+            GameAudio.BulletContact(owner,hit);
             lastShotTime = Time.time;
             nextFireTime = Time.time + fireInterval;
         }

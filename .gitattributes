@@ -5,3 +5,11 @@
 *.fbx binary
 *.jpg binary
 *.png binary
+*.wav binary
+*.ogg binary
+*.mp3 binary
+
+# Unity writes a space after empty importer fields; keep its serialized metadata as emitted.
+*.meta whitespace=-blank-at-eol
+# Preserve the original license notices exactly as supplied in the source archives.
+AudioSources/licenses/*.txt -text -whitespace

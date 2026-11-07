@@ -1,3 +1,4 @@
+using App.Audio;
 using System;
 using UnityEngine;
 
@@ -107,6 +108,7 @@ namespace App.Main.Player
             var target = col.GetComponentInParent<Player>();
             if (target == null)
             {
+                GameAudio.Play(SoundCue.ArrowImpact,owner,transform.position);
                 // 地面やオブジェクトに当たったら消す
                 TryDestroy();
                 return;

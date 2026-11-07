@@ -1,0 +1,176 @@
+PASS Persistent audio service starts in Title
+PASS Authored clip loaded: UiNavigate
+PASS Authored clip loaded: UiConfirm
+PASS Authored clip loaded: UiBack
+PASS Authored clip loaded: UiInvalid
+PASS Authored clip loaded: UiOpen
+PASS Authored clip loaded: PlayerJoin
+PASS Authored clip loaded: PlayerReady
+PASS Authored clip loaded: PlayerLeave
+PASS Authored clip loaded: Disconnect
+PASS Authored clip loaded: BoardCursor
+PASS Authored clip loaded: BoardSelect
+PASS Authored clip loaded: BoardCancel
+PASS Authored clip loaded: BoardMove
+PASS Authored clip loaded: BoardDrop
+PASS Authored clip loaded: Promote
+PASS Authored clip loaded: Countdown
+PASS Authored clip loaded: DuelStart
+PASS Authored clip loaded: DuelWin
+PASS Authored clip loaded: DuelDraw
+PASS Authored clip loaded: MatchWin
+PASS Authored clip loaded: SpearSwing
+PASS Authored clip loaded: SwordSwing
+PASS Authored clip loaded: NaginataSwing
+PASS Authored clip loaded: KnifeSwing
+PASS Authored clip loaded: ShortGun
+PASS Authored clip loaded: LongGun
+PASS Authored clip loaded: BowRelease
+PASS Authored clip loaded: BowNock
+PASS Authored clip loaded: GuardRaise
+PASS Authored clip loaded: GuardEnd
+PASS Authored clip loaded: AimIn
+PASS Authored clip loaded: AimOut
+PASS Authored clip loaded: Leap
+PASS Authored clip loaded: Throw
+PASS Authored clip loaded: FlashBurst
+PASS Authored clip loaded: Dash
+PASS Authored clip loaded: DashStrike
+PASS Authored clip loaded: GinShield
+PASS Authored clip loaded: KinShield
+PASS Authored clip loaded: BuffEnd
+PASS Authored clip loaded: Ascend
+PASS Authored clip loaded: FieldCast
+PASS Authored clip loaded: FieldEnter
+PASS Authored clip loaded: FieldExit
+PASS Authored clip loaded: Command
+PASS Authored clip loaded: TurretSpawn
+PASS Authored clip loaded: TurretShot
+PASS Authored clip loaded: TurretEnd
+PASS Authored clip loaded: Hit
+PASS Authored clip loaded: Block
+PASS Authored clip loaded: Down
+PASS Authored clip loaded: ArrowImpact
+PASS Authored clip loaded: BulletImpact
+PASS Authored clip loaded: FootstepSoft
+PASS Authored clip loaded: FootstepWood
+PASS Authored clip loaded: Land
+PASS Authored clip loaded: Climb
+PASS Authored clip loaded: SkillReady
+PASS Unity import preserves authored PCM headroom: 0.6800
+PASS One enabled shared listener
+PASS Real mouse click after hover emits only the semantic open sound
+PASS Settings exposes two sensitivities and three volume sliders
+PASS Back button has no extra confirmation sound
+PASS Gamepad menu navigation produces one focus sound
+PASS Gamepad submit opens menu once
+PASS Native mixed output audible: 01-menu
+PASS Native mixed output has headroom: 01-menu
+PASS Repeated actions avoid immediate sample repetition
+PASS Invalid feedback is rate limited
+PASS Assigned player leaving the lobby has one departure sound
+PASS Unplugging a single lobby participant emits its seat disconnect
+PASS New match finished loading and released the board input gate
+PASS Actual device joining and readiness have distinct cues
+PASS Both ready cues use their own seat and repeat gate
+PASS Audio and selection survive scene load
+PASS Deselecting a chosen piece emits board cancellation
+PASS Valid board move plays select and placement
+PASS Atomic board clicks do not double-play independent cursor movement
+PASS Illegal board action emits rejection without HUD polling
+PASS Promotion emits a single cue
+PASS Promoted piece does not replay promotion on later moves
+PASS Legal captured-piece drop has its own placement sound
+PASS Further loss on the reconnect screen still identifies each missing seat
+PASS Both reconnected players resume the match
+PASS Fuhyo countdown and start match displayed timing
+PASS Fuhyo accepted attack sounds once; cooldown press is silent
+PASS Fuhyo accepted skill sounds once; cooldown press is silent
+PASS Fuhyo secondary action uses accepted guard / aim cues
+PASS Native mixed output audible: weapon-Fuhyo
+PASS Native mixed output has headroom: weapon-Fuhyo
+PASS Holding movement against a fixed body makes no footsteps
+PASS Actual grounded travel emits footsteps
+PASS Climb foley follows actual upward travel beside a wall
+PASS Falling from a real climb sounds once on contact with the platform
+PASS Simultaneous real deaths emit the draw result once
+PASS Kyosya countdown and start match displayed timing
+PASS Kyosya accepted attack sounds once; cooldown press is silent
+PASS Kyosya accepted skill sounds once; cooldown press is silent
+PASS Flash grenade sounds once at detonation
+PASS Kyosya secondary action uses accepted guard / aim cues
+PASS Native mixed output audible: weapon-Kyosya
+PASS Native mixed output has headroom: weapon-Kyosya
+PASS Walking on actual room collider 床 emits FootstepSoft
+PASS Walking on actual room collider 円柱.002 emits FootstepWood
+PASS Ordinary capture plays its duel result once
+PASS Keima countdown and start match displayed timing
+PASS Keima accepted attack sounds once; cooldown press is silent
+PASS Keima accepted skill sounds once; cooldown press is silent
+PASS Dash slash sounds at the landing attack
+PASS Keima secondary action uses accepted guard / aim cues
+PASS Native mixed output audible: weapon-Keima
+PASS Native mixed output has headroom: weapon-Keima
+PASS Gin countdown and start match displayed timing
+PASS Gin accepted attack sounds once; cooldown press is silent
+PASS Gin accepted skill sounds once; cooldown press is silent
+PASS Gin secondary action uses accepted guard / aim cues
+PASS Native mixed output audible: weapon-Gin
+PASS Native mixed output has headroom: weapon-Gin
+PASS Gin defense expiry emits its release cue once
+PASS Kin countdown and start match displayed timing
+PASS Kin accepted attack sounds once; cooldown press is silent
+PASS Kin accepted skill sounds once; cooldown press is silent
+PASS Kin secondary action uses accepted guard / aim cues
+PASS Native mixed output audible: weapon-Kin
+PASS Native mixed output has headroom: weapon-Kin
+PASS Kin defense expiry emits its release cue once
+PASS Kakugyo countdown and start match displayed timing
+PASS Kakugyo accepted attack sounds once; cooldown press is silent
+PASS Kakugyo accepted skill sounds once; cooldown press is silent
+PASS Kakugyo secondary action uses accepted guard / aim cues
+PASS Native mixed output audible: weapon-Kakugyo
+PASS Native mixed output has headroom: weapon-Kakugyo
+PASS Both players are mixed with opposite modest pan
+PASS Pause freezes an in-flight combat sound
+PASS Interface sound remains playable while paused
+PASS Pause rejects new gameplay sound
+PASS Resume releases audio pause with gameplay gate
+PASS Effects mute immediately stops and rejects combat audio
+PASS Effects mute preserves interface sounds
+PASS Interface mute rejects interface sound
+PASS Master mute starts with live audible sources
+PASS Master zero rejects new effects and UI while child buses are up
+PASS Native master mute outputs silence
+PASS Volume choice is stored in preferences
+PASS Actual damage and blocked damage have distinct cues
+PASS Lethal hit has a distinct down cue
+PASS Native mixed output audible: stress-two-players
+PASS Native mixed output has headroom: stress-two-players
+PASS Simultaneous combat keeps a bounded voice pool
+PASS Reset test has two live owners
+PASS Owner reset stops only the departing owner's live effects
+PASS Hisya countdown and start match displayed timing
+PASS Hisya accepted attack sounds once; cooldown press is silent
+PASS Arrow re-nocking sounds once despite fixed and late pose updates
+PASS Hisya accepted skill sounds once; cooldown press is silent
+PASS Hisya secondary action uses accepted guard / aim cues
+PASS Native mixed output audible: weapon-Hisya
+PASS Native mixed output has headroom: weapon-Hisya
+PASS Actual field entry and exit sound on the affected seat
+PASS King countdown and start match displayed timing
+PASS King accepted attack sounds once; cooldown press is silent
+PASS King accepted skill sounds once; cooldown press is silent
+PASS Deployed turrets emit shots
+PASS King secondary action uses accepted guard / aim cues
+PASS Native mixed output audible: weapon-King
+PASS Native mixed output has headroom: weapon-King
+PASS Turret removal sounds at natural skill expiry
+PASS King capture emits only the final result and down cue
+PASS Final shot and fall remain audible after real duel teardown
+PASS Native mixed output audible: king-capture
+PASS Native mixed output has headroom: king-capture
+PASS Scene changes leave no stale combat sounds
+PASS Listener stays unique after repeated scene changes
+PASS All 58 cues reached
+PASS No native runtime exceptions

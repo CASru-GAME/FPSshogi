@@ -31,6 +31,8 @@ Windowsでは`Open-FPSshogi.cmd`でも開けます。Unityを独自の場所へ�
 
 駒ごとの武器・スキル・動きは「遊び方 → 駒の説明」で確認できます。
 
+「設定」で全体音量・効果音・操作音を別々に調整できます。効果音と元録音はプロジェクトに含まれます。[効果音の試聴ページ](AudioReview/index.html)はローカルで開いて使えます。作者と利用条件は[音声素材のクレジット](THIRD_PARTY_AUDIO.md)を参照してください。
+
 ## Windows版をビルドする
 
 Unityのメニューから`FPSshogi → Build Windows`を実行します。出力先は`Builds/FPSshogi/`です。実行・配布にはフォルダー全体が必要です。`FPSshogi.exe`を起動してください。

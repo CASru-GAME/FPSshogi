@@ -1,3 +1,4 @@
+using App.Audio;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -129,6 +130,7 @@ namespace App.Main.Player
             exploded = true;
 
             Vector3 pos = transform.position;
+            GameAudio.Play(SoundCue.FlashBurst,owner,pos);
             var colliders = Physics.OverlapSphere(pos, explosionRadius, affectLayers);
             var applied = new HashSet<Player>();
 

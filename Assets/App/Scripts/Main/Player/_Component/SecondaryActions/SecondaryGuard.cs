@@ -1,3 +1,4 @@
+using App.Audio;
 using System;
 using UnityEngine;
 
@@ -63,6 +64,7 @@ namespace App.Main.Player
             buffTimer = buffDuration;
             CombatVisuals.Aura(player,"Guard_Aura",new Color(.4f,.85f,1f,.9f),buffDuration);
             cooldownTimer = cooldown;
+            GameAudio.Play(SoundCue.GuardRaise,player);
         }
 
         public void UpdateSecondaryAction()
@@ -103,6 +105,7 @@ namespace App.Main.Player
 
                 buffActive = false;
                 buffTimer = 0f;
+                GameAudio.Play(SoundCue.GuardEnd,player);
             }
         }
     }

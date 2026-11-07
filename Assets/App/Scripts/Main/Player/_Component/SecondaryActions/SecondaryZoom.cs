@@ -1,3 +1,4 @@
+using App.Audio;
 using System;
 using UnityEngine;
 
@@ -88,6 +89,7 @@ namespace App.Main.Player
             player.WeaponObject?.GetComponent<WeaponPresentation>()?.SetAiming(true);
 
             zoomActive = true;
+            GameAudio.Play(SoundCue.AimIn,player);
             zoomTimer = (zoomDuration > 0f) ? zoomDuration : Mathf.Infinity;
         }
 
@@ -110,6 +112,7 @@ namespace App.Main.Player
 
             // 状態リセット
             zoomActive = false;
+            GameAudio.Play(SoundCue.AimOut,player);
             zoomTimer = 0f;
             originalFOV = -1f;
             cachedCamera = null;

@@ -1,0 +1,623 @@
+{
+  "cues": [
+    {
+      "id": "UiNavigate",
+      "ui": true,
+      "gain": 0.16,
+      "interval": 0.075,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/UiNavigate_01",
+        "Audio/Clips/UiNavigate_02",
+        "Audio/Clips/UiNavigate_03"
+      ]
+    },
+    {
+      "id": "UiConfirm",
+      "ui": true,
+      "gain": 0.3,
+      "interval": 0.06,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/UiConfirm_01"
+      ]
+    },
+    {
+      "id": "UiBack",
+      "ui": true,
+      "gain": 0.24,
+      "interval": 0.08,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/UiBack_01"
+      ]
+    },
+    {
+      "id": "UiInvalid",
+      "ui": true,
+      "gain": 0.25,
+      "interval": 0.22,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/UiInvalid_01"
+      ]
+    },
+    {
+      "id": "UiOpen",
+      "ui": true,
+      "gain": 0.2,
+      "interval": 0.1,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/UiOpen_01"
+      ]
+    },
+    {
+      "id": "PlayerJoin",
+      "ui": true,
+      "gain": 0.36,
+      "interval": 0.1,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/PlayerJoin_01"
+      ]
+    },
+    {
+      "id": "PlayerReady",
+      "ui": true,
+      "gain": 0.39,
+      "interval": 0.1,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/PlayerReady_01"
+      ]
+    },
+    {
+      "id": "PlayerLeave",
+      "ui": true,
+      "gain": 0.28,
+      "interval": 0.1,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/PlayerLeave_01"
+      ]
+    },
+    {
+      "id": "Disconnect",
+      "ui": true,
+      "gain": 0.4,
+      "interval": 0.5,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/Disconnect_01"
+      ]
+    },
+    {
+      "id": "BoardCursor",
+      "ui": true,
+      "gain": 0.13,
+      "interval": 0.055,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/BoardCursor_01",
+        "Audio/Clips/BoardCursor_02"
+      ]
+    },
+    {
+      "id": "BoardSelect",
+      "ui": true,
+      "gain": 0.28,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/BoardSelect_01"
+      ]
+    },
+    {
+      "id": "BoardCancel",
+      "ui": true,
+      "gain": 0.22,
+      "interval": 0.12,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/BoardCancel_01"
+      ]
+    },
+    {
+      "id": "BoardMove",
+      "ui": true,
+      "gain": 0.45,
+      "interval": 0.08,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/BoardMove_01",
+        "Audio/Clips/BoardMove_02",
+        "Audio/Clips/BoardMove_03"
+      ]
+    },
+    {
+      "id": "BoardDrop",
+      "ui": true,
+      "gain": 0.48,
+      "interval": 0.08,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/BoardDrop_01",
+        "Audio/Clips/BoardDrop_02"
+      ]
+    },
+    {
+      "id": "Promote",
+      "ui": true,
+      "gain": 0.35,
+      "interval": 0.2,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/Promote_01"
+      ]
+    },
+    {
+      "id": "Countdown",
+      "ui": true,
+      "gain": 0.38,
+      "interval": 0.45,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/Countdown_01"
+      ]
+    },
+    {
+      "id": "DuelStart",
+      "ui": true,
+      "gain": 0.52,
+      "interval": 0.4,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/DuelStart_01"
+      ]
+    },
+    {
+      "id": "DuelWin",
+      "ui": true,
+      "gain": 0.42,
+      "interval": 0.4,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/DuelWin_01"
+      ]
+    },
+    {
+      "id": "DuelDraw",
+      "ui": true,
+      "gain": 0.36,
+      "interval": 0.4,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/DuelDraw_01"
+      ]
+    },
+    {
+      "id": "MatchWin",
+      "ui": true,
+      "gain": 0.48,
+      "interval": 0.5,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/MatchWin_01"
+      ]
+    },
+    {
+      "id": "SpearSwing",
+      "ui": false,
+      "gain": 0.45,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/SpearSwing_01",
+        "Audio/Clips/SpearSwing_02",
+        "Audio/Clips/SpearSwing_03"
+      ]
+    },
+    {
+      "id": "SwordSwing",
+      "ui": false,
+      "gain": 0.48,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/SwordSwing_01",
+        "Audio/Clips/SwordSwing_02",
+        "Audio/Clips/SwordSwing_03"
+      ]
+    },
+    {
+      "id": "NaginataSwing",
+      "ui": false,
+      "gain": 0.49,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/NaginataSwing_01",
+        "Audio/Clips/NaginataSwing_02",
+        "Audio/Clips/NaginataSwing_03"
+      ]
+    },
+    {
+      "id": "KnifeSwing",
+      "ui": false,
+      "gain": 0.32,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/KnifeSwing_01",
+        "Audio/Clips/KnifeSwing_02",
+        "Audio/Clips/KnifeSwing_03"
+      ]
+    },
+    {
+      "id": "ShortGun",
+      "ui": false,
+      "gain": 0.68,
+      "interval": 0.07,
+      "pitch": 0.035,
+      "clips": [
+        "Audio/Clips/ShortGun_01",
+        "Audio/Clips/ShortGun_02",
+        "Audio/Clips/ShortGun_03"
+      ]
+    },
+    {
+      "id": "LongGun",
+      "ui": false,
+      "gain": 0.7,
+      "interval": 0.07,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/LongGun_01",
+        "Audio/Clips/LongGun_02",
+        "Audio/Clips/LongGun_03"
+      ]
+    },
+    {
+      "id": "BowRelease",
+      "ui": false,
+      "gain": 0.49,
+      "interval": 0.08,
+      "pitch": 0.015,
+      "clips": [
+        "Audio/Clips/BowRelease_01",
+        "Audio/Clips/BowRelease_02",
+        "Audio/Clips/BowRelease_03"
+      ]
+    },
+    {
+      "id": "BowNock",
+      "ui": false,
+      "gain": 0.25,
+      "interval": 0.12,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/BowNock_01"
+      ]
+    },
+    {
+      "id": "GuardRaise",
+      "ui": false,
+      "gain": 0.37,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/GuardRaise_01"
+      ]
+    },
+    {
+      "id": "GuardEnd",
+      "ui": false,
+      "gain": 0.18,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/GuardEnd_01"
+      ]
+    },
+    {
+      "id": "AimIn",
+      "ui": false,
+      "gain": 0.21,
+      "interval": 0.08,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/AimIn_01"
+      ]
+    },
+    {
+      "id": "AimOut",
+      "ui": false,
+      "gain": 0.18,
+      "interval": 0.08,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/AimOut_01"
+      ]
+    },
+    {
+      "id": "Leap",
+      "ui": false,
+      "gain": 0.46,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/Leap_01"
+      ]
+    },
+    {
+      "id": "Throw",
+      "ui": false,
+      "gain": 0.39,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/Throw_01"
+      ]
+    },
+    {
+      "id": "FlashBurst",
+      "ui": false,
+      "gain": 0.59,
+      "interval": 0.12,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/FlashBurst_01"
+      ]
+    },
+    {
+      "id": "Dash",
+      "ui": false,
+      "gain": 0.47,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/Dash_01"
+      ]
+    },
+    {
+      "id": "DashStrike",
+      "ui": false,
+      "gain": 0.53,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/DashStrike_01"
+      ]
+    },
+    {
+      "id": "GinShield",
+      "ui": false,
+      "gain": 0.45,
+      "interval": 0.1,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/GinShield_01"
+      ]
+    },
+    {
+      "id": "KinShield",
+      "ui": false,
+      "gain": 0.46,
+      "interval": 0.1,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/KinShield_01"
+      ]
+    },
+    {
+      "id": "BuffEnd",
+      "ui": false,
+      "gain": 0.18,
+      "interval": 0.1,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/BuffEnd_01"
+      ]
+    },
+    {
+      "id": "Ascend",
+      "ui": false,
+      "gain": 0.47,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/Ascend_01"
+      ]
+    },
+    {
+      "id": "FieldCast",
+      "ui": false,
+      "gain": 0.48,
+      "interval": 0.1,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/FieldCast_01"
+      ]
+    },
+    {
+      "id": "FieldEnter",
+      "ui": false,
+      "gain": 0.24,
+      "interval": 0.3,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/FieldEnter_01"
+      ]
+    },
+    {
+      "id": "FieldExit",
+      "ui": false,
+      "gain": 0.18,
+      "interval": 0.3,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/FieldExit_01"
+      ]
+    },
+    {
+      "id": "Command",
+      "ui": false,
+      "gain": 0.49,
+      "interval": 0.1,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/Command_01"
+      ]
+    },
+    {
+      "id": "TurretSpawn",
+      "ui": false,
+      "gain": 0.33,
+      "interval": 0.08,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/TurretSpawn_01"
+      ]
+    },
+    {
+      "id": "TurretShot",
+      "ui": false,
+      "gain": 0.4,
+      "interval": 0.035,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/TurretShot_01",
+        "Audio/Clips/TurretShot_02",
+        "Audio/Clips/TurretShot_03"
+      ]
+    },
+    {
+      "id": "TurretEnd",
+      "ui": false,
+      "gain": 0.24,
+      "interval": 0.1,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/TurretEnd_01"
+      ]
+    },
+    {
+      "id": "Hit",
+      "ui": false,
+      "gain": 0.49,
+      "interval": 0.045,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/Hit_01",
+        "Audio/Clips/Hit_02",
+        "Audio/Clips/Hit_03"
+      ]
+    },
+    {
+      "id": "Block",
+      "ui": false,
+      "gain": 0.46,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/Block_01",
+        "Audio/Clips/Block_02",
+        "Audio/Clips/Block_03"
+      ]
+    },
+    {
+      "id": "Down",
+      "ui": false,
+      "gain": 0.45,
+      "interval": 0.2,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/Down_01"
+      ]
+    },
+    {
+      "id": "ArrowImpact",
+      "ui": false,
+      "gain": 0.31,
+      "interval": 0.06,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/ArrowImpact_01",
+        "Audio/Clips/ArrowImpact_02"
+      ]
+    },
+    {
+      "id": "BulletImpact",
+      "ui": false,
+      "gain": 0.23,
+      "interval": 0.04,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/BulletImpact_01",
+        "Audio/Clips/BulletImpact_02",
+        "Audio/Clips/BulletImpact_03"
+      ]
+    },
+    {
+      "id": "FootstepSoft",
+      "ui": false,
+      "gain": 0.24,
+      "interval": 0.16,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/FootstepSoft_01",
+        "Audio/Clips/FootstepSoft_02",
+        "Audio/Clips/FootstepSoft_03",
+        "Audio/Clips/FootstepSoft_04",
+        "Audio/Clips/FootstepSoft_05"
+      ]
+    },
+    {
+      "id": "FootstepWood",
+      "ui": false,
+      "gain": 0.25,
+      "interval": 0.16,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/FootstepWood_01",
+        "Audio/Clips/FootstepWood_02",
+        "Audio/Clips/FootstepWood_03",
+        "Audio/Clips/FootstepWood_04",
+        "Audio/Clips/FootstepWood_05"
+      ]
+    },
+    {
+      "id": "Land",
+      "ui": false,
+      "gain": 0.36,
+      "interval": 0.2,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/Land_01",
+        "Audio/Clips/Land_02"
+      ]
+    },
+    {
+      "id": "Climb",
+      "ui": false,
+      "gain": 0.2,
+      "interval": 0.32,
+      "pitch": 0.025,
+      "clips": [
+        "Audio/Clips/Climb_01",
+        "Audio/Clips/Climb_02"
+      ]
+    },
+    {
+      "id": "SkillReady",
+      "ui": false,
+      "gain": 0.14,
+      "interval": 0.5,
+      "pitch": 0,
+      "clips": [
+        "Audio/Clips/SkillReady_01"
+      ]
+    }
+  ]
+}

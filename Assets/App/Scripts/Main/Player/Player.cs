@@ -1,3 +1,4 @@
+using App.Audio;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,14 +42,17 @@ namespace App.Main.Player
         public App.Main.ShogiThings.PieceType PieceType { get; set; }
         public int BodyLayer { get; set; }
         public float LookSensitivity { get => lookSensitivity; set => lookSensitivity = Mathf.Clamp(value, .5f, 5f); }
-        public void ResetInput() { moveInput = lookInput = Vector2.zero; climbInput = false; }
+        public bool IsClimbing { get; private set; }
+        public void ResetInput() { moveInput = lookInput = Vector2.zero; climbInput = IsClimbing = false; }
         public void ResetDuelPresentation()
         {
             if (WeaponObject != null) WeaponObject.GetComponent<WeaponPresentation>()?.ResetMotion();
             ResetInput(); ClearMovementOverride(); StopAllCoroutines();
+            GetComponent<PlayerFoley>()?.ResetTracking();
             playerStatus?.EffectList.ClearEffects();
             playerStatus?.DefensePoint.Reset();
             CombatVisuals.Clear(this);
+            GameAudio.StopCombat(this);
             yaw=transform.eulerAngles.y; pitch=0;
             if(cameraTransform!=null)
             {
@@ -79,6 +83,7 @@ namespace App.Main.Player
 
         public void Initialize()
         {
+            if(GetComponent<PlayerFoley>()==null)gameObject.AddComponent<PlayerFoley>();
             rb = GetComponent<Rigidbody>();
             if (rb == null)
                 rb = gameObject.AddComponent<Rigidbody>();
@@ -278,7 +283,8 @@ namespace App.Main.Player
                 rb.linearVelocity = v;
             }
 
-            if (climbInput && !movementOverrideActive && !movementYOverrideActive && CanClimb(desired, forward))
+            IsClimbing = climbInput && !movementOverrideActive && !movementYOverrideActive && CanClimb(desired, forward);
+            if (IsClimbing)
             {
                 var velocity=rb.linearVelocity;velocity.y=climbSpeed;rb.linearVelocity=velocity;
             }

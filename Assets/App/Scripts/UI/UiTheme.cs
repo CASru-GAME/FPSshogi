@@ -81,7 +81,8 @@ namespace App.UI
             button.Caption=Label(box.transform, "Label", caption, 16, 4, w-32, h-8, 26, Ink, TextAnchor.MiddleCenter);
             button.FocusLine=Box(box.transform,"Focus line",16,h-3,w-32,2,Ink);
             button.SetCurrent(primary);
-            button.onClick.AddListener(()=>{UiFeedback.Play(false);action?.Invoke();}); return button;
+            box.gameObject.AddComponent<App.Audio.UiFocusSound>();
+            button.onClick.AddListener(()=>UiFeedback.Activate(action)); return button;
         }
         public static void Current(Button button,bool current)
         {

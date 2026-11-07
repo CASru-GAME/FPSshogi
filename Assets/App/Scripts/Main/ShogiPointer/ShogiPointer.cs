@@ -1,3 +1,4 @@
+using App.Audio;
 using UnityEngine;
 using App.Common.Initialize;
 using App.Main.Player;
@@ -33,7 +34,7 @@ namespace App.Main.ShogiPointer
         public PieceType CapturedType => capturedPiecesPanelIndex.GetCapturedPiecesType();
         public string Feedback { get; private set; } = "駒を選んでください";
         public int InvalidFeedbackVersion { get; private set; }
-        void Reject(string reason){Feedback=reason;InvalidFeedbackVersion++;}
+        void Reject(string reason){Feedback=reason;InvalidFeedbackVersion++;GameAudio.Play(SoundCue.UiInvalid);}
         public PlayerType ActivePlayer => gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn ? PlayerType.PlayerTwo : PlayerType.PlayerOne;
         public bool IsBoardTurn => gameStateHolder != null && (gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerOneTurn || gameStateHolder.CurrentState == GameStateHolder.GameState.PlayerTwoTurn);
 
@@ -79,8 +80,9 @@ namespace App.Main.ShogiPointer
         public void SelectPositionDown() => SetCursor(pointerPosition[0], pointerPosition[1] - 1);
         public void SelectPositionLeft() => SetCursor(pointerPosition[0] - 1, pointerPosition[1]);
         public void SelectPositionRight() => SetCursor(pointerPosition[0] + 1, pointerPosition[1]);
-        public void SetCursor(int x, int y)
+        public void SetCursor(int x, int y,bool playSound=true)
         {
+            if(playSound&&(pointerPosition[0]!=Mathf.Clamp(x,0,8)||pointerPosition[1]!=Mathf.Clamp(y,0,8)))GameAudio.Play(SoundCue.BoardCursor);
             pointerPosition[0] = Mathf.Clamp(x, 0, 8);
             pointerPosition[1] = Mathf.Clamp(y, 0, 8);
         }
@@ -93,6 +95,7 @@ namespace App.Main.ShogiPointer
             if (piece != null && piece.Player == ActivePlayer)
             {
                 selectedPiecePosition = (int[])pointerPosition.Clone();
+                GameAudio.Play(SoundCue.BoardSelect);
                 Feedback = "光っているマスへ移動できます。決定で移動 / 取消で解除";
                 return;
             }
@@ -116,6 +119,7 @@ namespace App.Main.ShogiPointer
             if (!counts.TryGetValue(type, out int count) || count <= 0) { Reject("その持ち駒はありません"); return; }
             capturedPiecesPanelIndex.SetCapturedPiecesPanelIndex((int)type);
             isCapturedPiecesSelected = true;
+            GameAudio.Play(SoundCue.BoardSelect);
             isOpenCapturedPiecesPanel = false;
             selectedPiecePosition = new[] { -1, -1 };
             Feedback = "持ち駒を打つマスを選んでください / 取消で解除";
@@ -141,11 +145,12 @@ namespace App.Main.ShogiPointer
                 index += direction;
                 if (index > 7) index = 1;
                 if (index < 1) index = 7;
-                if (counts.TryGetValue((PieceType)index, out int count) && count > 0) { capturedPiecesPanelIndex.SetCapturedPiecesPanelIndex(index); break; }
+                if (counts.TryGetValue((PieceType)index, out int count) && count > 0) { if(index!=capturedPiecesPanelIndex.GetIndex())GameAudio.Play(SoundCue.BoardCursor);capturedPiecesPanelIndex.SetCapturedPiecesPanelIndex(index); break; }
             }
         }
         public void Deselect()
         {
+            if(selectedPiecePosition[0]>=0||IsCapturedMode||IsPlacingCaptured)GameAudio.Play(SoundCue.BoardCancel);
             selectedPiecePosition = new[] { -1, -1 };
             isCapturedPiecesSelected = isOpenCapturedPiecesPanel = false;
             Feedback = "選択を解除しました。駒を選んでください";

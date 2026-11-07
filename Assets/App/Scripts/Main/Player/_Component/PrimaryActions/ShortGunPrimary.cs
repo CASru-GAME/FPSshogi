@@ -1,3 +1,4 @@
+using App.Audio;
 using System;
 using UnityEngine;
 
@@ -142,6 +143,8 @@ namespace App.Main.Player
             // 発射成功としてクールダウンを記録（アニメ長を反映させたい場合は Mathf.Max を使う）
             CombatVisuals.Shot(player, hit.collider != null ? hit.point : ray.GetPoint(maxRange), hit.collider != null);
             lastUseTime = Time.time;
+            GameAudio.Play(SoundCue.ShortGun,player);
+            GameAudio.BulletContact(player,hit);
             // もしアニメがクールダウンに影響するなら以下のようにすることも可能:
             // lastUseTime = Time.time - (animDuration > cooldown ? -animDuration : 0f);
         }

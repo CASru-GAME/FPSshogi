@@ -98,27 +98,36 @@ namespace App.UI
         {
             Clear();var back=Header("設定");
             var panel=UiTheme.Rect(root,"Settings content",350,260,1220,650);
-            var sliders=new Slider[2];
-            for(int p=0;p<2;p++){
-                int index=p;float y=p*150;
-                UiTheme.Label(panel,"Sensitivity label "+p,$"{p+1}P 視点感度",0,y,370,80,30);
-                var value=UiTheme.Label(panel,"Sensitivity value "+p,$"{session.Sensitivity(p):0.0}",1100,y,120,80,30,UiTheme.Ink,TextAnchor.MiddleRight);
-                var row=UiTheme.Box(panel,"Sensitivity slider "+p,420,y,620,80,Color.clear,true).rectTransform;
+            var sliders=new Slider[5];
+            for(int p=0;p<5;p++){
+                int index=p;float y=p*92;
+                bool sensitivity=p<2;
+                var bus=(App.Audio.AudioBus)(p-2);
+                string label=sensitivity?$"{p+1}P 視点感度":p==2?"全体音量":p==3?"効果音":"操作音";
+                float initial=sensitivity?session.Sensitivity(p):App.Audio.GameAudio.GetVolume(bus);
+                UiTheme.Label(panel,"Setting label "+p,label,0,y,370,72,28);
+                var value=UiTheme.Label(panel,"Setting value "+p,sensitivity?$"{initial:0.0}":$"{initial*100:0}%",1100,y,120,72,28,UiTheme.Ink,TextAnchor.MiddleRight);
+                var row=UiTheme.Box(panel,sensitivity?"Sensitivity slider "+p:"Audio slider "+bus,420,y,620,80,Color.clear,true).rectTransform;
                 UiTheme.Box(row,"Track",0,38,620,4,UiTheme.Track);
                 var slider=row.gameObject.AddComponent<Slider>();var handleArea=UiTheme.Rect(row,"Handle area",0,22,620,36);
                 var handle=UiTheme.Box(handleArea,"Handle",0,0,14,0,Color.white,true).rectTransform;handle.pivot=new Vector2(.5f,.5f);
-                slider.handleRect=handle;slider.targetGraphic=handle.GetComponent<Image>();slider.minValue=.5f;slider.maxValue=5;slider.value=session.Sensitivity(p);
+                slider.handleRect=handle;slider.targetGraphic=handle.GetComponent<Image>();slider.minValue=sensitivity?.5f:0;slider.maxValue=sensitivity?5:1;slider.value=initial;
+                row.gameObject.AddComponent<App.Audio.UiFocusSound>();
                 var colors=slider.colors;colors.normalColor=UiTheme.Muted;colors.highlightedColor=colors.selectedColor=UiTheme.Gold;slider.colors=colors;
-                slider.onValueChanged.AddListener(v=>{session.SetSensitivity(index,v);value.text=$"{v:0.0}";});sliders[p]=slider;
-                UiTheme.Box(panel,"Settings row rule "+p,0,y+105,1220,1,UiTheme.Rule);
+                slider.onValueChanged.AddListener(v=>{
+                    if(sensitivity){session.SetSensitivity(index,v);value.text=$"{v:0.0}";}
+                    else{App.Audio.GameAudio.SetVolume(bus,v);value.text=$"{v*100:0}%";}
+                    if(sensitivity)App.Audio.GameAudio.Play(App.Audio.SoundCue.UiNavigate);else App.Audio.GameAudio.PreviewVolume(bus);
+                });sliders[p]=slider;
+                UiTheme.Box(panel,"Settings row rule "+p,0,y+82,1220,1,UiTheme.Rule);
             }
-            UiTheme.Label(panel,"HP setting label","HPの数値表示",0,300,650,80,30);
-            var hp=UiTheme.Button(panel,"HP number setting","",920,300,300,80,null);
+            UiTheme.Label(panel,"HP setting label","HPの数値表示",0,460,650,80,28);
+            var hp=UiTheme.Button(panel,"HP number setting","",920,460,300,80,null);
             void SetLabel()=>hp.GetComponentInChildren<Text>().text=session.ShowHpNumbers?"オン":"オフ";SetLabel();
             hp.onClick.AddListener(()=>{session.ShowHpNumbers=!session.ShowHpNumbers;SetLabel();});
-            UiTheme.Box(panel,"HP setting rule",0,405,1220,1,UiTheme.Rule);
-            var reset=UiTheme.Button(panel,"Reset settings button","初期値に戻す",850,540,370,65,()=>{session.ResetSettings();Settings();});
-            UiTheme.VerticalNavigation(sliders[0],sliders[1],hp,reset,back);session.Focus(sliders[0]);
+            UiTheme.Box(panel,"HP setting rule",0,542,1220,1,UiTheme.Rule);
+            var reset=UiTheme.Button(panel,"Reset settings button","初期値に戻す",850,574,370,65,()=>{session.ResetSettings();Settings();});
+            UiTheme.VerticalNavigation(sliders[0],sliders[1],sliders[2],sliders[3],sliders[4],hp,reset,back);session.Focus(sliders[0]);
         }
         public void Selection(){Clear();Header("プレイヤー選択","Selection back button",session.CancelSelection);selection=new PlayerSelectionPanel(root,session);}
         public void Connection()

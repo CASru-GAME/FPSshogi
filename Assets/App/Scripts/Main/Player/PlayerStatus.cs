@@ -1,9 +1,11 @@
+using App.Audio;
 using UnityEngine;
 
 namespace App.Main.Player
 {
     public class PlayerStatus
     {
+        readonly Player owner;
         public Hp Hp { get; private set; }
         public AttackPoint AttackPoint { get; private set; }
         public DefensePoint DefensePoint { get; private set; }
@@ -15,6 +17,7 @@ namespace App.Main.Player
 
         public PlayerStatus(int hpMax, int attackPointDefault, float moveSpeedDefault, Player player, int defensePointDefault = 0)
         {
+            owner=player;
             Hp = new Hp(hpMax);
             AttackPoint = new AttackPoint(attackPointDefault);
             DefensePoint = new DefensePoint(defensePointDefault);
@@ -29,8 +32,10 @@ namespace App.Main.Player
             {
                 effectiveDamage = 0;
             }
+            bool wasAlive=Hp.Current>0;
             Hp.Subtract(effectiveDamage);
             ImpactSource=source;ImpactBlocked=effectiveDamage==0;ImpactVersion++;
+            if(wasAlive)GameAudio.Play(ImpactBlocked?SoundCue.Block:Hp.Current<=0?SoundCue.Down:SoundCue.Hit,owner);
             Debug.Log($"Player took {effectiveDamage} damage, HP is now {Hp.Current}/{Hp.Max}");
         }
 

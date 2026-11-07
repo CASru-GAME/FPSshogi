@@ -73,7 +73,6 @@ namespace App.UI
                         var direction=Quaternion.Inverse(Quaternion.Euler(0,yaw,0))*(status.ImpactSource.Value-p.transform.position);
                         damageEdge[i]=Mathf.Abs(direction.x)>Mathf.Abs(direction.z)?direction.x<0?0:1:direction.z<0?2:3;
                     }
-                    UiFeedback.Impact(i,status.ImpactBlocked);
                 }
                 float flash=Mathf.Clamp01((damageUntil[i]-Time.unscaledTime)/.4f);
                 for(int e=0;e<4;e++){var tint=blockedImpact[i]?UiTheme.Gold:new Color(.8f,.16f,.1f);tint.a=(damageEdge[i]<0||damageEdge[i]==e)?flash*.8f:0;hurt[i,e].color=tint;}

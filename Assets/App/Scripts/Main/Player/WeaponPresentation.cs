@@ -1,3 +1,4 @@
+using App.Audio;
 using UnityEngine;
 
 namespace App.Main.Player
@@ -22,6 +23,7 @@ namespace App.Main.Player
         Camera view;
         Rigidbody body;
         float attackStarted = -100f;
+        bool nockPending;
         float guardStarted = -100f, guardUntil = -100f;
         float aimStarted = -100f, aimFrom;
         bool aiming;
@@ -68,6 +70,7 @@ namespace App.Main.Player
                 attackFromGrip = visual.localPosition + attackFromRotation * gripLocal;
             }
             attackStarted = Time.time;
+            nockPending=bowString!=null;
             return attackDuration;
         }
         public void Guard(float seconds)
@@ -87,7 +90,7 @@ namespace App.Main.Player
         public void ResetMotion()
         {
             attackStarted = guardStarted = guardUntil = skillStarted = aimStarted = -100f;
-            skill = SkillMotion.None; aiming = false; aimFrom = 0;
+            skill = SkillMotion.None; aiming = false; aimFrom = 0; nockPending=false;
         }
         void OnDisable() => ResetMotion();
         void FixedUpdate() => RefreshPose();
@@ -238,6 +241,7 @@ namespace App.Main.Player
         {
             if (bowString == null) return;
             float age = Time.time - attackStarted;
+            if(nockPending&&age>=.36f){nockPending=false;GameAudio.Play(SoundCue.BowNock,owner);}
             float release = 0;
             if (IsAttacking)
             {

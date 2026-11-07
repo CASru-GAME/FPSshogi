@@ -1,3 +1,4 @@
+using App.Audio;
 // ...existing code...
 using System;
 using System.Collections.Generic;
@@ -77,6 +78,7 @@ namespace App.Main.Player
             // クールダウン開始
             isOnCooldown = true;
             cooldownTimer = cooldownTime;
+            GameAudio.Play(SoundCue.Dash,player);
             player.WeaponObject?.GetComponent<WeaponPresentation>()?.PlaySkill(WeaponPresentation.SkillMotion.Dash, moveDuration + .45f, moveDuration);
         }
 
@@ -109,6 +111,7 @@ namespace App.Main.Player
 
         private void DoLandingAttack()
         {
+            GameAudio.Play(SoundCue.DashStrike,player);
             Vector3 origin = player.transform.position;
 
             // OverlapSphere で周囲を検出

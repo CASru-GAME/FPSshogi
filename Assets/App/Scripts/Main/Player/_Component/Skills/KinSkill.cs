@@ -1,3 +1,4 @@
+using App.Audio;
 namespace App.Main.Player
 {
     public class KinSkill : ISkill
@@ -25,6 +26,7 @@ namespace App.Main.Player
 
             // クールダウンを開始
             cooldownTimer = cooldownTime;
+            GameAudio.Play(SoundCue.KinShield,player);
             timer = duration;
             CombatVisuals.Aura(player,"KinSkill_Aura",new UnityEngine.Color(1f,.75f,.25f,.9f),duration);
         }
@@ -46,6 +48,7 @@ namespace App.Main.Player
                 if (timer <= 0f)
                 {
                     playerStatus.DefensePoint.Add(-amount);
+                    GameAudio.Play(SoundCue.BuffEnd,player);
                     timer = 0f;
                 }
             }
