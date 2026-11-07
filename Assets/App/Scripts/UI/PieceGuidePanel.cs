@@ -47,13 +47,14 @@ namespace App.UI
             }
             UiTheme.Label(detail,"Move direction","相手側 ↑",450,430,305,46,23,UiTheme.Muted,TextAnchor.MiddleCenter);
             UiTheme.Label(detail,"Move description",PiecePresentation.Movement(type,promoted),440,500,440,136,27);
-            UiTheme.Label(detail,"Combat heading","FPSでの操作",965,35,490,60,33);
+            UiTheme.Label(detail,"Combat heading","決闘での能力",965,35,490,60,33);
             UiTheme.Symbol(detail,"Weapon icon",PiecePresentation.WeaponSymbol(type),965,145,65);UiTheme.Label(detail,"Weapon name",PiecePresentation.Weapon(type),1050,147,420,60,30);
+            if (type == PieceType.Hisya)
+                UiTheme.Label(detail, "Bow control", "長押しで引き、離して射る。", 965, 212, 490, 44, 24, UiTheme.Muted);
             bool zoom=type==PieceType.Hisya||type==PieceType.Kakugyo||type==PieceType.Kyosya;
             UiTheme.Symbol(detail,"Secondary icon",zoom?UiSymbol.Kind.Zoom:UiSymbol.Kind.Shield,965,275,65);UiTheme.Label(detail,"Secondary name",zoom?"ズーム":"防御",1050,277,420,60,30);
             UiTheme.Symbol(detail,"Skill icon",PiecePresentation.SkillSymbol(type),965,405,65);UiTheme.Label(detail,"Skill name",PiecePresentation.Skill(type),1050,407,420,60,30);
-            UiTheme.Label(detail,"Cooldown explanation","アイコンの円が消えると\n再び使えます。",965,535,490,110,27,UiTheme.Muted);
-            UiTheme.Label(detail,"Promotion note","成れる駒は、敵陣に入る・敵陣から動くと自動で成ります。",48,675,1410,50,25,UiTheme.Muted);
+            UiTheme.Label(detail,"Skill description",PiecePresentation.SkillDescription(type),965,481,490,112,25,UiTheme.Muted,TextAnchor.UpperLeft);
             for(int i=0;i<choices.Length;i++)UiTheme.Current(choices[i],types[i]==type);
         }
     }

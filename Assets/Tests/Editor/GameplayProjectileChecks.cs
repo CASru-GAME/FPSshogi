@@ -19,12 +19,12 @@ public static class GameplayProjectileChecks
         foreach (bool longGun in new[] { false, true })
         {
             string label = longGun ? "Long gun" : "Short gun";
-            int fullDamage = longGun ? 20 : 60;
+            const int fullDamage = 20;
             CheckGun(check, longGun, label + " damages once and respects cooldown", null, fullDamage);
             CheckGun(check, longGun, label + " passes through a slow-field trigger", "trigger", fullDamage);
             CheckGun(check, longGun, label + " ignores its owner's colliders", "owner", fullDamage);
             CheckGun(check, longGun, label + " is stopped by a solid wall", "wall", 0);
-            CheckGun(check, longGun, label + " retains linear distance falloff", "falloff", longGun ? 15 : 45);
+            CheckGun(check, longGun, label + " retains linear distance falloff", "falloff", 15);
             CheckGun(check, longGun, label + " cannot hit beyond its range", "range", 0);
         }
 
@@ -255,7 +255,7 @@ public static class GameplayProjectileChecks
     static void Hit(ProjectileArrow arrow, Collider collider) => Invoke(arrow, "HandleHit", collider);
     static void Invoke(object target, string method, params object[] args) => target.GetType().GetMethod(method, PrivateInstance).Invoke(target, args);
 
-    sealed class Fixture : IDisposable
+    internal sealed class Fixture : IDisposable
     {
         readonly List<GameObject> objects = new List<GameObject>();
         readonly List<Player> players = new List<Player>();

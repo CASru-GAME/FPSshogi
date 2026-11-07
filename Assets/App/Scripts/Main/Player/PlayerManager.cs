@@ -1,6 +1,7 @@
 using App.Common.Initialize;
 using UnityEngine;
 using App.Main.GameMaster;
+using App.Main.ViewManager;
 using UnityEngine.InputSystem;
 using App.Main.ShogiThings;
 using System;
@@ -10,7 +11,7 @@ namespace App.Main.Player
     public class PlayerManager : MonoBehaviour, IInitializable
     {
         public int InitializationPriority => 0;
-        public System.Type[] Dependencies => new System.Type[] { typeof(GameStateHolder), typeof(ShogiBoard) };
+        public System.Type[] Dependencies => new System.Type[] { typeof(GameStateHolder), typeof(ShogiBoard), typeof(ViewPiece) };
         [SerializeField] private InputActionAsset inputActions;
 
         [SerializeField] private GameObject PlayerPrefab;
@@ -24,6 +25,7 @@ namespace App.Main.Player
 
         private GameStateHolder gameStateHolder;
         private ShogiBoard shogiBoard;
+        private ViewPiece boardView;
         [SerializeField] GameObject PlayerOneSpawnPositionMarker;
         [SerializeField] GameObject PlayerTwoSpawnPositionMarker;
         private Vector3 PlayerOneSpawnPosition = new Vector3(-5f, 0f, 0f);
@@ -69,8 +71,6 @@ namespace App.Main.Player
             uiBlocked = blocked;
             if (blocked)
             {
-                PlayerOne?.GetComponent<Player>().ResetInput();
-                PlayerTwo?.GetComponent<Player>().ResetInput();
                 DisableAllInput();
             }
             else if (gameStateHolder.CurrentState != GameStateHolder.GameState.PlayerOneWin && gameStateHolder.CurrentState != GameStateHolder.GameState.PlayerTwoWin)
@@ -86,9 +86,14 @@ namespace App.Main.Player
         {
             gameStateHolder = referenceHolder.GetInitializable<GameStateHolder>();
             shogiBoard = referenceHolder.GetInitializable<ShogiBoard>();
+            boardView = referenceHolder.GetInitializable<ViewPiece>();
             SetSpawnPositions();
             PlayerOne = CreatePlayer(PlayerOneSpawnPosition, PlayerOneSpawnRotation);
             PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition, PlayerTwoSpawnRotation);
+            var first = PlayerOne.GetComponent<Player>();
+            var second = PlayerTwo.GetComponent<Player>();
+            first.Opponent = second;
+            second.Opponent = first;
             PlayerIndexPlayerOne = PlayerOne.GetComponent<PlayerInput>().playerIndex;
             PlayerIndexPlayerTwo = PlayerTwo.GetComponent<PlayerInput>().playerIndex;
             RefreshDuelCameras();
@@ -141,40 +146,33 @@ namespace App.Main.Player
         private void OnChangedToDuel()
         {
             EnableOnlyMap("Player");
-            ResetPlayerPrefabPosition();
-            ResetPlayerPrefabRotation();
+            boardView.SetDuelPiecesVisible(false);
+            Vector3 first = DuelSquareCenter(PlayerType.PlayerOne);
+            Vector3 second = DuelSquareCenter(PlayerType.PlayerTwo);
+            PlaceOnBoard(PlayerOne, first, second);
+            PlaceOnBoard(PlayerTwo, second, first);
+            Physics.SyncTransforms();
             PlayerOne.GetComponent<Player>().ResetDuelPresentation();
             PlayerTwo.GetComponent<Player>().ResetDuelPresentation();
             RefreshDuelCameras();
             CursorDisable();
             SetPlayerCondition();
+            App.PlayData.PlayRecorder.Current?.BeginDuel(shogiBoard, PlayerOne.GetComponent<Player>(), PlayerTwo.GetComponent<Player>());
         }
 
-        //プレイヤーのプレハブをスポーンポジションに戻す
-        private void ResetPlayerPrefabPosition()
+        private Vector3 DuelSquareCenter(PlayerType seat)
         {
-            if (PlayerOne != null)
-            {
-                PlayerOne.transform.position = PlayerOneSpawnPosition;
-                PlayerOne.transform.rotation = PlayerOneSpawnRotation;
-            }
-            if (PlayerTwo != null)
-            {
-                PlayerTwo.transform.position = PlayerTwoSpawnPosition;
-                PlayerTwo.transform.rotation = PlayerTwoSpawnRotation;
-            }
+            var square = shogiBoard.GetDuelSquare(seat);
+            return boardView.boardCellPositions[square.x, square.y];
         }
 
-        private void ResetPlayerPrefabRotation()
+        private static void PlaceOnBoard(GameObject fighter, Vector3 square, Vector3 opponentSquare)
         {
-            if (PlayerOne != null)
-            {
-                PlayerOne.transform.rotation = PlayerOneSpawnRotation;
-            }
-            if (PlayerTwo != null)
-            {
-                PlayerTwo.transform.rotation = PlayerTwoSpawnRotation;
-            }
+            Vector3 heading = opponentSquare - square;
+            heading.y = 0f;
+            var capsule = fighter.GetComponent<CapsuleCollider>();
+            square.y += capsule.bounds.extents.y - fighter.transform.TransformVector(capsule.center).y;
+            fighter.transform.SetPositionAndRotation(square, Quaternion.LookRotation(heading));
         }
 
         public void ChangeToPlayerOneWinForDebug()
@@ -187,13 +185,15 @@ namespace App.Main.Player
 
         private void SetPlayerModel(GameObject player, GameObject pieceObject, bool isPromoted, bool isPlayerOne)
         {
+            RemovePlayerModel(isPlayerOne ? PlayerOnePieceObject : PlayerTwoPieceObject);
             GameObject go = Instantiate(pieceObject);
             go.transform.SetParent(player.transform);
             go.transform.localPosition = Vector3.zero;
             go.transform.localRotation = Quaternion.identity;
             // Each split-screen view hides its own body; the opponent still sees it.
             int bodyLayer=isPlayerOne?30:31;
-            player.GetComponent<Player>().BodyLayer=bodyLayer;
+            var actor = player.GetComponent<Player>();
+            actor.BodyLayer=bodyLayer;
             foreach(var node in go.GetComponentsInChildren<Transform>(true))node.gameObject.layer=bodyLayer;
             var ownCamera=player.GetComponentInChildren<Camera>(true);
             if(ownCamera!=null)ownCamera.cullingMask&=~(1<<bodyLayer);
@@ -202,6 +202,7 @@ namespace App.Main.Player
                 // 成り後のモデル調整処理
                 go.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
             }
+            MeleeBody.Bind(actor, go);
             if (isPlayerOne)
             {
                 PlayerOnePieceObject = go;
@@ -215,6 +216,9 @@ namespace App.Main.Player
 
         private void OnExitDuel()
         {
+            PlayerOne.transform.SetPositionAndRotation(PlayerOneSpawnPosition, PlayerOneSpawnRotation);
+            PlayerTwo.transform.SetPositionAndRotation(PlayerTwoSpawnPosition, PlayerTwoSpawnRotation);
+            boardView.SetDuelPiecesVisible(true);
             PlayerOne.GetComponent<Player>().ResetDuelPresentation();
             PlayerTwo.GetComponent<Player>().ResetDuelPresentation();
             EnableOnlyMap("Shogi");
@@ -222,19 +226,20 @@ namespace App.Main.Player
             CursorEnable();
 
             // PlayerOne/Two に割り当てたピースオブジェクトを削除（子オブジェクトも含む）
-            if (PlayerOnePieceObject != null)
-            {
-                DestroyObjectWithChildren(PlayerOnePieceObject);
-                PlayerOnePieceObject = null;
-            }
-            if (PlayerTwoPieceObject != null)
-            {
-                DestroyObjectWithChildren(PlayerTwoPieceObject);
-                PlayerTwoPieceObject = null;
-            }
+            RemovePlayerModel(PlayerOnePieceObject);
+            RemovePlayerModel(PlayerTwoPieceObject);
+            PlayerOnePieceObject = null;
+            PlayerTwoPieceObject = null;
 
             DestroyChildrenSafe(PlayerOne);
             DestroyChildrenSafe(PlayerTwo);
+        }
+
+        private void RemovePlayerModel(GameObject model)
+        {
+            if (model == null) return;
+            model.SetActive(false);
+            DestroyObjectWithChildren(model);
         }
 
         private void OnEndGame()
@@ -617,6 +622,9 @@ namespace App.Main.Player
 
         private void DisableAllInput()
         {
+            // Disabling an action map sends Canceled even for a held trigger.
+            PlayerOne.GetComponent<Player>().ResetInput();
+            PlayerTwo.GetComponent<Player>().ResetInput();
             // アセット単位で全無効化（通常これで十分）
             inputActions?.Disable();
 

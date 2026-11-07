@@ -105,11 +105,13 @@ public static class VisualRepairChecks
         float spacing=Vector3.Distance(cells[0,0],cells[1,0]);
         Check(Enumerable.Range(1,8).All(i=>Mathf.Abs(Vector3.Distance(cells[i-1,0],cells[i,0])-spacing)<.01f),"Board cells equally spaced");
         Shot("board");yield return .3;
-        Duel(PieceType.Kyosya);yield return 4.0;Secondary(One());yield return .1;
-        Check(One().GetComponentInChildren<Camera>().fieldOfView<40,"Zoom enters");
+        Duel(PieceType.Kyosya);yield return 4.0;
+        float normalFov=One().FieldOfView;
+        Secondary(One());yield return .1;
+        Check(One().GetComponentInChildren<Camera>().fieldOfView<normalFov,"Zoom enters");
         Set(One(),"pitch",35f);yield return .1;Two().playerStatus.Hp.Subtract(100000);yield return 1.0;
         Duel(PieceType.Fuhyo);yield return 4.0;
-        Check(Mathf.Abs(One().GetComponentInChildren<Camera>().fieldOfView-60)<.01,"FOV resets on next duel");
+        Check(Mathf.Abs(One().GetComponentInChildren<Camera>().fieldOfView-normalFov)<.01,"FOV resets on next duel");
         Check(Mathf.Abs((float)Field(One(),"pitch"))<.01,"Pitch resets on next duel");
         Shot("consecutive-duel");yield return .3;
         SceneManager.LoadScene("Main");yield return 1.0;Duel(PieceType.King);yield return 4.0;
@@ -133,8 +135,10 @@ public static class VisualRepairChecks
             Check(screen.z>view.nearClipPlane && screen.x>0 && screen.x<1 && screen.y>0 && screen.y<1,type+" weapon centre visible");
             Shot(type+"-idle");yield return .25;
             InputSystem.QueueStateEvent(pad1,new GamepadState{rightTrigger=1});yield return .10;
+            if (type == PieceType.Hisya) { InputSystem.QueueStateEvent(pad1,new GamepadState());yield return .06; }
             Check(w.IsAttacking,type+" primary input animates");Shot(type+"-attack");yield return .12;
             InputSystem.QueueStateEvent(pad2,new GamepadState{rightTrigger=1});yield return .1;
+            if (type == PieceType.Hisya) { InputSystem.QueueStateEvent(pad2,new GamepadState());yield return .06; }
             Check(Two().WeaponObject.GetComponent<WeaponPresentation>().IsAttacking,type+" player two primary input animates");
             InputSystem.QueueStateEvent(pad2,new GamepadState());
             InputSystem.QueueStateEvent(pad1,new GamepadState());yield return .9;
@@ -168,6 +172,11 @@ public static class VisualRepairChecks
             }
             if(type==PieceType.Hisya){Set(p,"pitch",30f);yield return .15;}
             InputSystem.QueueStateEvent(pad1,new GamepadState().WithButton(GamepadButton.East));yield return .22;
+            if (type == PieceType.Kyosya)
+            {
+                InputSystem.QueueStateEvent(pad1,new GamepadState());Shot("Kyosya-aim");yield return .15;
+                InputSystem.QueueStateEvent(pad1,new GamepadState{rightTrigger=1});yield return .1;
+            }
             InputSystem.QueueStateEvent(pad1,new GamepadState());Shot(type+"-skill");yield return .35;
             if(type==PieceType.King)
             {

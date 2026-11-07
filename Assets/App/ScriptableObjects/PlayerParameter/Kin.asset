@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Kin
   m_EditorClassIdentifier: 
   pieceTypeIndex: 3
-  hpMax: 130
+  hpMax: 148
   attackPointDefault: 30
   defensePointDefault: 0
-  moveSpeedDefault: 6
-  hpMaxUra: 230
-  attackPointDefaultUra: 40
+  moveSpeedDefault: 5.7
+  hpMaxUra: 148
+  attackPointDefaultUra: 30
   defensePointDefaultUra: 0
-  moveSpeedDefaultUra: 6
+  moveSpeedDefaultUra: 5.7

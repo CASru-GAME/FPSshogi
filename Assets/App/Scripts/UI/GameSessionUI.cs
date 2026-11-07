@@ -12,6 +12,7 @@ using App.Main.Player;
 using App.Main.ShogiThings;
 using State=App.Main.GameMaster.GameStateHolder.GameState;
 using App.Audio;
+using App.PlayData;
 
 namespace App.UI
 {
@@ -38,6 +39,7 @@ namespace App.UI
         DuelTransition transition;
         PlayerManager players;
         GameStateHolder state;
+        PlayRecorder recording;
         InputSystemUIInputModule module;
         InputDevice menuOwner, requestedMenuDevice;
         float transitionRemaining;
@@ -69,6 +71,7 @@ namespace App.UI
             EnsureEventSystem();
             if(!IsTitle){
                 players=FindFirstObjectByType<PlayerManager>();state=FindFirstObjectByType<GameStateHolder>();PairPlayers();
+                if (Devices.Ready) recording = new PlayRecorder(FindFirstObjectByType<ShogiBoard>(), Devices);
                 boardHud=new BoardHud(layout,this);duelHud=new DuelHud((RectTransform)transform,players,Devices);
                 state.SubscribeToStateChange(StateChanged);GateRelease();
             }else Presentation.SetTitleRoom();
@@ -119,8 +122,17 @@ namespace App.UI
             var player = (slot == 0 ? players.PlayerOne : players.PlayerTwo).GetComponent<Player>();
             player.LookSensitivity = Sensitivity(slot);
             player.GamepadZoomSensitivity = ZoomSensitivity(slot);
+            player.FieldOfView = FieldOfView(slot);
         }
         static string ZoomKey(int slot) => "FPSshogi.GamepadZoomSensitivity." + slot;
+        static string FieldOfViewKey(int slot) => "FPSshogi.FieldOfView." + slot;
+        public int FieldOfView(int slot) => Mathf.Clamp(Mathf.RoundToInt(PlayerPrefs.GetFloat(FieldOfViewKey(slot),
+            Player.DefaultFieldOfView)), Player.MinFieldOfView, Player.MaxFieldOfView);
+        public void SetFieldOfView(int slot, int degrees)
+        {
+            PlayerPrefs.SetFloat(FieldOfViewKey(slot), Mathf.Clamp(degrees, Player.MinFieldOfView, Player.MaxFieldOfView));
+            ApplyLookSettings(slot);
+        }
         public float Sensitivity(int slot) => Mathf.Clamp(PlayerPrefs.GetFloat("FPSshogi.Sensitivity." + slot,
             Player.DefaultLookSensitivity), Player.MinLookSensitivity, Player.MaxLookSensitivity);
         public float ZoomSensitivity(int slot)
@@ -146,6 +158,7 @@ namespace App.UI
             {
                 SetSensitivity(slot, Player.DefaultLookSensitivity);
                 SetZoomSensitivity(slot, Player.DefaultLookSensitivity * Player.InitialZoomFraction);
+                SetFieldOfView(slot, Player.DefaultFieldOfView);
             }
             ShowHpNumbers = false;
             GameAudio.ResetVolumes();
@@ -163,6 +176,7 @@ namespace App.UI
         void ArmSelection(){selectionInputArmed=false;selectionStartAt=-1;menuNavigationAfter=Time.unscaledTime+.2f;keyboardSelectionFrame=-1;}
         void Update()
         {
+            recording?.Tick();
             if(pendingDuelWin){pendingDuelWin=false;GameAudio.Play(SoundCue.DuelWin);}
             bool changed=RefreshDevices();
             if(changed){PairPlayers();if(waitingReconnect){ArmSelection();if(!Devices.Ready)Devices.BeginSelection(true);}}
@@ -205,6 +219,8 @@ namespace App.UI
             }
             ApplyBlock();if(state!=null){bool duel=state.CurrentState==State.Duel;bool showHud=page==Page.None&&transitionRemaining<=0;boardHud.Tick(showHud&&!duel);duelHud.Tick(showHud&&duel);}
         }
+        // Sample the view after both players have applied this frame's look input.
+        void LateUpdate() => duelHud?.RefreshReach();
         bool RefreshDevices()=>Devices.Refresh(waitingReconnect,SeatDisconnected,SeatReconnected);
         static void SeatDisconnected(int seat)=>GameAudio.PlayForSeat(SoundCue.Disconnect,seat);
         static void SeatReconnected(int seat)=>GameAudio.PlayForSeat(SoundCue.PlayerJoin,seat);
@@ -217,6 +233,7 @@ namespace App.UI
         }
         void StateChanged(State from,State to)
         {
+            recording?.StateChanged(to);
             if(from==State.Duel&&to!=State.Duel){GameAudio.StopCombat();duelCountdown=false;}
             if(to==State.Duel){var pieces=FindFirstObjectByType<ShogiBoard>().GetDuelPiece();transition.Duel(pieces[PlayerType.PlayerOne],pieces[PlayerType.PlayerTwo]);transitionRemaining=3;duelCountdown=true;countdownBeat=3;GameAudio.Play(SoundCue.Countdown);}
             if(to==State.DuelPlayerOneWin||to==State.DuelPlayerTwoWin){transition.Result(to==State.DuelPlayerOneWin?0:1);transitionRemaining=2;pendingDuelWin=true;}
@@ -338,8 +355,11 @@ namespace App.UI
             UnityEditor.EditorApplication.isPlaying=false;
             #endif
         }
+        void OnApplicationPause(bool paused) { if (paused) recording?.Save(); }
+        void OnApplicationQuit() => recording?.Close();
         void OnDestroy()
         {
+            recording?.Close();
             if(state!=null)state.UnsubscribeFromStateChange(StateChanged);
             if(Instance==this){Instance=null;Time.timeScale=1;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;}
         }

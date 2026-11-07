@@ -76,6 +76,10 @@ namespace App.Main.GameMaster
         {
             return board[x, y];
         }
+        public Vector2Int DuelFrom => new Vector2Int(savedFromX, savedFromY);
+        public Vector2Int DuelTo => new Vector2Int(savedToX, savedToY);
+        public Vector2Int GetDuelSquare(PlayerType seat) => seat == currentPlayer ? DuelFrom : DuelTo;
+
         public Dictionary<PlayerType, IPiece> GetDuelPiece()
         {
             Dictionary<PlayerType, IPiece> duelPieces = new Dictionary<PlayerType, IPiece>();
@@ -109,6 +113,7 @@ namespace App.Main.GameMaster
         {
             if (!CanAct(player) || !IsValidMove(fromX, fromY, toX, toY, player)) return MoveResult.InvalidMove;
             currentPlayer = player;
+            App.PlayData.PlayRecorder.Current?.BoardMove(this, player, false);
 
             if (IsDuel(fromX, fromY, toX, toY))
             {
@@ -233,6 +238,7 @@ namespace App.Main.GameMaster
             currentPlayer = player;
             board[x, y] = pieceInstance;
             capturedPieces[player].Remove(pieceInstance.Type);
+            App.PlayData.PlayRecorder.Current?.BoardMove(this, player, true);
             GameAudio.Play(SoundCue.BoardDrop);
             if (currentPlayer == PlayerType.PlayerOne)
             {

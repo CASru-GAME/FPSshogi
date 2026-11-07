@@ -9,8 +9,8 @@ namespace App.Main.Player
         public bool isOnCooldown => cooldownTimer > 0f;
         public PlayerStatus playerStatus { get; private set; }
         public Player player { get; private set; }
-        int amount = 10;
-        float duration = 5f;
+        int amount = 16;
+        float duration = 3.5f;
         float timer;
 
         public void UseSkill(Player player, PlayerStatus playerStatus)
@@ -26,6 +26,7 @@ namespace App.Main.Player
 
             // クールダウンを開始
             cooldownTimer = cooldownTime;
+            App.PlayData.PlayRecorder.Current?.Skill(playerStatus);
             GameAudio.Play(SoundCue.KinShield,player);
             timer = duration;
             CombatVisuals.Aura(player,"KinSkill_Aura",new UnityEngine.Color(1f,.75f,.25f,.9f),duration);

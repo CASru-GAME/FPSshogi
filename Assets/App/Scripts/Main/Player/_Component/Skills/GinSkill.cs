@@ -4,13 +4,13 @@ namespace App.Main.Player
     public class GinSkill : ISkill
     {
         public string skillName => "GinSkill";
-        public float cooldownTime => 30f;
+        public float cooldownTime => 12f;
         public float cooldownTimer { get; private set; }
         public bool isOnCooldown => cooldownTimer > 0f;
         public PlayerStatus playerStatus { get; private set; }
         public Player player { get; private set; }
         int amount = 99999; // 防御力上昇量
-        float duration = 3f; // 効果持続時間
+        float duration = 1.5f; // 効果持続時間
         float timer;
 
         public void UseSkill(Player player, PlayerStatus playerStatus)
@@ -26,6 +26,7 @@ namespace App.Main.Player
 
             // クールダウンを開始
             cooldownTimer = cooldownTime;
+            App.PlayData.PlayRecorder.Current?.Skill(playerStatus);
             GameAudio.Play(SoundCue.GinShield,player);
             timer = duration;
             CombatVisuals.Aura(player,"GinSkill_Aura",new UnityEngine.Color(.55f,.82f,1f,.9f),duration);

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Fuhyo
   m_EditorClassIdentifier: 
   pieceTypeIndex: 7
-  hpMax: 100
-  attackPointDefault: 30
+  hpMax: 120
+  attackPointDefault: 32
   defensePointDefault: 0
-  moveSpeedDefault: 6
-  hpMaxUra: 200
-  attackPointDefaultUra: 30
+  moveSpeedDefault: 7.4
+  hpMaxUra: 140
+  attackPointDefaultUra: 36
   defensePointDefaultUra: 0
-  moveSpeedDefaultUra: 8
+  moveSpeedDefaultUra: 7.7

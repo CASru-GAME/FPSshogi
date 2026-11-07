@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Gin
   m_EditorClassIdentifier: 
   pieceTypeIndex: 4
-  hpMax: 130
-  attackPointDefault: 30
+  hpMax: 120
+  attackPointDefault: 33
   defensePointDefault: 0
-  moveSpeedDefault: 6
-  hpMaxUra: 230
-  attackPointDefaultUra: 40
+  moveSpeedDefault: 6.9
+  hpMaxUra: 140
+  attackPointDefaultUra: 36
   defensePointDefaultUra: 0
-  moveSpeedDefaultUra: 6
+  moveSpeedDefaultUra: 7.2

@@ -85,11 +85,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
   fuseTime: 2
-  explosionRadius: 10
+  explosionRadius: 5
   affectLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  collisionEnableDelay: 3
 --- !u!64 &4260048170137367930
 MeshCollider:
   m_ObjectHideFlags: 0

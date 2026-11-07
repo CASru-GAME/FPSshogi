@@ -66,5 +66,37 @@ namespace App.Main.Player
             var hit=Scope(owner,"ImpactFeedback",.2f);hit.transform.position=point;
             Line(hit,"Impact",new[]{new Vector3(-.12f,-.12f,0),new Vector3(.12f,.12f,0),Vector3.zero,new Vector3(-.12f,.12f,0),new Vector3(.12f,-.12f,0)},new Color(1,.85f,.4f),.025f);
         }
+
+        internal static Quaternion FlashbangRadiusPlane(Vector3 normal)
+        {
+            // Show the horizontal reach beside players and walls, and follow walkable surfaces.
+            return normal.y >= .85f ? Quaternion.FromToRotation(Vector3.up, normal) : Quaternion.identity;
+        }
+
+        public static void FlashbangBurst(Player owner, Vector3 center, Vector3 normal, float radius)
+        {
+            var burst = Scope(owner, "FlashbangBurst", .28f);
+            burst.transform.SetPositionAndRotation(center, FlashbangRadiusPlane(normal));
+            Ring(burst, radius, new Color(1f, .77f, .32f, .85f), .09f);
+
+            var core = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            core.name = "Flash";
+            var collider = core.GetComponent<Collider>();
+            collider.enabled = false;
+            Object.Destroy(collider);
+            core.transform.SetParent(burst.transform, false);
+            core.transform.localScale = Vector3.one * 1.4f;
+            var renderer = core.GetComponent<MeshRenderer>();
+            renderer.sharedMaterial = Glow;
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+
+            var light = burst.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.color = new Color(1f, .9f, .65f);
+            light.range = radius;
+            light.intensity = 6f;
+            light.shadows = LightShadows.None;
+        }
     }
 }

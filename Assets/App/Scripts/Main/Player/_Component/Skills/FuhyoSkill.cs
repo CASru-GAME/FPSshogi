@@ -81,6 +81,7 @@ namespace App.Main.Player
             // クールダウン開始（別途 cooldown を維持）
             isOnCooldown = true;
             cooldownTimer = cooldownTime;
+            App.PlayData.PlayRecorder.Current?.Skill(playerStatus);
             GameAudio.Play(SoundCue.Leap,player);
             player.WeaponObject?.GetComponent<WeaponPresentation>()?.PlaySkill(WeaponPresentation.SkillMotion.Leap, jumpDuration);
         }

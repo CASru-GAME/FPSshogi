@@ -30,7 +30,11 @@ namespace App.UI
                 UiTheme.Label(panel,"Duel weapon name",PiecePresentation.Weapon(piece.Type),322,185,340,46,28);
                 UiTheme.Symbol(panel,"Duel skill",PiecePresentation.SkillSymbol(piece.Type),260,249,40);
                 UiTheme.Label(panel,"Duel skill name",PiecePresentation.Skill(piece.Type),322,245,340,46,27);
-                UiTheme.Label(panel,"Duel controls",devices.IsGamepad(p)?"RT 攻撃　LT 防御・ズーム　B スキル":"左 攻撃　右 防御・ズーム　E スキル",35,320,640,40,24,UiTheme.Muted);
+                bool pad = devices.IsGamepad(p);
+                string controls = pad ? "RT 攻撃　LT 防御・ズーム　B スキル" : "左 攻撃　右 防御・ズーム　E スキル";
+                if (piece.Type == PieceType.Hisya)
+                    controls = pad ? "RT 長押し→離して射る　LT ズーム　B スキル" : "左 長押し→離して射る　右 ズーム　E スキル";
+                UiTheme.Label(panel,"Duel controls",controls,35,320,640,40,24,UiTheme.Muted);
             }
             var center=UiTheme.Rect(root,"Countdown backing",885,445,150,150);
             counter=UiTheme.Label(center,"Countdown","3",0,0,150,150,70,UiTheme.Ink,TextAnchor.MiddleCenter);

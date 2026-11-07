@@ -6,6 +6,17 @@ namespace App.Main.Player
     // Choose the nearest remaining solid so filtering never skips a wall.
     public static class ShotPhysics
     {
+        internal static bool HasClearPathTo(Vector3 origin, Collider targetCollider, Player target, LayerMask layers,
+            Player owner, Transform weapon = null)
+        {
+            Vector3 direction = targetCollider.ClosestPoint(origin) - origin;
+            float distance = direction.magnitude;
+            if (distance <= Mathf.Epsilon) return true;
+
+            return !Raycast(new Ray(origin, direction / distance), distance, layers, owner, out var blocker, weapon) ||
+                blocker.collider.GetComponentInParent<Player>() == target;
+        }
+
         public static bool Raycast(Ray ray, float distance, LayerMask layers, Player owner,
             out RaycastHit nearest, Transform projectile = null)
         {

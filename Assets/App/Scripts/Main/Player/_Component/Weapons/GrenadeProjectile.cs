@@ -1,161 +1,134 @@
-using App.Audio;
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using App.Audio;
 using UnityEngine;
 
 namespace App.Main.Player
 {
     public class GrenadeProjectile : MonoBehaviour
     {
+        // The tetuhau mesh has a local radius of 0.01 at a uniform prefab scale of 52.592438.
+        const float ProjectileRadius = .526f;
+        const float LevelThrowAngle = 20f;
+        // Bring a 48 m/s throw back down within the length of the duel board.
+        const float GravityMultiplier = 6f;
+        static RaycastHit[] sweepHits = new RaycastHit[8];
+
         public Player owner;
         public float fuseTime = 2f;
         public float explosionRadius = 5f;
         public LayerMask affectLayers = ~0;
-        public float collisionEnableDelay = 0.1f;
 
-        private bool exploded = false;
-        private float timer = 0f;
+        Vector3 velocity;
+        Vector3 impactNormal = Vector3.up;
+        float remaining;
+        bool launched;
+        bool exploded;
 
-        // 発射体と所有者のコライダー無視管理
-        private Collider[] projectileColliders;
-        private bool ownerCollisionIgnored = false;
-
-        void Awake()
+        internal static Vector3 LaunchOrigin(Player owner)
         {
-            // 発射体側のコライダーを取得しておく（無効化はしない）
-            projectileColliders = GetComponentsInChildren<Collider>();
+            Camera camera = owner.DuelCamera != null ? owner.DuelCamera : owner.GetComponentInChildren<Camera>(true);
+            Transform aim = camera != null ? camera.transform : owner.transform;
+            Vector3 toHand = aim.right * .3f - aim.up * .3f + aim.forward * .45f;
+            Vector3 hand = Sweep(owner, aim.position, toHand, out bool blocked, out _);
+            return blocked ? aim.position : hand;
         }
 
-        void Start()
+        internal static Vector3 LobVelocity(Transform view, float speed)
         {
-            timer = fuseTime;
-
-            // 指定秒数だけ待ってから所有者無視とコライダー設定を行う
-            StartCoroutine(EnableCollisionsAfterDelay(collisionEnableDelay));
+            float elevation = view.forward.y;
+            // Keep raised throws below the angle of maximum range so looking higher still reaches farther.
+            float limit = elevation >= 0f ? 42f : -50f;
+            float angle = Mathf.Lerp(LevelThrowAngle, limit, Mathf.Abs(elevation)) * Mathf.Deg2Rad;
+            Vector3 heading = Vector3.Cross(view.right, Vector3.up).normalized;
+            return speed * (heading * Mathf.Cos(angle) + Vector3.up * Mathf.Sin(angle));
         }
 
-        // 秒数指定版：delaySeconds 秒待ってから衝突を有効化／所有者無視を設定する
-        IEnumerator EnableCollisionsAfterDelay(float delaySeconds)
+        // The guide and the live throw advance in identical fixed steps, including the last partial fuse step.
+        internal static Vector3 Step(Player owner, Vector3 position, ref Vector3 velocity, float delta,
+            out bool hit, out Vector3 normal)
         {
-            if (delaySeconds > 0f)
-            {
-                yield return new WaitForSeconds(delaySeconds);
-            }
-            else
-            {
-                // デフォルトの安全策：FixedUpdate を2フレーム待つ
-                yield return new WaitForFixedUpdate();
-                yield return new WaitForFixedUpdate();
-            }
-
-            // 所有者との衝突無視を試行（owner が未設定なら Update 側で補填）
-            TryIgnoreOwnerCollisions();
-
-            // 念のためコライダーが無効化されていたら有効化する（通常は既に true）
-            if (projectileColliders != null)
-            {
-                foreach (var c in projectileColliders)
-                {
-                    if (c != null && !c.enabled) c.enabled = true;
-                }
-            }
+            Vector3 gravity = Physics.gravity * GravityMultiplier;
+            Vector3 displacement = (velocity + .5f * gravity * delta) * delta;
+            velocity += gravity * delta;
+            return Sweep(owner, position, displacement, out hit, out normal);
         }
 
-        void Update()
+        static Vector3 Sweep(Player owner, Vector3 origin, Vector3 displacement, out bool hit, out Vector3 normal)
         {
-            // 所有者設定が Start 後に行われる可能性があるので、まだ無視していなければ毎フレーム試す
-            if (!ownerCollisionIgnored && owner != null)
+            hit = false;
+            normal = Vector3.up;
+            float distance = displacement.magnitude;
+            if (distance == 0f) return origin;
+
+            Vector3 direction = displacement / distance;
+            int count;
+            // A full buffer can omit the nearest wall. Grow only in unusually crowded geometry.
+            while ((count = Physics.SphereCastNonAlloc(origin, ProjectileRadius, direction, sweepHits, distance,
+                       Physics.AllLayers, QueryTriggerInteraction.Ignore)) == sweepHits.Length)
+                sweepHits = new RaycastHit[sweepHits.Length * 2];
+
+            float nearest = distance;
+            for (int i = 0; i < count; i++)
             {
-                TryIgnoreOwnerCollisions();
+                RaycastHit candidate = sweepHits[i];
+                if (candidate.distance > nearest) continue;
+                if (owner != null && candidate.collider.transform.IsChildOf(owner.transform)) continue;
+                hit = true;
+                nearest = candidate.distance;
+                normal = candidate.normal;
             }
 
-            if (exploded) return;
-            timer -= Time.deltaTime;
-            if (timer <= 0f) Explode();
+            // With a starting overlap Unity returns distance zero and an empty contact point.
+            // The center along the sweep is also the position the blast radius must use.
+            return hit ? origin + direction * nearest : origin + displacement;
         }
 
-        void OnCollisionEnter(Collision collision)
+        public void Launch(Player owner, Vector3 velocity, float fuse, float radius, LayerMask affectLayers)
         {
-            if (exploded) return;
+            this.owner = owner;
+            this.velocity = velocity;
+            this.affectLayers = affectLayers;
+            fuseTime = Mathf.Max(0f, fuse);
+            explosionRadius = Mathf.Max(0f, radius);
+            remaining = fuseTime;
+            launched = true;
 
-            // 衝突相手が所有者のコライダーであれば無視
-            if (owner != null)
+            // The recovered model includes a dynamic convex collider. A second physics simulation
+            // would move the model away from the guide and expose it to its own sweep.
+            foreach (var collider in GetComponentsInChildren<Collider>(true)) collider.enabled = false;
+            if (TryGetComponent<Rigidbody>(out var body))
             {
-                var ownerCollider = collision.collider;
-                if (ownerCollider != null && ownerCollider.transform.IsChildOf(owner.transform))
-                {
-                    return;
-                }
+                body.collisionDetectionMode = CollisionDetectionMode.Discrete;
+                body.useGravity = false;
+                body.isKinematic = true;
             }
-
-            Explode();
+            if (remaining == 0f) Explode();
         }
 
-        private void TryIgnoreOwnerCollisions()
+        void FixedUpdate()
         {
-            if (owner == null || ownerCollisionIgnored) return;
-
-            try
-            {
-                var ownerColliders = owner.GetComponentsInChildren<Collider>();
-                if (ownerColliders == null || ownerColliders.Length == 0 || projectileColliders == null || projectileColliders.Length == 0)
-                {
-                    ownerCollisionIgnored = true; // 無視対象がないとしてマークしておく
-                    return;
-                }
-
-                foreach (var pCol in projectileColliders)
-                {
-                    if (pCol == null) continue;
-                    foreach (var oCol in ownerColliders)
-                    {
-                        if (oCol == null) continue;
-                        Physics.IgnoreCollision(pCol, oCol, true);
-                    }
-                }
-
-                ownerCollisionIgnored = true;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning("[GrenadeProjectile] TryIgnoreOwnerCollisions failed: " + ex.Message);
-                ownerCollisionIgnored = true;
-            }
+            if (!launched || exploded) return;
+            float delta = Mathf.Min(Time.fixedDeltaTime, remaining);
+            transform.position = Step(owner, transform.position, ref velocity, delta, out bool hit, out impactNormal);
+            remaining -= delta;
+            if (hit || remaining <= 0f) Explode();
         }
 
-        private void Explode()
+        void Explode()
         {
             if (exploded) return;
             exploded = true;
+            Vector3 center = transform.position;
+            GameAudio.Play(SoundCue.FlashBurst, owner, center);
+            CombatVisuals.FlashbangBurst(owner, center, impactNormal, explosionRadius);
 
-            Vector3 pos = transform.position;
-            GameAudio.Play(SoundCue.FlashBurst,owner,pos);
-            var colliders = Physics.OverlapSphere(pos, explosionRadius, affectLayers);
             var applied = new HashSet<Player>();
-
-            foreach (var c in colliders)
+            foreach (var collider in Physics.OverlapSphere(center, explosionRadius, affectLayers, QueryTriggerInteraction.Ignore))
             {
-                var p = c.GetComponentInParent<Player>();
-                if (p == null) continue;
-                if (applied.Contains(p)) continue;
-                applied.Add(p);
-
-                var ps = p.playerStatus;
-                if (ps == null) continue;
-
-                var effect = new FlashBangEffect();
-                try
-                {
-                    ps.EffectList.AddEffect(effect);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogWarning("[GrenadeProjectile] EffectList.AddEffect failed: " + ex.Message);
-                    effect.Effect(p, ps, null);
-                }
+                var player = collider.GetComponentInParent<Player>();
+                if (player != null && player.playerStatus != null && applied.Add(player))
+                    player.playerStatus.EffectList.AddEffect(new FlashBangEffect());
             }
-
             Destroy(gameObject);
         }
 

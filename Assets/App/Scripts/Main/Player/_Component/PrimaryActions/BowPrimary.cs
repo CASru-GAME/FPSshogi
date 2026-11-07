@@ -1,157 +1,128 @@
 using App.Audio;
-using System;
 using UnityEngine;
 
 namespace App.Main.Player
 {
     public class BowPrimary : IPrimaryAction
     {
+        public const float FullDrawSeconds = 1.2f;
+        const float QuickTapSeconds = .12f;
+        const float FullDrawDamageScale = 1.5f;
+        const float FullDrawSpeedScale = 1.6f;
+
         public string primaryActionName => "BowPrimary";
         public Player player { get; private set; }
         public PlayerStatus playerStatus { get; private set; }
-
-        // 調整パラメータ
-        public float cooldown = 3f;
+        public float cooldown = 1.7f;
         public float arrowSpeed = 40f;
         public float arrowLifeTime = 8f;
-        public float maxRange = 200f;
-        public float falloffStart = 100f; // maxRange と同値だと無効化されるためデフォルトを調整
-        public float minDamageMultiplier = 0.5f;
-        public float damageMultiplier = 1.0f;
+        public float maxRange = 100f;
+        public float falloffStart = 28f;
+        public float minDamageMultiplier = .55f;
+        public float damageMultiplier = 1f;
         public LayerMask hitLayers = ~0;
-
-        // 任意: マズル位置があればセット（無ければカメラ位置）
         public Transform muzzleTransform;
 
-        // 内部管理
+        float lastUseTime = float.NegativeInfinity;
+        float drawStarted;
+        public bool IsDrawing { get; private set; }
+        public float DrawAmount => IsDrawing ? Mathf.Clamp01((Time.time - drawStarted) / FullDrawSeconds) : 0f;
+        public float MovementScale => Mathf.Lerp(1f, .75f, DrawAmount);
         public float CooldownRemaining => Mathf.Max(0f, cooldown - (Time.time - lastUseTime));
         public float CooldownDuration => cooldown;
-        private float lastUseTime = -999f;
 
-        public void PrimaryAction(Player player, PlayerStatus playerStatus)
+        public void BeginDraw(Player archer, PlayerStatus status)
         {
-            if (player == null || playerStatus == null) return;
-            this.player = player;
-            this.playerStatus = playerStatus;
+            if (IsDrawing || archer == null || status == null || status.Hp.Current <= 0)
+                return;
+            player = archer;
+            playerStatus = status;
+            // Holding through recovery starts pulling the next arrow when it is ready.
+            drawStarted = Time.time + CooldownRemaining;
+            IsDrawing = true;
+        }
 
-            // クールダウンは Time ベースで管理（UpdatePrimaryAction が呼ばれない場合でも動作する）
-            if (Time.time - lastUseTime < cooldown) return;
+        public void CancelDraw() => IsDrawing = false;
 
-            // 発射元と方向
-            Camera cam = player.GetComponentInChildren<Camera>() ?? Camera.main;
-            Vector3 origin;
-            Vector3 dir;
-            RaycastHit blockedLaunch = default;
+        public void ReleaseDraw()
+        {
+            if (IsDrawing) PrimaryAction(player, playerStatus);
+        }
+
+        // A direct attack is a quick shot. Live input calls this on release with
+        // the draw still active so the shot leaves the same pose the player sees.
+        public void PrimaryAction(Player archer, PlayerStatus status)
+        {
+            if (archer == null || status == null || status.Hp.Current <= 0 || CooldownRemaining > 0)
+            {
+                CancelDraw();
+                return;
+            }
+            player = archer;
+            playerStatus = status;
+            float draw = DrawAmount;
+            float power = Mathf.InverseLerp(QuickTapSeconds / FullDrawSeconds, 1f, draw);
+            float damageScale = damageMultiplier * Mathf.Lerp(1f, FullDrawDamageScale, power);
+            float speed = arrowSpeed * Mathf.Lerp(1f, FullDrawSpeedScale, power);
+
+            var display = archer.WeaponObject != null ? archer.WeaponObject.GetComponent<WeaponPresentation>() : null;
+            display?.RefreshPose();
+            Camera view = archer.GetComponentInChildren<Camera>() ?? Camera.main;
+            Transform aim = view != null ? view.transform : archer.transform;
+            Vector3 origin = aim.position + aim.forward * (view != null ? .5f : 1f);
+            Vector3 direction = aim.forward;
+            RaycastHit obstruction = default;
             if (muzzleTransform != null)
             {
                 origin = muzzleTransform.position;
-                dir = muzzleTransform.forward;
+                direction = muzzleTransform.forward;
             }
-            else if (cam != null)
+            else if (display != null && display.nockedArrow != null)
             {
-                origin = cam.transform.position + cam.transform.forward * 0.5f;
-                dir = cam.transform.forward;
-                var display = player.WeaponObject?.GetComponent<WeaponPresentation>();
-                if (display != null && display.nockedArrow != null)
-                {
-                    origin = display.nockedArrow.position;
-                    // Aim at the reticle from the visible arrow, rather than teleporting
-                    // the projectile from the bow to a point in front of the camera.
-                    Vector3 target = ShotPhysics.Raycast(new Ray(cam.transform.position, cam.transform.forward), maxRange, hitLayers, player, out var aimHit)
-                        ? aimHit.point : cam.transform.position + cam.transform.forward * maxRange;
-                    Vector3 toNock = origin - cam.transform.position;
-                    if (toNock.sqrMagnitude > .0001f)
-                        ShotPhysics.Raycast(new Ray(cam.transform.position, toNock.normalized), toNock.magnitude, hitLayers, player, out blockedLaunch);
-                    dir = (target - origin).normalized;
-                }
+                origin = display.nockedArrow.position;
+                var sight = new Ray(aim.position, aim.forward);
+                Vector3 target = ShotPhysics.Raycast(sight, maxRange, hitLayers, archer, out var hit)
+                    ? hit.point : sight.GetPoint(maxRange);
+                var toNock = origin - aim.position;
+                if (toNock.sqrMagnitude > .0001f)
+                    ShotPhysics.Raycast(new Ray(aim.position, toNock.normalized), toNock.magnitude, hitLayers, archer, out obstruction);
+                direction = (target - origin).normalized;
             }
-            else
+            if (obstruction.collider == null && archer.SubWeaponObject == null)
             {
-                origin = player.transform.position + player.transform.forward * 1f;
-                dir = player.transform.forward;
-            }
-
-            if(player.SubWeaponObject==null&&blockedLaunch.collider==null)
-            {
-                Debug.LogWarning("[BowPrimary] SubWeaponObject (arrow prefab) is not assigned on player.");
-                lastUseTime=Time.time;return;
-            }
-            GameAudio.Play(SoundCue.BowRelease,player);
-            // 射撃アニメ（武器に PlayerWeapon があれば優先して再生）
-            try
-            {
-                PlayerWeapon pw = null;
-                if (player.WeaponObject != null) pw = player.WeaponObject.GetComponentInChildren<PlayerWeapon>();
-                if (pw == null) pw = player.GetComponentInChildren<PlayerWeapon>();
-                if (pw != null)
-                    pw.PlayAnimation("弓_003|矢用");
-                else
-                {
-                    var anim = (player.WeaponObject ?? player.gameObject).GetComponentInChildren<Animator>();
-                    if (anim != null) anim.Play("弓_003|矢用", 0, 0f);
-                }
-            }
-            catch { }
-
-            // The bow can visibly cross near cover. Resolve that contact immediately:
-            // moving just the projectile pivot back left its solid hull inside the wall.
-            if (blockedLaunch.collider != null)
-            {
-                var target = blockedLaunch.collider.GetComponentInParent<Player>();
-                if (target != null && target != player)
-                    target.playerStatus?.TakeDamage(Mathf.CeilToInt(playerStatus.AttackPoint.Current * damageMultiplier), cam.transform.position);
-                CombatVisuals.Impact(player, blockedLaunch.point);
-                if(target==null)GameAudio.Play(SoundCue.ArrowImpact,player,blockedLaunch.point);
-                lastUseTime = Time.time;
+                CancelDraw();
+                Debug.LogWarning("[BowPrimary] Arrow prefab is missing.");
                 return;
             }
 
-            // 矢プレハブは player.SubWeaponObject を想定（プレハブ参照が入っていること）
-            GameObject arrowPrefab = player.SubWeaponObject;
-            if (arrowPrefab == null)
-            {
-                Debug.LogWarning("[BowPrimary] SubWeaponObject (arrow prefab) is not assigned on player.");
-                lastUseTime = Time.time;
-                return;
-            }
-
-            // インスタンス作成
-            var arrowGO = UnityEngine.Object.Instantiate(arrowPrefab, origin, Quaternion.LookRotation(dir));
-            if (player.WeaponObject != null)
-            {
-                var presentation = player.WeaponObject.GetComponent<WeaponPresentation>();
-                if (presentation != null && presentation.nockedArrow != null)
-                    arrowGO.transform.localScale = presentation.nockedArrow.lossyScale;
-            }
-            var lifetime=arrowGO.AddComponent<CombatVisualLifetime>();lifetime.owner=player;lifetime.remaining=arrowLifeTime;
-
-            // ProjectileArrow コンポーネントを取得/追加して初期化
-            var proj = arrowGO.GetComponent<ProjectileArrow>();
-            if (proj == null)
-                proj = arrowGO.AddComponent<ProjectileArrow>();
-
-            proj.Initialize(player, playerStatus, damageMultiplier, falloffStart, maxRange, minDamageMultiplier, hitLayers);
-
-            // Rigidbody があれば物理で飛ばす。velocity プロパティを使う（linearVelocity は不正）
-            var rb = arrowGO.GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                rb.linearVelocity = dir.normalized * arrowSpeed;
-                proj.SetAutoDestroy(arrowLifeTime);
-            }
-            else
-            {
-                proj.Launch(dir.normalized, arrowSpeed, arrowLifeTime);
-            }
-
-            // 発射時刻を記録してクールダウン開始
+            if (display != null) display.Attack();
+            else archer.GetComponentInChildren<PlayerWeapon>()?.PlayAnimation("弓_003|矢用");
+            CancelDraw();
             lastUseTime = Time.time;
-        }
+            App.PlayData.PlayRecorder.Current?.Attack(status);
+            GameAudio.Play(SoundCue.BowRelease, archer);
 
-        // 外部呼び出し用（もし外部から Update 呼ぶなら補助）
-        public void UpdatePrimaryAction()
-        {
-            // 今回は Time ベースの lastUseTime を使っているため特別な処理不要
+            // Resolve a wall or opponent between the camera and the visible arrow
+            // before spawning a solid projectile inside that collider.
+            if (obstruction.collider != null)
+            {
+                var target = obstruction.collider.GetComponentInParent<Player>();
+                if (target != null && target != archer)
+                    target.playerStatus?.TakeDamage(Mathf.CeilToInt(status.AttackPoint.Current * damageScale), aim.position, status);
+                if (target == null) GameAudio.Play(SoundCue.ArrowImpact, archer, obstruction.point);
+                CombatVisuals.Impact(archer, obstruction.point);
+                return;
+            }
+
+            var arrow = Object.Instantiate(archer.SubWeaponObject, origin, Quaternion.LookRotation(direction));
+            if (display != null && display.nockedArrow != null)
+                arrow.transform.localScale = display.nockedArrow.lossyScale;
+            var lifetime = arrow.AddComponent<CombatVisualLifetime>();
+            lifetime.owner = archer;
+            lifetime.remaining = arrowLifeTime;
+            var projectile = arrow.GetComponent<ProjectileArrow>() ?? arrow.AddComponent<ProjectileArrow>();
+            projectile.Initialize(archer, status, damageScale, falloffStart, maxRange, minDamageMultiplier, hitLayers);
+            projectile.Launch(direction, speed, arrowLifeTime);
         }
     }
 }

@@ -54,7 +54,12 @@ public static class GameplayRegressionRunner
         one=InputSystem.AddDevice<Gamepad>("Gameplay test one");two=InputSystem.AddDevice<Gamepad>("Gameplay test two");yield return .3d;
         SceneManager.LoadScene("Title");yield return .5d;
         var join=SelectionTestInput.TwoGamepads(one,two);while(join.MoveNext())yield return join.Current;
-        foreach(string name in new[]{"GameplayBoardChecks","GameplayMovementChecks","GameplayEffectsChecks","GameplayProjectileChecks","GameplayMeleeChecks","GameplayDuelChecks"})
+        // The scene load and release of the lobby input gate can span several editor frames.
+        var deadline = EditorApplication.timeSinceStartup + 8;
+        bool BoardReady() => SceneManager.GetActiveScene().name == "Main" && !App.UI.GameSessionUI.BlocksGameplay;
+        while (!BoardReady() && EditorApplication.timeSinceStartup < deadline) yield return .05d;
+        Check("Both players reach the playable board", BoardReady());
+        foreach(string name in new[]{"GameplayBoardChecks","GameplayMovementChecks","GameplayEffectsChecks","GameplayProjectileChecks","GameplayMeleeChecks","GameplayDuelChecks","GameplayBalanceChecks"})
         {
             var type=typeof(GameplayRegressionRunner).Assembly.GetType(name);if(type==null)continue;
             File.WriteAllText(dir+"progress.txt",name);

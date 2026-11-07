@@ -13,6 +13,9 @@ namespace App.Main.Player
         public const float MinLookSensitivity = .5f;
         public const float MinZoomSensitivity = .1f;
         public const float MaxLookSensitivity = 5f;
+        public const int DefaultFieldOfView = 60;
+        public const int MinFieldOfView = 50;
+        public const int MaxFieldOfView = 140;
         [SerializeField] private Transform cameraTransform; // InspectorでMainCameraを割り当てる
         [SerializeField] private float lookSensitivity = DefaultLookSensitivity;
         private float gamepadZoomSensitivity = DefaultLookSensitivity * InitialZoomFraction;
@@ -32,10 +35,24 @@ namespace App.Main.Player
         private InputDevice lookDevice;
         private float yaw = 0f;
         private float pitch = 0f;
-        private float normalFieldOfView = 60f;
+        private int normalFieldOfView = DefaultFieldOfView;
+        internal Camera DuelCamera { get; private set; }
+        public int FieldOfView
+        {
+            get => normalFieldOfView;
+            set { normalFieldOfView = Mathf.Clamp(value, MinFieldOfView, MaxFieldOfView); RefreshFieldOfView(); }
+        }
+        internal void RefreshFieldOfView()
+        {
+            if (DuelCamera == null) return;
+            float magnification = currentSecondaryAction is SecondaryZoom { IsZoomed: true } zoom ? zoom.zoomMultiplier : 1f;
+            DuelCamera.fieldOfView = normalFieldOfView / Mathf.Max(.0001f, magnification);
+        }
 
         public PlayerStatus playerStatus;
         public float PrimaryCooldown => currentPrimaryAction?.CooldownRemaining ?? 0f;
+        public float BowDrawAmount => currentPrimaryAction is BowPrimary bow ? bow.DrawAmount : 0f;
+        public bool IsAimingFlashbang => currentSkill is KyosyaSkill { IsAiming: true };
         public float SecondaryCooldown => currentSecondaryAction?.CooldownRemaining ?? 0f;
         public float SkillCooldown => Mathf.Max(0f, currentSkill?.cooldownTimer ?? 0f);
         public float PrimaryCooldownDuration => currentPrimaryAction?.CooldownDuration ?? 0f;
@@ -47,10 +64,19 @@ namespace App.Main.Player
         public string SecondaryName => currentSecondaryAction?.secondaryActionName == "SecondaryZoom" ? "ズーム" : "防御";
         public App.Main.ShogiThings.PieceType PieceType { get; set; }
         public int BodyLayer { get; set; }
+        public Player Opponent { get; internal set; }
         public float LookSensitivity { get => lookSensitivity; set => lookSensitivity = Mathf.Clamp(value, MinLookSensitivity, MaxLookSensitivity); }
         public float GamepadZoomSensitivity { get => gamepadZoomSensitivity; set => gamepadZoomSensitivity = Mathf.Clamp(value, MinZoomSensitivity, MaxLookSensitivity); }
         public bool IsClimbing { get; private set; }
-        public void ResetInput() { moveInput = lookInput = Vector2.zero; climbInput = IsClimbing = false; }
+        public void ResetInput()
+        {
+            moveInput = lookInput = Vector2.zero;
+            climbInput = IsClimbing = false;
+            (currentPrimaryAction as BowPrimary)?.CancelDraw();
+            (currentSkill as KyosyaSkill)?.CancelAim();
+        }
+        void OnDisable() => ResetInput();
+        void OnApplicationFocus(bool focused) { if (!focused) ResetInput(); }
         public void ResetDuelPresentation()
         {
             if (WeaponObject != null) WeaponObject.GetComponent<WeaponPresentation>()?.ResetMotion();
@@ -61,19 +87,15 @@ namespace App.Main.Player
             CombatVisuals.Clear(this);
             GameAudio.StopCombat(this);
             yaw=transform.eulerAngles.y; pitch=0;
-            if(cameraTransform!=null)
-            {
-                cameraTransform.localRotation=Quaternion.identity;
-                var camera=cameraTransform.GetComponent<Camera>();
-                if(camera!=null)camera.fieldOfView=normalFieldOfView;
-            }
-            currentSkill=null;currentPrimaryAction=null;currentSecondaryAction=null;
+            if(cameraTransform!=null)cameraTransform.localRotation=Quaternion.identity;
+            currentSkill=null;currentPrimaryAction=null;SetSecondaryAction(null);
             SubWeaponObject=null;ObjectForKingSkill=null;
             if(rb!=null)rb.linearVelocity=Vector3.zero;
         }
         private ISkill currentSkill;
         private IPrimaryAction currentPrimaryAction;
         private ISecondaryAction currentSecondaryAction;
+        internal bool AppliedMovementOverrideThisStep { get; private set; }
         private bool movementOverrideActive = false;
         private Vector3 movementOverrideVelocity = Vector3.zero;
         private float movementOverrideRemaining = 0f;
@@ -83,6 +105,7 @@ namespace App.Main.Player
         private bool movementYOverrideActive = false;
         private float movementYOverrideVelocity = 0f;
         private float movementYOverrideRemaining = 0f;
+        private float horizontalControl = 1f;
 
         public GameObject WeaponObject { get; private set; }
         public GameObject SubWeaponObject { get; private set; }
@@ -98,8 +121,10 @@ namespace App.Main.Player
             rb.useGravity = true;
             rb.constraints = RigidbodyConstraints.FreezeRotation;
 
-            if (cameraTransform == null && Camera.main != null)
-                cameraTransform = Camera.main.transform;
+            if (cameraTransform == null)
+                cameraTransform = GetComponentInChildren<Camera>(true)?.transform;
+            DuelCamera = cameraTransform != null ? cameraTransform.GetComponent<Camera>() : null;
+            RefreshFieldOfView();
 
             pi = GetComponent<PlayerInput>();
             if (pi != null)
@@ -108,8 +133,6 @@ namespace App.Main.Player
             yaw = transform.eulerAngles.y;
             if (cameraTransform != null)
             {
-                var camera=cameraTransform.GetComponent<Camera>();
-                if(camera!=null)normalFieldOfView=camera.fieldOfView;
                 pitch = cameraTransform.localEulerAngles.x;
                 if (pitch > 180f) pitch -= 360f;
             }
@@ -165,17 +188,20 @@ namespace App.Main.Player
 
         public void SetSkill(ISkill skill)
         {
+            (currentSkill as KyosyaSkill)?.CancelAim();
             currentSkill = skill;
         }
 
         public void SetPrimaryAction(IPrimaryAction action)
         {
+            (currentPrimaryAction as BowPrimary)?.CancelDraw();
             currentPrimaryAction = action;
         }
 
         public void SetSecondaryAction(ISecondaryAction action)
         {
             currentSecondaryAction = action;
+            RefreshFieldOfView();
         }
 
         public void OnDestroy()
@@ -223,10 +249,16 @@ namespace App.Main.Player
                     }
                     break;
                 case "WeaponActionMain":
-                    if (context.phase == InputActionPhase.Performed && currentPrimaryAction != null)
+                    if (currentSkill is KyosyaSkill { IsAiming: true } flashbang)
                     {
-                        currentPrimaryAction.PrimaryAction(this, playerStatus);
+                        if (context.performed) flashbang.Throw();
                     }
+                    else if (currentPrimaryAction is BowPrimary bow)
+                    {
+                        if (context.performed) bow.BeginDraw(this, playerStatus);
+                        else if (context.canceled) bow.ReleaseDraw();
+                    }
+                    else if (context.performed) currentPrimaryAction?.PrimaryAction(this, playerStatus);
                     break;
                 case "WeaponActionSub":
                     if (context.phase == InputActionPhase.Performed && currentSecondaryAction != null)
@@ -247,14 +279,16 @@ namespace App.Main.Player
             forward.y = 0f; right.y = 0f;
             forward.Normalize(); right.Normalize();
 
-            Vector3 desired = right * moveInput.x + forward * moveInput.y;
+            Vector3 desired = Vector3.ClampMagnitude(right * moveInput.x + forward * moveInput.y, 1f);
             Vector3 targetVel = desired * playerStatus.MoveSpeed.Current;
+            if (currentPrimaryAction is BowPrimary bow) targetVel *= bow.MovementScale;
 
             // 優先度: Y-only 上書き > フル上書き > 通常移動
+            AppliedMovementOverrideThisStep = movementOverrideActive && !movementYOverrideActive;
             if (movementYOverrideActive)
             {
                 // 水平方向は通常移動（入力）で決め、Yだけ上書きする
-                Vector3 v = targetVel;
+                Vector3 v = targetVel * horizontalControl;
                 v.y = movementYOverrideVelocity;
                 rb.linearVelocity = v;
 
@@ -270,12 +304,16 @@ namespace App.Main.Player
                 // 上書き速度適用（必要に応じて Y 成分を保持）
                 Vector3 v = movementOverrideVelocity;
                 if (movementOverridePreserveY)
+                {
+                    // Travel only the remaining distance when a horizontal dash ends partway through this step.
+                    v *= Mathf.Min(1f, movementOverrideRemaining / Time.fixedDeltaTime);
                     v.y = rb.linearVelocity.y;
+                }
                 rb.linearVelocity = v;
 
                 // タイマー減算（FixedUpdate のため fixedDeltaTime を使う）
                 movementOverrideRemaining -= Time.fixedDeltaTime;
-                if (movementOverrideRemaining <= 0f)
+                if (movementOverrideRemaining <= .000001f)
                 {
                     ClearMovementOverride();
                 }
@@ -319,9 +357,10 @@ namespace App.Main.Player
         }
 
         // Yのみ上書きを設定（滞空中に水平操作を許可したい場合に使う）
-        public void SetMovementYOverride(float yVelocity, float durationSeconds)
+        public void SetMovementYOverride(float yVelocity, float durationSeconds, float horizontalScale = 1f)
         {
             movementYOverrideVelocity = yVelocity;
+            horizontalControl = Mathf.Clamp01(horizontalScale);
             movementYOverrideRemaining = Mathf.Max(0f, durationSeconds);
             movementYOverrideActive = movementYOverrideRemaining > 0f;
         }
@@ -333,6 +372,8 @@ namespace App.Main.Player
             movementYOverrideActive = false;
             movementYOverrideRemaining = 0f;
         }
+
+        void LateUpdate() => (currentSkill as KyosyaSkill)?.RefreshAim();
 
         void Update()
         {
