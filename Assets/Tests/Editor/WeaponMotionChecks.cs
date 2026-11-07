@@ -73,10 +73,11 @@ public static class WeaponMotionChecks
             {
                 check(windGrip.x - finishGrip.x > .32f && windGrip.y - finishGrip.y > .30f,
                     name + " hand carries the cut diagonally from high right to low left");
+                check(contactGrip.z - windGrip.z > .18f, name + " extends the hand forward as the blade crosses the aim");
             }
             else
             {
-                float travel = weapon.motion == WeaponPresentation.Motion.Thrust ? 1.05f : .80f;
+                float travel = weapon.motion == WeaponPresentation.Motion.Thrust ? 1.60f : 1.10f;
                 check(contactGrip.z - windGrip.z > travel && Vector3.Angle(windTip, contactTip) > 7f,
                     name + " pulls back visibly before extending toward the aim");
             }
@@ -120,12 +121,12 @@ public static class WeaponMotionChecks
             check(poseUntouched, name + " prediction preserves the current visual and trigger pose");
             check(triggerCoversBlade, name + " trigger covers the corners of the moving contact box");
             bool polearm = weapon.GetComponentInParent<Player>()?.PieceType is PieceType.Gin or PieceType.Kin;
-            float originalReach = weapon.motion switch {
-                WeaponPresentation.Motion.Thrust => 4.15f, WeaponPresentation.Motion.Knife => 2.79f,
-                _ => polearm ? 3.83f : 3.57f
+            float expectedReach = weapon.motion switch {
+                WeaponPresentation.Motion.Thrust => 4.60f, WeaponPresentation.Motion.Knife => 3.10f,
+                _ => polearm ? 4.24f : 3.96f
             };
-            check(Mathf.Abs(farthestForward - originalReach) < .12f,
-                $"{name} retains its forward contact range ({farthestForward:F2} weapon-local units)");
+            check(Mathf.Abs(farthestForward - expectedReach) < .10f,
+                $"{name} reaches its forward contact range ({farthestForward:F2} weapon-local units)");
 
             foreach (float fov in new[] { 50f, 60f, 90f, 140f })
             {

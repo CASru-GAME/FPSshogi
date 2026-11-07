@@ -15,7 +15,7 @@ public sealed partial class GameplayPlayerSmoke
 
     static IEnumerator SettleHud() { yield return null; yield return new WaitForEndOfFrame(); }
 
-    IEnumerator CheckReachFor(Player attacker, Player defender, int seat)
+    IEnumerator CheckReachFor(Player attacker, Player defender, int seat, float expectedFrontReach)
     {
         var marker = ReachMark(seat);
         string name = attacker.PieceType.ToString();
@@ -37,6 +37,9 @@ public sealed partial class GameplayPlayerSmoke
             Opposite(distance); yield return SettleHud();
             if (marker.gameObject.activeInHierarchy) inside = distance; else outside = distance;
         }
+        float measured = (inside + outside) * .5f;
+        Check(Mathf.Abs(measured - expectedFrontReach) < .14f,
+            $"{name} against {defender.PieceType} has {measured:F2} m frontal reach (target {expectedFrontReach:F2} m)");
         int hp = defender.playerStatus.Hp.Current;
         Opposite(outside + .07f); yield return SettleHud();
         bool unmarked = !marker.gameObject.activeInHierarchy;
@@ -85,13 +88,13 @@ public sealed partial class GameplayPlayerSmoke
     IEnumerator CheckMeleeReach()
     {
         yield return Matchup(new Fuhyo(PlayerType.PlayerOne),new King(PlayerType.PlayerTwo));
-        yield return CheckReachFor(One(),Two(),1);
-        yield return CheckReachFor(Two(),One(),2);
+        yield return CheckReachFor(One(),Two(),1,9.7f);
+        yield return CheckReachFor(Two(),One(),2,6.7f);
         yield return Matchup(new Gin(PlayerType.PlayerOne),new Kin(PlayerType.PlayerTwo));
-        yield return CheckReachFor(One(),Two(),1);
-        yield return CheckReachFor(Two(),One(),2);
+        yield return CheckReachFor(One(),Two(),1,9f);
+        yield return CheckReachFor(Two(),One(),2,9f);
         yield return Matchup(new Keima(PlayerType.PlayerOne),new Hisya(PlayerType.PlayerTwo));
-        yield return CheckReachFor(One(),Two(),1);
+        yield return CheckReachFor(One(),Two(),1,8.45f);
         Check(ReachMark(2)?.gameObject.activeInHierarchy == false,"The bow never shows melee reach brackets");
     }
 }

@@ -86,8 +86,8 @@ namespace App.Main.Player
             {
                 case Motion.Thrust:
                     meleeWindup = new Pose(grip + new Vector3(.03f, .08f, -.62f), Quaternion.Euler(holdEuler + new Vector3(-4, 3, -3)));
-                    meleeContact = new Pose(grip + rest * Vector3.up * .62f, rest);
-                    meleeFinish = new Pose(meleeContact.position + new Vector3(-.035f, .028f, -.18f), rest);
+                    meleeContact = new Pose(grip + rest * Vector3.up * 1.08f, rest);
+                    meleeFinish = new Pose(meleeContact.position + new Vector3(-.035f, .028f, -.26f), rest);
                     break;
                 case Motion.Slash:
                     bool pole = owner != null && (owner.PieceType == App.Main.ShogiThings.PieceType.Gin || owner.PieceType == App.Main.ShogiThings.PieceType.Kin);
@@ -95,16 +95,16 @@ namespace App.Main.Player
                         ? new Pose(new Vector3(.27f, .07f, 1.30f), Quaternion.Euler(54, -24, -49))
                         : new Pose(new Vector3(.24f, .02f, 1.26f), Quaternion.Euler(40, -19, -44));
                     meleeContact = pole
-                        ? new Pose(new Vector3(.27f, -.55f, 1.35f), Quaternion.Euler(75, 13, 23))
-                        : new Pose(new Vector3(.22f, -.59f, 1.08f), Quaternion.Euler(70, 10, 22));
+                        ? new Pose(new Vector3(.27f, -.55f, 1.77f), Quaternion.Euler(75, 13, 23))
+                        : new Pose(new Vector3(.22f, -.59f, 1.47f), Quaternion.Euler(70, 10, 22));
                     meleeFinish = pole
-                        ? new Pose(new Vector3(-.13f, -.58f, 1.55f), Quaternion.Euler(79, 34, 75))
-                        : new Pose(new Vector3(-.16f, -.56f, 1.40f), Quaternion.Euler(80, 33, 72));
+                        ? new Pose(new Vector3(-.13f, -.58f, 1.88f), Quaternion.Euler(79, 34, 75))
+                        : new Pose(new Vector3(-.16f, -.56f, 1.71f), Quaternion.Euler(80, 33, 72));
                     break;
                 case Motion.Knife:
                     meleeWindup = new Pose(grip + new Vector3(.09f, .25f, -.36f), Quaternion.Euler(40, -20, -26));
-                    meleeContact = new Pose(grip + new Vector3(-.105f, .16f, .53f), Quaternion.Euler(80, -9, 6));
-                    meleeFinish = new Pose(meleeContact.position + new Vector3(-.06f, -.025f, -.17f), Quaternion.Euler(77, -10, 11));
+                    meleeContact = new Pose(grip + new Vector3(-.105f, .16f, .83f), Quaternion.Euler(80, -9, 6));
+                    meleeFinish = new Pose(meleeContact.position + new Vector3(-.06f, -.025f, -.21f), Quaternion.Euler(77, -10, 11));
                     break;
             }
         }
