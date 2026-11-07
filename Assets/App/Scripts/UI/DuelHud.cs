@@ -24,6 +24,7 @@ namespace App.UI
         {
             this.devices=devices;players=new[]{manager.PlayerOne.GetComponent<Player>(),manager.PlayerTwo.GetComponent<Player>()};
             root=UiTheme.Rect(parent,"Duel HUD",0,0,0,0);UiTheme.Stretch(root);
+            root.SetAsFirstSibling(); // Draw the divider and combat overlays beneath full-screen menus.
             for(int p=0;p<2;p++){
                 var half=UiTheme.Rect(root,$"P{p+1} viewport HUD",0,0,0,0);half.anchorMin=new Vector2(p*.5f,0);half.anchorMax=new Vector2((p+1)*.5f,1);half.offsetMin=half.offsetMax=Vector2.zero;
                 var topShade=UiTheme.Shade(half,"HUD top shade",0,0,0,180,UiSymbol.Kind.TopShade,.8f,.25f);

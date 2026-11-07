@@ -227,6 +227,9 @@ namespace App.UI
         }
         void RenderPage(string focus=null)
         {
+            bool menuOpen = page != Page.None;
+            players?.SetMenuOpen(menuOpen);
+            if (menuOpen) duelHud?.Tick(false);
             SetMenuDevices();defaultFocus=null;
             switch(page){
                 case Page.None:menus.Hide();break;case Page.Title:menus.Title();break;case Page.Pause:menus.Pause();break;

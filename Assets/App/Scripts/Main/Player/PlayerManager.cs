@@ -61,6 +61,7 @@ namespace App.Main.Player
         [SerializeField] private GameObject hisyaWeapon;
         private Action OnUpdate;
         private bool uiBlocked;
+        private bool menuOpen;
         private string activeMap = "Shogi";
         public void SetUiBlocked(bool blocked)
         {
@@ -90,7 +91,7 @@ namespace App.Main.Player
             PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition, PlayerTwoSpawnRotation);
             PlayerIndexPlayerOne = PlayerOne.GetComponent<PlayerInput>().playerIndex;
             PlayerIndexPlayerTwo = PlayerTwo.GetComponent<PlayerInput>().playerIndex;
-            DisablePlayerCamera();
+            RefreshDuelCameras();
             gameStateHolder.SubscribeToChangeToDuel(OnChangedToDuel);
             gameStateHolder.SubscribeToExitDuel(OnExitDuel);
             gameStateHolder.SubscribeToChangeToPlayerOneWin(OnEndGame);
@@ -144,7 +145,7 @@ namespace App.Main.Player
             ResetPlayerPrefabRotation();
             PlayerOne.GetComponent<Player>().ResetDuelPresentation();
             PlayerTwo.GetComponent<Player>().ResetDuelPresentation();
-            EnablePlayerCamera();
+            RefreshDuelCameras();
             CursorDisable();
             SetPlayerCondition();
         }
@@ -217,7 +218,7 @@ namespace App.Main.Player
             PlayerOne.GetComponent<Player>().ResetDuelPresentation();
             PlayerTwo.GetComponent<Player>().ResetDuelPresentation();
             EnableOnlyMap("Shogi");
-            DisablePlayerCamera();
+            RefreshDuelCameras();
             CursorEnable();
 
             // PlayerOne/Two に割り当てたピースオブジェクトを削除（子オブジェクトも含む）
@@ -241,7 +242,7 @@ namespace App.Main.Player
             PlayerOne.GetComponent<Player>().ResetDuelPresentation();
             PlayerTwo.GetComponent<Player>().ResetDuelPresentation();
             DisableAllInput();
-            DisablePlayerCamera();
+            RefreshDuelCameras();
             CursorEnable();
         }
 
@@ -599,16 +600,19 @@ namespace App.Main.Player
             Cursor.visible = false;
         }
 
-        private void DisablePlayerCamera()
+        public void SetMenuOpen(bool open)
         {
-            PlayerOne.GetComponentInChildren<Camera>().enabled = false;
-            PlayerTwo.GetComponentInChildren<Camera>().enabled = false;
+            if (menuOpen == open) return;
+            menuOpen = open;
+            RefreshDuelCameras();
         }
 
-        private void EnablePlayerCamera()
+        private void RefreshDuelCameras()
         {
-            PlayerOne.GetComponentInChildren<Camera>().enabled = true;
-            PlayerTwo.GetComponentInChildren<Camera>().enabled = true;
+            // The full-screen board camera already renders the room beneath these two views.
+            bool showDuel = !menuOpen && gameStateHolder.CurrentState == GameStateHolder.GameState.Duel;
+            PlayerOne.GetComponentInChildren<Camera>().enabled = showDuel;
+            PlayerTwo.GetComponentInChildren<Camera>().enabled = showDuel;
         }
 
         private void DisableAllInput()

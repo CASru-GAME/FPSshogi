@@ -190,10 +190,22 @@ public static class RoomUiRegression
         Check("HP gauge follows damage without numeric text",Mathf.Abs(GameObject.Find("P1 health bar").GetComponent<RectTransform>().sizeDelta.x-212)<1&&!Visible("P1 HP"));Shot("16-damage");yield return .15d;
         InputSystem.QueueStateEvent(one,new GamepadState{rightTrigger=1});yield return .14d;InputSystem.QueueStateEvent(one,new GamepadState());yield return .12d;
         Check("Cooldown arc reflects the actual attack",p1.PrimaryCooldown>0&&GameObject.Find("P1 cooldown 0").GetComponent<UiSymbol>().Fill>0);Shot("17-cooldown");yield return .15d;
-        Session.OpenPause();yield return .2d;Check("Pause hides FPS HUD and crosshairs",!Visible("Duel HUD")&&!Visible("P1 Crosshair"));float remaining=p1.PrimaryCooldown;yield return .3d;Check("Pause freezes cooldown",Mathf.Approximately(p1.PrimaryCooldown,remaining));
+        var secondCamera = Find<PlayerManager>().PlayerTwo.GetComponentInChildren<Camera>();
+        Rect leftView = damageCamera.rect, rightView = secondCamera.rect;
+        Check("Active duel shows its center divider", Visible("Screen divider"));
+        Session.OpenPause();
+        Check("Opening a duel menu immediately hides its center divider", !Visible("Screen divider"));
+        yield return .2d;Check("Pause hides FPS HUD and crosshairs",!Visible("Duel HUD")&&!Visible("P1 Crosshair"));float remaining=p1.PrimaryCooldown;yield return .3d;Check("Pause freezes cooldown",Mathf.Approximately(p1.PrimaryCooldown,remaining));
+        GameObject.Find("Settings button").GetComponent<Button>().onClick.Invoke();yield return .25d;
+        Check("Duel settings have one continuous full-screen room behind the controls", Visible("Zoom sensitivity slider 0") &&
+            Camera.main != null && Camera.main.rect == new Rect(0,0,1,1) && !damageCamera.enabled && !secondCamera.enabled && !Visible("Screen divider"));
+        Shot("17-duel-settings");yield return .25d;
+        Session.Back();yield return .2d;
+        Check("Returning from duel settings keeps the pause menu on a single background", Visible("Resume button") && !damageCamera.enabled && !secondCamera.enabled);
         InputSystem.QueueStateEvent(one,new GamepadState{leftStick=Vector2.up});yield return .1d;Session.Resume();yield return .3d;
         Check("Held movement remains blocked after resume",GameSessionUI.BlocksGameplay);InputSystem.QueueStateEvent(one,new GamepadState());yield return .4d;Check("Neutral movement releases gameplay gate",!GameSessionUI.BlocksGameplay);
         Check("Resume restores FPS HUD and both crosshairs",Visible("Duel HUD")&&Visible("P1 Crosshair")&&Visible("P2 Crosshair"));
+        Check("Resume restores both original viewports and their divider", damageCamera.enabled && secondCamera.enabled && damageCamera.rect == leftView && secondCamera.rect == rightView && Visible("Screen divider"));
         foreach(var resolution in new[]{new Vector2Int(1280,720),new Vector2Int(2560,1080),new Vector2Int(1280,1024)}){
             Resolution(resolution.x,resolution.y);yield return .4d;Canvas.ForceUpdateCanvases();
             for(int p=0;p<2;p++){var cross=GameObject.Find($"P{p+1} Crosshair").GetComponent<RectTransform>();Check($"Crosshair {p+1} centered at {resolution}",Mathf.Abs(cross.position.x-Screen.width*(p==0?.25f:.75f))<2&&Mathf.Abs(cross.position.y-Screen.height*.5f)<2);}
