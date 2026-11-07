@@ -93,6 +93,7 @@ namespace App.Main.Player
         private ISkill currentSkill;
         private IPrimaryAction currentPrimaryAction;
         private ISecondaryAction currentSecondaryAction;
+        internal bool AppliedMovementOverrideThisStep { get; private set; }
         private bool movementOverrideActive = false;
         private Vector3 movementOverrideVelocity = Vector3.zero;
         private float movementOverrideRemaining = 0f;
@@ -276,6 +277,7 @@ namespace App.Main.Player
             if (currentPrimaryAction is BowPrimary bow) targetVel *= bow.MovementScale;
 
             // 優先度: Y-only 上書き > フル上書き > 通常移動
+            AppliedMovementOverrideThisStep = movementOverrideActive && !movementYOverrideActive;
             if (movementYOverrideActive)
             {
                 // 水平方向は通常移動（入力）で決め、Yだけ上書きする
@@ -295,12 +297,16 @@ namespace App.Main.Player
                 // 上書き速度適用（必要に応じて Y 成分を保持）
                 Vector3 v = movementOverrideVelocity;
                 if (movementOverridePreserveY)
+                {
+                    // Travel only the remaining distance when a horizontal dash ends partway through this step.
+                    v *= Mathf.Min(1f, movementOverrideRemaining / Time.fixedDeltaTime);
                     v.y = rb.linearVelocity.y;
+                }
                 rb.linearVelocity = v;
 
                 // タイマー減算（FixedUpdate のため fixedDeltaTime を使う）
                 movementOverrideRemaining -= Time.fixedDeltaTime;
-                if (movementOverrideRemaining <= 0f)
+                if (movementOverrideRemaining <= .000001f)
                 {
                     ClearMovementOverride();
                 }

@@ -217,12 +217,7 @@ namespace App.Main.Player
             // An animated blade can overlap a body on the far side of cover.
             // Check from its wielder so starting the query beyond the wall cannot bypass it.
             Vector3 origin = owner != null ? owner.transform.position : transform.position;
-            Vector3 direction = targetCollider.ClosestPoint(origin) - origin;
-            float distance = direction.magnitude;
-            if (distance <= Mathf.Epsilon) return true;
-
-            return !ShotPhysics.Raycast(new Ray(origin, direction / distance), distance, hitLayers,
-                owner, out RaycastHit hit, transform) || hit.collider.GetComponentInParent<Player>() == target;
+            return ShotPhysics.HasClearPathTo(origin, targetCollider, target, hitLayers, owner, transform);
         }
 
         // 所有者を設定するユーティリティ

@@ -25,7 +25,7 @@ namespace App.UI
         public static string SkillDescription(PieceType type) => type switch {
             PieceType.Fuhyo => "向いている方向へ跳び込む。",
             PieceType.Kyosya => "閃光弾を投げる。爆発範囲にいる駒は視界が白くなり、移動が遅くなる。",
-            PieceType.Keima => "前方へ12m突進し、到達地点の周囲を攻撃する。",
+            PieceType.Keima => "前方へ12m突進し、進路上と終点の周囲にいる相手を一度だけ攻撃する。",
             PieceType.Gin => "1.5秒間、受けるダメージを無効にする。",
             PieceType.Kin => "3.5秒間、受けるダメージを1回につき16減らす。",
             PieceType.Kakugyo => "約8m上昇し、2.4秒間空中にとどまる。",
