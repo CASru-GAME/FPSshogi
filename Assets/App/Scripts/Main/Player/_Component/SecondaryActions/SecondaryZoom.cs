@@ -20,6 +20,7 @@ namespace App.Main.Player
         public float CooldownDuration => cooldown;
         private float cooldownTimer = 0f;
         private bool zoomActive = false;
+        public bool IsZoomed => zoomActive;
         private float zoomTimer = 0f;
 
         // カメラの元のFOVを保持して正確に復元する

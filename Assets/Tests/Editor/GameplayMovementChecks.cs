@@ -44,6 +44,13 @@ public static class GameplayMovementChecks
                 check($"Mouse displacement is consumed once at {rate} fps",Mathf.Abs((float)Get(player,"yaw")-after)<.0001f);
             }
             check($"Equal mouse travel turns equally at 30 and 120 fps ({deltas[0]:F3}/{deltas[1]:F3})",deltas[0]>.01f&&Mathf.Abs(deltas[0]-deltas[1])<.01f);
+            var zoom = new SecondaryZoom();
+            player.SetSecondaryAction(zoom);
+            zoom.SecondaryAction(player, player.playerStatus);
+            float beforeZoomedMouse = (float)Get(player,"yaw");
+            InputSystem.QueueStateEvent(mouse,new MouseState{delta=new Vector2(20,0)});InputSystem.Update();Invoke(player,"Update");
+            check("Mouse travel while zoomed keeps its configured mouse sensitivity", zoom.IsZoomed &&
+                Mathf.Abs((float)Get(player,"yaw") - beforeZoomedMouse - deltas[1]) < .01f);
             var flash=new FlashBangEffect();player.playerStatus.EffectList.AddEffect(flash);
             var overlay=(GameObject)Get(flash,"overlayRoot");
             new GinSkill().UseSkill(player,player.playerStatus);

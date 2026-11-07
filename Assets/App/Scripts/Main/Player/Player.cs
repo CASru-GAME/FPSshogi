@@ -8,8 +8,14 @@ namespace App.Main.Player
 {
     public class Player : MonoBehaviour
     {
+        public const float DefaultLookSensitivity = 2f;
+        public const float InitialZoomFraction = .4f;
+        public const float MinLookSensitivity = .5f;
+        public const float MinZoomSensitivity = .1f;
+        public const float MaxLookSensitivity = 5f;
         [SerializeField] private Transform cameraTransform; // InspectorでMainCameraを割り当てる
-        [SerializeField] private float lookSensitivity = 2.0f;
+        [SerializeField] private float lookSensitivity = DefaultLookSensitivity;
+        private float gamepadZoomSensitivity = DefaultLookSensitivity * InitialZoomFraction;
         [SerializeField] private float gamepadLookMultiplier = 150f;
         [SerializeField] private float minPitch = -80f;
         [SerializeField] private float maxPitch = 80f;
@@ -23,7 +29,7 @@ namespace App.Main.Player
         private PlayerInput pi;
         private Vector2 moveInput = Vector2.zero;
         private Vector2 lookInput = Vector2.zero;
-        private bool mouseLook;
+        private InputDevice lookDevice;
         private float yaw = 0f;
         private float pitch = 0f;
         private float normalFieldOfView = 60f;
@@ -41,7 +47,8 @@ namespace App.Main.Player
         public string SecondaryName => currentSecondaryAction?.secondaryActionName == "SecondaryZoom" ? "ズーム" : "防御";
         public App.Main.ShogiThings.PieceType PieceType { get; set; }
         public int BodyLayer { get; set; }
-        public float LookSensitivity { get => lookSensitivity; set => lookSensitivity = Mathf.Clamp(value, .5f, 5f); }
+        public float LookSensitivity { get => lookSensitivity; set => lookSensitivity = Mathf.Clamp(value, MinLookSensitivity, MaxLookSensitivity); }
+        public float GamepadZoomSensitivity { get => gamepadZoomSensitivity; set => gamepadZoomSensitivity = Mathf.Clamp(value, MinZoomSensitivity, MaxLookSensitivity); }
         public bool IsClimbing { get; private set; }
         public void ResetInput() { moveInput = lookInput = Vector2.zero; climbInput = IsClimbing = false; }
         public void ResetDuelPresentation()
@@ -195,11 +202,9 @@ namespace App.Main.Player
                 case "Look":
                     if (context.phase == InputActionPhase.Performed || context.phase == InputActionPhase.Started)
                     {
-                        var device = context.control?.device;
-                        bool isGamepad = device is Gamepad;
-                        mouseLook = device is Mouse;
-                        var raw = context.ReadValue<Vector2>();
-                        lookInput = isGamepad ? raw * gamepadLookMultiplier : raw;
+                        lookDevice = context.control?.device;
+                        lookInput = context.ReadValue<Vector2>();
+                        if (lookDevice is Gamepad) lookInput *= gamepadLookMultiplier;
                     }
                     else if (context.phase == InputActionPhase.Canceled)
                         lookInput = Vector2.zero;
@@ -335,10 +340,13 @@ namespace App.Main.Player
             playerStatus.EffectList.UpdateEffects();
             // Mouse input is displacement per frame; a stick expresses a turn rate.
             // .02 retains approximately the old mouse feel at 50 Hz without FPS dependence.
+            bool mouseLook = lookDevice is Mouse;
             float lookStep=mouseLook ? .02f : Time.deltaTime;
             if(Time.timeScale<=0)lookStep=0;
-            float deltaX = lookInput.x * lookSensitivity * lookStep;
-            float deltaY = lookInput.y * lookSensitivity * lookStep;
+            bool zoomedStick = lookDevice is Gamepad && currentSecondaryAction is SecondaryZoom { IsZoomed: true };
+            float sensitivity = zoomedStick ? gamepadZoomSensitivity : lookSensitivity;
+            float deltaX = lookInput.x * sensitivity * lookStep;
+            float deltaY = lookInput.y * sensitivity * lookStep;
             if(mouseLook)lookInput=Vector2.zero;
 
             yaw += deltaX;

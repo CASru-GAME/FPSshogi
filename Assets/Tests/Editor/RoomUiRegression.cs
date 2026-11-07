@@ -33,7 +33,7 @@ public static class RoomUiRegression
     static readonly BindingFlags All=BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic;
     static EditorWindow gameView;
     static int oldSize=-1;
-    static float sensitivity0,sensitivity1;
+    static readonly Dictionary<string, float?> savedSettings = new();
     static bool hpNumbers;
     static bool expectedLoadFailure;
     static GameSessionUI Session=>GameSessionUI.Instance;
@@ -97,7 +97,10 @@ public static class RoomUiRegression
     static IEnumerator Run()
     {
         one=InputSystem.AddDevice<Gamepad>("Room First");two=InputSystem.AddDevice<Gamepad>("Room Second");keyboard=InputSystem.AddDevice<Keyboard>("Room Keyboard");mouse=InputSystem.AddDevice<Mouse>("Room Mouse");
-        sensitivity0=Session.Sensitivity(0);sensitivity1=Session.Sensitivity(1);hpNumbers=Session.ShowHpNumbers;Session.ShowHpNumbers=false;
+        foreach (string key in new[] { "FPSshogi.Sensitivity.0", "FPSshogi.Sensitivity.1", "FPSshogi.GamepadZoomSensitivity.0",
+            "FPSshogi.GamepadZoomSensitivity.1", "FPSshogi.Audio.Master", "FPSshogi.Audio.Effects", "FPSshogi.Audio.Interface" })
+            savedSettings[key] = PlayerPrefs.HasKey(key) ? PlayerPrefs.GetFloat(key) : null;
+        hpNumbers=Session.ShowHpNumbers;Session.ShowHpNumbers=false;
         Resolution(1920,1080);yield return .5d;Shot("01-title");yield return .15d;yield return .2d;
         Check("Title stages all forty real pieces",GameObject.Find("Title board pieces")?.transform.childCount==40);
         var shade=GameObject.Find("Title shade").GetComponent<UiSymbol>();Check("Title shade has rendered geometry",shade.canvasRenderer!=null&&shade.canvasRenderer.GetMesh()?.vertexCount>0);
@@ -141,17 +144,34 @@ public static class RoomUiRegression
         Check("Opening player owns pause",Visible("Resume button")&&GameObject.Find("Menu owner").GetComponent<Text>().text.Contains("1P"));Shot("09-pause");yield return .15d;
         Check("Pause hides board HUD while preserving the board scene",!Visible("Board HUD")&&Find<ShogiBoard>()!=null);
         tap=Tap(two,GamepadButton.East);while(tap.MoveNext())yield return tap.Current;Check("Other player cannot dismiss pause",Visible("Resume button")&&Time.timeScale==0);
+        PlayerPrefs.SetFloat("FPSshogi.Sensitivity.0", 3f);
+        PlayerPrefs.DeleteKey("FPSshogi.GamepadZoomSensitivity.0");
+        Check("An existing normal sensitivity of 3.0 starts zoom at 1.2", Mathf.Approximately(Session.ZoomSensitivity(0), 1.2f));
         Session.SetSensitivity(0,2);Session.SetSensitivity(1,2);
+        Check("Changing normal look preserves the initial zoom value", Mathf.Approximately(Session.ZoomSensitivity(0), 1.2f));
+        Session.SetZoomSensitivity(0,.8f);Session.SetZoomSensitivity(1,.8f);
         Session.OpenSettings();yield return .25d;Shot("10-settings");yield return .15d;
         float beforeSlider=Session.Sensitivity(0);tap=Tap(one,GamepadButton.DpadRight);while(tap.MoveNext())yield return tap.Current;
-        Check("Controller adjusts focused first-player sensitivity",Session.Sensitivity(0)>beforeSlider);
+        Check("D-pad adjusts normal look by one tenth",Mathf.Approximately(Session.Sensitivity(0), beforeSlider + .1f));
+        tap=Tap(one,GamepadButton.DpadDown);while(tap.MoveNext())yield return tap.Current;
+        Check("Controller focuses first-player zoom",EventSystem.current.currentSelectedGameObject?.name=="Zoom sensitivity slider 0");
+        tap=Tap(one,GamepadButton.DpadRight);while(tap.MoveNext())yield return tap.Current;
+        Check("1P zoom changes by one tenth independently",Mathf.Approximately(Session.ZoomSensitivity(0),.9f) && Mathf.Approximately(Session.ZoomSensitivity(1),.8f) && Mathf.Approximately(Session.Sensitivity(0),2.1f));
         tap=Tap(one,GamepadButton.DpadDown);while(tap.MoveNext())yield return tap.Current;
         Check("Controller navigates to second-player sensitivity",EventSystem.current.currentSelectedGameObject?.name=="Sensitivity slider 1");
         beforeSlider=Session.Sensitivity(1);tap=Tap(one,GamepadButton.DpadRight);while(tap.MoveNext())yield return tap.Current;
-        Check("Controller adjusts focused second-player sensitivity",Session.Sensitivity(1)>beforeSlider);
-        Session.SetSensitivity(0,4);Session.ShowHpNumbers=true;Session.ResetSettings();
+        Check("Controller adjusts focused second-player sensitivity",Mathf.Approximately(Session.Sensitivity(1), beforeSlider + .1f));
+        tap=Tap(one,GamepadButton.DpadDown);while(tap.MoveNext())yield return tap.Current;
+        Check("Controller focuses second-player zoom",EventSystem.current.currentSelectedGameObject?.name=="Zoom sensitivity slider 1");
+        tap=Tap(one,GamepadButton.DpadLeft);while(tap.MoveNext())yield return tap.Current;
+        var players = Find<PlayerManager>();
+        Check("Four independent settings reach the paired players", Mathf.Approximately(players.PlayerOne.GetComponent<Player>().GamepadZoomSensitivity,.9f) &&
+            Mathf.Approximately(players.PlayerTwo.GetComponent<Player>().GamepadZoomSensitivity,.7f) && Mathf.Approximately(players.PlayerOne.GetComponent<Player>().LookSensitivity,2.1f) && Mathf.Approximately(players.PlayerTwo.GetComponent<Player>().LookSensitivity,2.1f));
+        Session.Back();yield return .2d;Session.OpenSettings();yield return .2d;
+        Check("Both zoom values survive reopening settings", GameObject.Find("Zoom sensitivity slider 0 value").GetComponent<Text>().text=="0.9" && GameObject.Find("Zoom sensitivity slider 1 value").GetComponent<Text>().text=="0.7");
+        Session.SetSensitivity(0,4);Session.ShowHpNumbers=true;GameObject.Find("Reset settings button").GetComponent<Button>().onClick.Invoke();yield return .2d;
         Check("Nested settings keep gameplay HUD hidden",!Visible("Board HUD")&&!Visible("Duel HUD"));
-        Check("Reset restores both sensitivity and HP preference",Session.Sensitivity(0)==2&&Session.Sensitivity(1)==2&&!Session.ShowHpNumbers);
+        Check("Reset restores both normal values to 2.0, zoom to 0.8 and HP preference",Session.Sensitivity(0)==2&&Session.Sensitivity(1)==2&&Mathf.Approximately(Session.ZoomSensitivity(0),.8f)&&Mathf.Approximately(Session.ZoomSensitivity(1),.8f)&&!Session.ShowHpNumbers);
         Session.Back();yield return .25d;Check("Settings returns to pause",Visible("Resume button"));
         Session.ConfirmReturn();yield return .25d;Shot("11-return-confirm");yield return .15d;Session.Back();yield return .25d;Check("Cancelled return restores pause",Visible("Resume button"));
         Session.OpenHelp();yield return .25d;InputSystem.DisableDevice(two);yield return .4d;
@@ -190,7 +210,13 @@ public static class RoomUiRegression
     {
         routine=null;Application.logMessageReceived-=Log;File.WriteAllLines(dir+"errors.txt",errors);
         File.WriteAllText(dir+"complete.txt",$"{DateTime.Now:O}\n{results.Count(x=>x.StartsWith("PASS"))} PASS / {results.Count(x=>x.StartsWith("FAIL"))} FAIL");
-        if(Session!=null){Session.SetSensitivity(0,sensitivity0);Session.SetSensitivity(1,sensitivity1);Session.ShowHpNumbers=hpNumbers;PlayerPrefs.Save();}
+        foreach (var pair in savedSettings)
+        {
+            if (pair.Value.HasValue) PlayerPrefs.SetFloat(pair.Key, pair.Value.Value);
+            else PlayerPrefs.DeleteKey(pair.Key);
+        }
+        if(Session!=null)Session.ShowHpNumbers=hpNumbers;
+        PlayerPrefs.Save();
         foreach(var d in new InputDevice[]{one,two,keyboard,mouse})if(d!=null&&d.added)InputSystem.RemoveDevice(d);
         if(gameView!=null&&oldSize>=0)gameView.GetType().GetProperty("selectedSizeIndex",All).SetValue(gameView,oldSize);oldSize=-1;
         Time.timeScale=1;EditorApplication.isPlaying=false;

@@ -110,11 +110,47 @@ namespace App.UI
         {
             if(players==null)return;
             Devices.Pair(players.PlayerOne.GetComponent<PlayerInput>(),0);Devices.Pair(players.PlayerTwo.GetComponent<PlayerInput>(),1);
-            players.PlayerOne.GetComponent<Player>().LookSensitivity=Sensitivity(0);players.PlayerTwo.GetComponent<Player>().LookSensitivity=Sensitivity(1);
+            ApplyLookSettings(0);
+            ApplyLookSettings(1);
         }
-        public float Sensitivity(int player)=>PlayerPrefs.GetFloat("FPSshogi.Sensitivity."+player,2f);
-        public void SetSensitivity(int player,float value){PlayerPrefs.SetFloat("FPSshogi.Sensitivity."+player,Mathf.Clamp(value,.5f,5));PairPlayers();}
-        public void ResetSettings(){SetSensitivity(0,2);SetSensitivity(1,2);ShowHpNumbers=false;GameAudio.ResetVolumes();PlayerPrefs.Save();}
+        void ApplyLookSettings(int slot)
+        {
+            if (players == null) return;
+            var player = (slot == 0 ? players.PlayerOne : players.PlayerTwo).GetComponent<Player>();
+            player.LookSensitivity = Sensitivity(slot);
+            player.GamepadZoomSensitivity = ZoomSensitivity(slot);
+        }
+        static string ZoomKey(int slot) => "FPSshogi.GamepadZoomSensitivity." + slot;
+        public float Sensitivity(int slot) => Mathf.Clamp(PlayerPrefs.GetFloat("FPSshogi.Sensitivity." + slot,
+            Player.DefaultLookSensitivity), Player.MinLookSensitivity, Player.MaxLookSensitivity);
+        public float ZoomSensitivity(int slot)
+        {
+            float initial = Mathf.Round(Sensitivity(slot) * Player.InitialZoomFraction * 10f) / 10f;
+            return Mathf.Clamp(PlayerPrefs.GetFloat(ZoomKey(slot), initial), Player.MinZoomSensitivity, Player.MaxLookSensitivity);
+        }
+        public void SetSensitivity(int slot, float value)
+        {
+            // Anchor the initial zoom value to the player's old setting before changing normal look.
+            if (!PlayerPrefs.HasKey(ZoomKey(slot))) PlayerPrefs.SetFloat(ZoomKey(slot), ZoomSensitivity(slot));
+            PlayerPrefs.SetFloat("FPSshogi.Sensitivity." + slot, Mathf.Clamp(value, Player.MinLookSensitivity, Player.MaxLookSensitivity));
+            ApplyLookSettings(slot);
+        }
+        public void SetZoomSensitivity(int slot, float value)
+        {
+            PlayerPrefs.SetFloat(ZoomKey(slot), Mathf.Clamp(value, Player.MinZoomSensitivity, Player.MaxLookSensitivity));
+            ApplyLookSettings(slot);
+        }
+        public void ResetSettings()
+        {
+            for (int slot = 0; slot < 2; slot++)
+            {
+                SetSensitivity(slot, Player.DefaultLookSensitivity);
+                SetZoomSensitivity(slot, Player.DefaultLookSensitivity * Player.InitialZoomFraction);
+            }
+            ShowHpNumbers = false;
+            GameAudio.ResetVolumes();
+            PlayerPrefs.Save();
+        }
         bool GateDevice(InputDevice device)=>device!=null&&(IsTitle||pendingNewMatch||Devices.PlayerFor(device)>=0);
         bool ControlsHeld()
         {

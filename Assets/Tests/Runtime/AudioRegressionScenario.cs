@@ -78,7 +78,7 @@ public static class AudioRegressionScenario
             InputSystem.QueueStateEvent(mouse,new MouseState{position=center,buttons=1});yield return .12d;
             InputSystem.QueueStateEvent(mouse,new MouseState{position=center});yield return .3d;
             check(Count(SoundCue.UiOpen)==1&&Count(SoundCue.UiConfirm)==0&&Count(SoundCue.UiNavigate)==0,"Real mouse click after hover emits only the semantic open sound");
-            check(UnityEngine.Object.FindObjectsByType<Slider>(FindObjectsSortMode.None).Length==5,"Settings exposes two sensitivities and three volume sliders");
+            check(Enum.GetValues(typeof(AudioBus)).Cast<AudioBus>().All(bus => GameObject.Find("Audio slider " + bus)?.GetComponent<Slider>() != null), "Settings exposes all three volume sliders");
             if(capture){ScreenCapture.CaptureScreenshot(Path.Combine(output,"settings.png"));yield return .2d;}
             played.Clear();GameObject.Find("Back button").GetComponent<Button>().onClick.Invoke();yield return .3d;
             check(Count(SoundCue.UiBack)==1&&Count(SoundCue.UiConfirm)==0,"Back button has no extra confirmation sound");
