@@ -127,7 +127,7 @@ public static class WeaponMotionChecks
             check(Mathf.Abs(farthestForward - originalReach) < .12f,
                 $"{name} retains its forward contact range ({farthestForward:F2} weapon-local units)");
 
-            foreach (float fov in new[] { 50f, 60f, 90f })
+            foreach (float fov in new[] { 50f, 60f, 90f, 140f })
             {
                 camera.fieldOfView = fov;
                 int leastVisible = 13;

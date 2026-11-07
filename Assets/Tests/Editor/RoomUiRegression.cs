@@ -136,9 +136,9 @@ public static class RoomUiRegression
                 InputSystem.QueueStateEvent(mouse,pointer);yield return .1d;
                 InputSystem.QueueStateEvent(mouse,pointer.WithButton(MouseButton.Left));yield return .12d;
                 InputSystem.QueueStateEvent(mouse,pointer.WithButton(MouseButton.Left,false));yield return .12d;
-                Check("Mouse selects the end of the FOV track at " + x, FovLabel(1) == (x < bounds.center.x ? "50°" : "90°"));
+                Check("Mouse selects the end of the FOV track at " + x, FovLabel(1) == (x < bounds.center.x ? "50°" : "140°"));
             }
-            Check("Keyboard changes only the first FOV by one degree", FovLabel(0) == "61°" && FovLabel(1) == "90°");
+            Check("Keyboard changes only the first FOV by one degree", FovLabel(0) == "61°" && FovLabel(1) == "140°");
         }
         Session.Back();yield return .2d;
         foreach(var resolution in new[]{new Vector2Int(2560,1080),new Vector2Int(1280,1024)}){
@@ -215,7 +215,7 @@ public static class RoomUiRegression
         var firstView = players.PlayerOne.GetComponentInChildren<Camera>();
         var secondView = players.PlayerTwo.GetComponentInChildren<Camera>();
         float boardFov = Camera.main.fieldOfView;
-        Check("Both title FOV settings reach the new match", firstView.fieldOfView == 61 && secondView.fieldOfView == 90);
+        Check("Both title FOV settings reach the new match", firstView.fieldOfView == 61 && secondView.fieldOfView == 140);
         if (FovSlider(0) != null && FovSlider(1) != null)
         {
             tap=Tap(one,GamepadButton.DpadDown);while(tap.MoveNext())yield return tap.Current;
@@ -223,11 +223,11 @@ public static class RoomUiRegression
             tap=Tap(one,GamepadButton.DpadDown);while(tap.MoveNext())yield return tap.Current;
             tap=Tap(one,GamepadButton.DpadLeft);while(tap.MoveNext())yield return tap.Current;
             Check("D-pad adjusts both seat FOVs independently and leaves the board camera alone",
-                firstView.fieldOfView == 62 && secondView.fieldOfView == 89 && Camera.main.fieldOfView == boardFov);
+                firstView.fieldOfView == 62 && secondView.fieldOfView == 139 && Camera.main.fieldOfView == boardFov);
         }
         Session.Back();yield return .2d;Session.OpenSettings();yield return .2d;
         Check("Both zoom values survive reopening settings", GameObject.Find("Zoom sensitivity slider 0 value").GetComponent<Text>().text=="0.9" && GameObject.Find("Zoom sensitivity slider 1 value").GetComponent<Text>().text=="0.7");
-        Check("Pause retains both FOV values when reopened", FovLabel(0) == "62°" && FovLabel(1) == "89°");
+        Check("Pause retains both FOV values when reopened", FovLabel(0) == "62°" && FovLabel(1) == "139°");
         Session.SetSensitivity(0,4);Session.ShowHpNumbers=true;GameObject.Find("Reset settings button").GetComponent<Button>().onClick.Invoke();yield return .2d;
         Check("Nested settings keep gameplay HUD hidden",!Visible("Board HUD")&&!Visible("Duel HUD"));
         Check("Reset returns both duel cameras and labels to 60 degrees", FovLabel(0) == "60°" && FovLabel(1) == "60°" &&
@@ -251,9 +251,10 @@ public static class RoomUiRegression
         var p2=p1.Opponent;
         Check("Both spears show their brackets at the opening of an adjacent pawn capture",
             Visible("P1 melee reach") && Visible("P2 melee reach"));
-        p1.FieldOfView=50;p2.FieldOfView=90;yield return .15d;
-        Check("Changing either FOV preserves the spear's physical reach",
-            Visible("P1 melee reach") && Visible("P2 melee reach"));
+        p1.FieldOfView=Player.DefaultFieldOfView;p2.FieldOfView=140;yield return .15d;
+        Check("140 degree split view preserves each spear's physical reach",
+            firstView.fieldOfView == 60 && secondView.fieldOfView == 140 && Visible("P1 melee reach") && Visible("P2 melee reach"));
+        Shot("15-duel-fov-60-140");yield return .15d;
         p1.FieldOfView=Session.FieldOfView(0);p2.FieldOfView=Session.FieldOfView(1);
         var otherBody=p2.GetComponent<Rigidbody>();
         Vector3 start=otherBody.position;

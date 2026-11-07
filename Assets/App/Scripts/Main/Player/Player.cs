@@ -15,7 +15,7 @@ namespace App.Main.Player
         public const float MaxLookSensitivity = 5f;
         public const int DefaultFieldOfView = 60;
         public const int MinFieldOfView = 50;
-        public const int MaxFieldOfView = 90;
+        public const int MaxFieldOfView = 140;
         [SerializeField] private Transform cameraTransform; // InspectorでMainCameraを割り当てる
         [SerializeField] private float lookSensitivity = DefaultLookSensitivity;
         private float gamepadZoomSensitivity = DefaultLookSensitivity * InitialZoomFraction;

@@ -77,20 +77,21 @@ public static class GameplayDuelChecks
             var toggle = ToggleZoom(pad);while(toggle.MoveNext())yield return toggle.Current;
             session.OpenPause();session.OpenSettings();yield return .2d;
             var fov = GameObject.Find("Field of view slider 0")?.GetComponent<Slider>();
-            if (fov != null) fov.value = 84;
+            const int wideFov = 140;
+            if (fov != null) fov.value = wideFov;
             check("Changing normal FOV during zoom immediately updates only that player's zoomed camera",
-                camera.fieldOfView == 42 && otherCamera.fieldOfView == otherFov);
+                camera.fieldOfView == wideFov / 2f && otherCamera.fieldOfView == otherFov);
             session.Back();session.Resume();yield return .4d;
             toggle=ToggleZoom(pad);while(toggle.MoveNext())yield return toggle.Current;
-            check("Releasing zoom restores the FOV selected during zoom", camera.fieldOfView == 84);
+            check("Releasing zoom restores the FOV selected during zoom", camera.fieldOfView == wideFov);
             toggle=ToggleZoom(pad);while(toggle.MoveNext())yield return toggle.Current;
-            check("Entering zoom again uses the new FOV", camera.fieldOfView == 42);
+            check("Entering zoom again uses the new FOV", camera.fieldOfView == wideFov / 2f);
             session.OpenPause();Two().playerStatus.TakeDamage(10000);yield return .2d;
             check("Paused duel defers death resolution",Find<GameStateHolder>().CurrentState==State.Duel);
             GameplayRegressionRunner.Shot("paused-duel");
             session.Resume();yield return 2.7d;
             check("Resuming resolves pending death and returns to next turn",Find<GameStateHolder>().CurrentState==State.PlayerTwoTurn);
-            check("Ending a zoomed duel restores the latest normal FOV", camera.fieldOfView == 84 && !camera.enabled);
+            check("Ending a zoomed duel restores the latest normal FOV", camera.fieldOfView == wideFov && !camera.enabled);
         }
         finally
         {
