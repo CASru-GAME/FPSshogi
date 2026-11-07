@@ -69,8 +69,6 @@ namespace App.Main.Player
             uiBlocked = blocked;
             if (blocked)
             {
-                PlayerOne?.GetComponent<Player>().ResetInput();
-                PlayerTwo?.GetComponent<Player>().ResetInput();
                 DisableAllInput();
             }
             else if (gameStateHolder.CurrentState != GameStateHolder.GameState.PlayerOneWin && gameStateHolder.CurrentState != GameStateHolder.GameState.PlayerTwoWin)
@@ -618,6 +616,9 @@ namespace App.Main.Player
 
         private void DisableAllInput()
         {
+            // Disabling an action map sends Canceled even for a held trigger.
+            PlayerOne.GetComponent<Player>().ResetInput();
+            PlayerTwo.GetComponent<Player>().ResetInput();
             // アセット単位で全無効化（通常これで十分）
             inputActions?.Disable();
 

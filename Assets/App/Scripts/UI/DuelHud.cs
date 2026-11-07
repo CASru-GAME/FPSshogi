@@ -11,6 +11,7 @@ namespace App.UI
         readonly LocalMatchDevices devices;
         readonly Text[] hp=new Text[2],title=new Text[2],climb=new Text[2],menu=new Text[2];
         readonly Image[] health=new Image[2];
+        readonly Image[] drawTrack = new Image[2], drawBar = new Image[2];
         readonly UiSymbol[,] icons=new UiSymbol[2,3],rings=new UiSymbol[2,3];
         readonly Text[,] keys=new Text[2,3];
         readonly Image[,] hurt=new Image[2,4];
@@ -45,6 +46,9 @@ namespace App.UI
                 var cross=UiTheme.Rect(half,$"P{p+1} Crosshair",0,0,28,28);Anchor(cross,new Vector2(.5f,.5f),new Vector2(.5f,.5f),Vector2.zero);
                 UiTheme.Box(cross,"Shadow horizontal",0,11,28,6,UiTheme.Shadow);UiTheme.Box(cross,"Shadow vertical",11,0,6,28,UiTheme.Shadow);
                 UiTheme.Box(cross,"Horizontal",2,13,24,2,Color.white);UiTheme.Box(cross,"Vertical",13,2,2,24,Color.white);
+                drawTrack[p] = UiTheme.Box(cross, $"P{p+1} bow draw track", -16, 40, 60, 6, UiTheme.Shadow);
+                drawBar[p] = UiTheme.Box(drawTrack[p].transform, "Charge", 1, 1, 0, 4, UiTheme.Ink);
+                drawTrack[p].gameObject.SetActive(false);
                 var status=UiTheme.Rect(half,$"P{p+1} status backing",0,0,370,82);Anchor(status,Vector2.zero,Vector2.zero,new Vector2(30,30));
                 UiTheme.Symbol(status,"Heart",UiSymbol.Kind.Heart,18,22,40,UiTheme.PlayerColor(p));
                 UiTheme.Box(status,"HP track",78,34,265,14,UiTheme.Track);health[p]=UiTheme.Box(status,$"P{p+1} health bar",78,34,265,14,UiTheme.PlayerColor(p));
@@ -82,6 +86,13 @@ namespace App.UI
                 health[i].rectTransform.sizeDelta=new Vector2(265f*Mathf.Clamp01((float)status.Hp.Current/Mathf.Max(1,status.Hp.Max)),14);
                 health[i].color=status.Hp.Current<=status.Hp.Max*.25f?new Color(.7f,.18f,.1f):UiTheme.PlayerColor(i);
                 bool pad=devices.IsGamepad(i);menu[i].text=pad?"START":"Esc";
+                float draw = p.BowDrawAmount;
+                drawTrack[i].gameObject.SetActive(draw > 0f);
+                if (draw > 0f)
+                {
+                    drawBar[i].rectTransform.sizeDelta = new Vector2(58f * draw, 4f);
+                    drawBar[i].color = draw >= 1f ? UiTheme.Gold : UiTheme.Ink;
+                }
                 keys[i,0].text=pad?"RT":"左";keys[i,1].text=pad?"LT":"右";keys[i,2].text=pad?"B":"E";
                 icons[i,0].SetShape(PiecePresentation.WeaponSymbol(p.PieceType));icons[i,1].SetShape(p.SecondaryName=="ズーム"?UiSymbol.Kind.Zoom:UiSymbol.Kind.Shield);icons[i,2].SetShape(PiecePresentation.SkillSymbol(p.PieceType));
                 Cooldown(i,0,p.PrimaryCooldown,p.PrimaryCooldownDuration);Cooldown(i,1,p.SecondaryCooldown,p.SecondaryCooldownDuration);Cooldown(i,2,p.SkillCooldown,p.SkillCooldownDuration);

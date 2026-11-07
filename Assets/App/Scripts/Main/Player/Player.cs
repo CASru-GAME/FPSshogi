@@ -36,6 +36,7 @@ namespace App.Main.Player
 
         public PlayerStatus playerStatus;
         public float PrimaryCooldown => currentPrimaryAction?.CooldownRemaining ?? 0f;
+        public float BowDrawAmount => currentPrimaryAction is BowPrimary bow ? bow.DrawAmount : 0f;
         public float SecondaryCooldown => currentSecondaryAction?.CooldownRemaining ?? 0f;
         public float SkillCooldown => Mathf.Max(0f, currentSkill?.cooldownTimer ?? 0f);
         public float PrimaryCooldownDuration => currentPrimaryAction?.CooldownDuration ?? 0f;
@@ -50,7 +51,14 @@ namespace App.Main.Player
         public float LookSensitivity { get => lookSensitivity; set => lookSensitivity = Mathf.Clamp(value, MinLookSensitivity, MaxLookSensitivity); }
         public float GamepadZoomSensitivity { get => gamepadZoomSensitivity; set => gamepadZoomSensitivity = Mathf.Clamp(value, MinZoomSensitivity, MaxLookSensitivity); }
         public bool IsClimbing { get; private set; }
-        public void ResetInput() { moveInput = lookInput = Vector2.zero; climbInput = IsClimbing = false; }
+        public void ResetInput()
+        {
+            moveInput = lookInput = Vector2.zero;
+            climbInput = IsClimbing = false;
+            (currentPrimaryAction as BowPrimary)?.CancelDraw();
+        }
+        void OnDisable() => ResetInput();
+        void OnApplicationFocus(bool focused) { if (!focused) ResetInput(); }
         public void ResetDuelPresentation()
         {
             if (WeaponObject != null) WeaponObject.GetComponent<WeaponPresentation>()?.ResetMotion();
@@ -170,6 +178,7 @@ namespace App.Main.Player
 
         public void SetPrimaryAction(IPrimaryAction action)
         {
+            (currentPrimaryAction as BowPrimary)?.CancelDraw();
             currentPrimaryAction = action;
         }
 
@@ -223,10 +232,12 @@ namespace App.Main.Player
                     }
                     break;
                 case "WeaponActionMain":
-                    if (context.phase == InputActionPhase.Performed && currentPrimaryAction != null)
+                    if (currentPrimaryAction is BowPrimary bow)
                     {
-                        currentPrimaryAction.PrimaryAction(this, playerStatus);
+                        if (context.performed) bow.BeginDraw(this, playerStatus);
+                        else if (context.canceled) bow.ReleaseDraw();
                     }
+                    else if (context.performed) currentPrimaryAction?.PrimaryAction(this, playerStatus);
                     break;
                 case "WeaponActionSub":
                     if (context.phase == InputActionPhase.Performed && currentSecondaryAction != null)

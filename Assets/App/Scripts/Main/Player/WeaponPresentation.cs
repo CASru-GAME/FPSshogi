@@ -24,6 +24,8 @@ namespace App.Main.Player
         Rigidbody body;
         float attackStarted = -100f;
         bool nockPending;
+        BowRig bowRig;
+        float releasedDraw;
         float guardStarted = -100f, guardUntil = -100f;
         float aimStarted = -100f, aimFrom;
         bool aiming;
@@ -31,7 +33,7 @@ namespace App.Main.Player
         float skillStarted = -100f, skillDuration, skillActionTime;
         BoxCollider hitbox;
         Bounds meshBounds;
-        Vector3 gripLocal, arrowRest, bowDrawn, bowReleased;
+        Vector3 gripLocal;
         Vector3 attackFromGrip;
         Quaternion attackFromRotation;
         public bool IsAttacking => Time.time >= attackStarted && Time.time - attackStarted < attackDuration;
@@ -53,12 +55,10 @@ namespace App.Main.Player
                 Motion.Command => Vector3.down * .4f,
                 _ => Vector3.zero
             };
-            if (nockedArrow != null) arrowRest = nockedArrow.localPosition;
             if (bowString != null)
             {
-                bowDrawn = bowString.GetPosition(1);
-                var top = bowString.GetPosition(0); var bottom = bowString.GetPosition(2);
-                bowReleased = Vector3.Lerp(bottom, top, Mathf.InverseLerp(bottom.y, top.y, bowDrawn.y));
+                bowRig = new BowRig(visual, bowString, nockedArrow);
+                bowRig.SetPose(0f, true);
             }
         }
         public void Bind(Player p) { owner = p; view = p.GetComponentInChildren<Camera>(true); body = p.GetComponent<Rigidbody>(); RefreshPose(); }
@@ -71,6 +71,7 @@ namespace App.Main.Player
             }
             attackStarted = Time.time;
             nockPending=bowString!=null;
+            releasedDraw = owner != null ? owner.BowDrawAmount : 0f;
             return attackDuration;
         }
         public void Guard(float seconds)
@@ -91,8 +92,11 @@ namespace App.Main.Player
         {
             attackStarted = guardStarted = guardUntil = skillStarted = aimStarted = -100f;
             skill = SkillMotion.None; aiming = false; aimFrom = 0; nockPending=false;
+            releasedDraw = 0f;
+            bowRig?.SetPose(0f, true);
         }
         void OnDisable() => ResetMotion();
+        void OnDestroy() => bowRig?.Dispose();
         void FixedUpdate() => RefreshPose();
         void LateUpdate() => RefreshPose();
 
@@ -107,6 +111,12 @@ namespace App.Main.Player
             {
                 grip += new Vector3(-.18f, .07f, -.10f) * aim;
                 rotation = Quaternion.Slerp(rotation, Quaternion.Euler(motion == Motion.Gun ? new Vector3(-1, 0, 0) : new Vector3(0, -3, -4)), aim);
+            }
+            float draw = owner != null ? owner.BowDrawAmount : 0f;
+            if (draw > 0f && motion == Motion.Bow)
+            {
+                grip += new Vector3(-.13f, .08f, .09f) * draw;
+                rotation = Quaternion.Slerp(rotation, Quaternion.Euler(0, -2, -3), draw * .80f);
             }
             Vector3 attackBaseGrip = grip;
             Quaternion attackBaseRotation = rotation;
@@ -144,7 +154,7 @@ namespace App.Main.Player
             }
             visual.localPosition = grip - rotation * gripLocal;
             visual.localRotation = rotation;
-            UpdateBow();
+            UpdateBow(draw);
             if (hitbox != null)
             {
                 var matrix = transform.worldToLocalMatrix * visual.localToWorldMatrix;
@@ -237,23 +247,13 @@ namespace App.Main.Player
                     break;
             }
         }
-        void UpdateBow()
+        void UpdateBow(float draw)
         {
-            if (bowString == null) return;
+            if (bowRig == null) return;
             float age = Time.time - attackStarted;
             if(nockPending&&age>=.36f){nockPending=false;GameAudio.Play(SoundCue.BowNock,owner);}
-            float release = 0;
-            if (IsAttacking)
-            {
-                release = Between(age, 0, .04f) * (1 - Between(age, .36f, attackDuration));
-            }
-            var point = Vector3.Lerp(bowDrawn, bowReleased, release);
-            bowString.SetPosition(1, point);
-            if (nockedArrow != null)
-            {
-                nockedArrow.gameObject.SetActive(!IsAttacking || age >= .36f);
-                nockedArrow.localPosition = arrowRest + point - bowDrawn;
-            }
+            float tension = IsAttacking ? releasedDraw * (1f - Between(age, 0f, .055f)) : draw;
+            bowRig.SetPose(tension, !IsAttacking || age >= .36f);
         }
     }
 }

@@ -49,6 +49,8 @@ namespace App.UI
             UiTheme.Label(detail,"Move description",PiecePresentation.Movement(type,promoted),440,500,440,136,27);
             UiTheme.Label(detail,"Combat heading","FPSでの操作",965,35,490,60,33);
             UiTheme.Symbol(detail,"Weapon icon",PiecePresentation.WeaponSymbol(type),965,145,65);UiTheme.Label(detail,"Weapon name",PiecePresentation.Weapon(type),1050,147,420,60,30);
+            if (type == PieceType.Hisya)
+                UiTheme.Label(detail, "Bow control", "長押しで引き、離して射る。", 965, 212, 490, 44, 24, UiTheme.Muted);
             bool zoom=type==PieceType.Hisya||type==PieceType.Kakugyo||type==PieceType.Kyosya;
             UiTheme.Symbol(detail,"Secondary icon",zoom?UiSymbol.Kind.Zoom:UiSymbol.Kind.Shield,965,275,65);UiTheme.Label(detail,"Secondary name",zoom?"ズーム":"防御",1050,277,420,60,30);
             UiTheme.Symbol(detail,"Skill icon",PiecePresentation.SkillSymbol(type),965,405,65);UiTheme.Label(detail,"Skill name",PiecePresentation.Skill(type),1050,407,420,60,30);

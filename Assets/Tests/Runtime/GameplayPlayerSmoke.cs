@@ -80,7 +80,14 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         StartDuel(new Kyosya(PlayerType.PlayerTwo)); yield return new WaitForSecondsRealtime(3.6f);
         var one = One(); var two = Two(); Shot("duel"); yield return new WaitForSecondsRealtime(.2f);
         Check(!App.UI.GameSessionUI.BlocksGameplay && one.GetComponentInChildren<Camera>().enabled, "Native countdown enables split-screen combat");
-        yield return Tap(one, GamepadButton.Start);
+        Input(one, new GamepadState { rightTrigger = 1 });
+        yield return new WaitForSecondsRealtime(.55f);
+        Shot("bow-drawing");
+        Check(one.BowDrawAmount > .2f && one.PrimaryCooldown == 0, "Native holding RT draws without shooting");
+        Input(one, new GamepadState { rightTrigger = 1 }.WithButton(GamepadButton.Start));
+        yield return new WaitForSecondsRealtime(.18f);
+        Input(one, new GamepadState());
+        yield return new WaitForSecondsRealtime(.24f);
         yield return Tap(one, GamepadButton.DpadDown);
         yield return Tap(one, GamepadButton.South);
         Check(GameObject.Find("Zoom sensitivity slider 0") != null && GameObject.Find("Screen divider") == null &&
@@ -91,8 +98,9 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         export.onClick.Invoke();
         yield return WaitForExport(export);
         var snapshot = ReadMatches().Single();
-        Check(snapshot.result == "unfinished" && snapshot.duels.Single().result == "unfinished",
-            "Native mid-match export preserves an unfinished duel");
+        Check(snapshot.result == "unfinished" && snapshot.duels.Single().result == "unfinished" &&
+            snapshot.duels[0].seats[0].attacks == 0 && one.PrimaryCooldown == 0 && one.BowDrawAmount == 0,
+            "Native mid-match export preserves an unfinished duel and pausing a drawn bow fires no arrow");
         double pausedSeconds = snapshot.duels[0].seconds;
         yield return new WaitForSecondsRealtime(.5f);
         export.onClick.Invoke();
@@ -111,8 +119,26 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         field.transform.position = origin + Vector3.forward * 4; field.transform.localScale = new Vector3(8, 8, .1f); field.GetComponent<Collider>().isTrigger = true;
         Physics.SyncTransforms();
         int beforeOne = one.playerStatus.Hp.Current, beforeTwo = two.playerStatus.Hp.Current;
-        Input(one, new GamepadState { rightTrigger = 1 }); yield return new WaitForSecondsRealtime(.45f); Input(one, new GamepadState());
-        Check(two.playerStatus.Hp.Current < beforeTwo && one.playerStatus.Hp.Current == beforeOne, "Native gamepad fires the real bow through a trigger and hits only the opponent");
+        var bow = one.WeaponObject.GetComponent<WeaponPresentation>();
+        var relaxedTip = bow.bowString.GetPosition(0);
+        var relaxedNock = bow.bowString.GetPosition(1);
+        Input(one, new GamepadState { rightTrigger = 1 });
+        yield return new WaitForSecondsRealtime(.55f);
+        var halfNock = bow.bowString.GetPosition(1);
+        yield return new WaitForSecondsRealtime(.9f);
+        var fullTip = bow.bowString.GetPosition(0);
+        var fullNock = bow.bowString.GetPosition(1);
+        var tail = bow.nockedArrow.localPosition + Vector3.forward * bow.nockedArrow.GetComponent<MeshFilter>().sharedMesh.bounds.min.z;
+        var bestTipDistance = bow.visual.GetComponent<MeshFilter>().sharedMesh.vertices.Min(point => Vector3.Distance(point, fullTip));
+        Check(one.BowDrawAmount == 1f && GameObject.Find("P1 bow draw track") != null && two.playerStatus.Hp.Current == beforeTwo &&
+            fullNock.z < halfNock.z && halfNock.z < relaxedNock.z && fullTip.z < relaxedTip.z - .1f &&
+            bestTipDistance < .015f && Vector3.Distance(tail, fullNock) < .015f,
+            "Native full draw holds the arrow on the string, bends the limbs and fills the first-seat gauge");
+        Input(one, new GamepadState());
+        yield return new WaitForSecondsRealtime(.35f);
+        Check(two.playerStatus.Hp.Current == beforeTwo - 84 && one.playerStatus.Hp.Current == beforeOne &&
+            GameObject.Find("P1 bow draw track") == null && Vector3.Distance(relaxedTip,bow.bowString.GetPosition(0)) < .01f,
+            "Native RT release alone fires one 84-damage arrow through the trigger and relaxes the bow");
         int afterArrow = two.playerStatus.Hp.Current; yield return new WaitForSecondsRealtime(.2f);
         Check(two.playerStatus.Hp.Current == afterArrow, "Native arrow does not apply damage twice");
         Input(two, new GamepadState { rightTrigger = 1 }); yield return new WaitForSecondsRealtime(.15f); Input(two, new GamepadState());
@@ -217,7 +243,7 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         var duel = ranged.duels[0];
         Check(ranged.result == "interrupted" && ranged.moves == 3 && ranged.drops == 1 && duel.move == 1 && duel.attackingSeat == 1 &&
             duel.result == "1P", "Native interrupted match retains its completed duel, turns and drop");
-        Check(duel.seats[0].attacks == 1 && duel.seats[0].hits == 1 && duel.seats[0].primaryDamage == 44 &&
+        Check(duel.seats[0].attacks == 1 && duel.seats[0].hits == 1 && duel.seats[0].primaryDamage == 84 &&
             duel.seats[1].attacks == 2 && duel.seats[1].hits == 1 && duel.seats[1].primaryDamage == 36 &&
             duel.seats[1].hitDistanceSum > 0, "Native history includes a miss and excludes the rejected cooldown press");
         Check(matches.Single(m => m.duels[0].result == "draw").result == "interrupted", "Native draw does not become a win in saved history");
@@ -241,8 +267,33 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
             while (tap.MoveNext()) yield return new WaitForSecondsRealtime((float)(double)tap.Current);
         }
         yield return new WaitForSecondsRealtime(1.5f);
-        StartDuel(new Gin(PlayerType.PlayerTwo));
+        var dragon = new Hisya(PlayerType.PlayerOne);
+        dragon.Promote();
+        StartDuel(new King(PlayerType.PlayerTwo), dragon);
         yield return new WaitForSecondsRealtime(3.6f);
+        var archer = One(); var defender = Two();
+        var range = new Vector3(3000, 200, 2000);
+        Place(archer, range, 0); Place(defender, range + Vector3.forward * 8, 180);
+        // Compare two draw lengths against the same stationary target. In the
+        // weightless fixture the first physical arrow otherwise pushes it away.
+        defender.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+        var mouse = archer.GetComponent<PlayerInput>().devices.OfType<Mouse>().Single();
+        int before = defender.playerStatus.Hp.Current;
+        InputSystem.QueueStateEvent(mouse, new MouseState().WithButton(MouseButton.Left));
+        InputSystem.QueueStateEvent(mouse, new MouseState());
+        yield return new WaitForSecondsRealtime(.45f);
+        Check(defender.playerStatus.Hp.Current == before - 64, "Native mouse tap releases a 64-damage dragon arrow");
+        before = defender.playerStatus.Hp.Current;
+        InputSystem.QueueStateEvent(mouse, new MouseState().WithButton(MouseButton.Left));
+        InputSystem.QueueStateEvent(mouse, new MouseState());
+        yield return new WaitForSecondsRealtime(.1f);
+        float recovery = archer.PrimaryCooldown;
+        InputSystem.QueueStateEvent(mouse, new MouseState().WithButton(MouseButton.Left));
+        yield return new WaitForSecondsRealtime(recovery + .66f);
+        InputSystem.QueueStateEvent(mouse, new MouseState());
+        yield return new WaitForSecondsRealtime(.35f);
+        int partialDamage = before - defender.playerStatus.Hp.Current;
+        Check(partialDamage >= 75 && partialDamage <= 86, $"Native holding through recovery releases one partially drawn arrow ({partialDamage} damage)");
         One().playerStatus.TakeDamage(10000);
         yield return new WaitForSecondsRealtime(2.7f);
         var board = Find<ShogiBoard>(); var grid = board.GetBoard();
@@ -251,13 +302,23 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         grid[4,5] = new Hisya(PlayerType.PlayerTwo); grid[4,5].Promote();
         Check(board.MovePiece(4,5,4,4,PlayerType.PlayerTwo) == ShogiBoard.MoveResult.DuelMove,
             "Native second seat starts a duel between promoted pieces");
+        yield return new WaitForSecondsRealtime(3.6f);
+        archer = Two(); defender = One();
+        Place(archer, range, 0); Place(defender, range + Vector3.forward * 8, 180);
+        Input(archer, new GamepadState { rightTrigger = 1 });
+        yield return new WaitForSecondsRealtime(1.45f);
+        Check(GameObject.Find("P2 bow draw track") != null && GameObject.Find("P1 bow draw track") == null,
+            "Native second-seat charge gauge is independent");
+        Input(archer, new GamepadState());
+        yield return new WaitForSecondsRealtime(.35f);
         App.UI.GameSessionUI.Instance.ReturnTitle();
         yield return new WaitForSecondsRealtime(.8f);
         var mixed = ReadMatches().Single(m => m.device1 == "keyboard_mouse");
         var last = mixed.duels.Last();
         Check(mixed.device2 == "gamepad" && mixed.result == "interrupted" && mixed.moves == 2 &&
             mixed.duels.Count == 2 && mixed.duels[0].result == "2P" && last.result == "interrupted" && last.number == 2 &&
-            last.move == 2 && last.attackingSeat == 2 && last.seats.All(s => s.promoted && s.hpLeft == s.hpMax) &&
+            last.move == 2 && last.attackingSeat == 2 && last.seats.All(s => s.promoted) &&
+            last.seats[0].hpLeft == last.seats[0].hpMax - 96 && last.seats[1].attacks == 1 && last.seats[1].primaryDamage == 96 &&
             last.seats[0].piece == "桂馬" && last.seats[1].piece == "飛車",
             "Native mixed-input history preserves both duels, seat order, promotions and a mid-duel exit");
 

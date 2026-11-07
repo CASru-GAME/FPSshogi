@@ -133,8 +133,10 @@ public static class VisualRepairChecks
             Check(screen.z>view.nearClipPlane && screen.x>0 && screen.x<1 && screen.y>0 && screen.y<1,type+" weapon centre visible");
             Shot(type+"-idle");yield return .25;
             InputSystem.QueueStateEvent(pad1,new GamepadState{rightTrigger=1});yield return .10;
+            if (type == PieceType.Hisya) { InputSystem.QueueStateEvent(pad1,new GamepadState());yield return .06; }
             Check(w.IsAttacking,type+" primary input animates");Shot(type+"-attack");yield return .12;
             InputSystem.QueueStateEvent(pad2,new GamepadState{rightTrigger=1});yield return .1;
+            if (type == PieceType.Hisya) { InputSystem.QueueStateEvent(pad2,new GamepadState());yield return .06; }
             Check(Two().WeaponObject.GetComponent<WeaponPresentation>().IsAttacking,type+" player two primary input animates");
             InputSystem.QueueStateEvent(pad2,new GamepadState());
             InputSystem.QueueStateEvent(pad1,new GamepadState());yield return .9;

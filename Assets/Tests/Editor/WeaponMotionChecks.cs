@@ -70,8 +70,20 @@ public static class WeaponMotionChecks
             var primary=(IPrimaryAction)Field(p,"currentPrimaryAction");var skill=(ISkill)Field(p,"currentSkill");
             var idlePos=w.visual.localPosition;var idleRot=w.visual.localRotation;
             var trace=new List<string>();Sample(w,"00-idle",trace,shot,type.ToString());yield return .1d;
-            Vector3 bowOrigin=w.nockedArrow!=null?w.nockedArrow.position:Vector3.zero;
-            primary.PrimaryAction(p,p.playerStatus);
+            Vector3 bowOrigin = Vector3.zero;
+            if (primary is BowPrimary chargingBow)
+            {
+                chargingBow.BeginDraw(p,p.playerStatus);
+                yield return .5d;
+                Sample(w,"draw-half",trace,shot,type.ToString());
+                yield return .85d;
+                Sample(w,"draw-full",trace,shot,type.ToString());
+                yield return .12d;
+                w.RefreshPose();
+                bowOrigin = w.nockedArrow.position;
+                chargingBow.ReleaseDraw();
+            }
+            else primary.PrimaryAction(p,p.playerStatus);
             if(type==PieceType.Hisya)
             {
                 var arrow=UnityEngine.Object.FindObjectsByType<ProjectileArrow>(FindObjectsSortMode.None).FirstOrDefault(a=>a.GetComponent<CombatVisualLifetime>()?.owner==p);
@@ -81,6 +93,7 @@ public static class WeaponMotionChecks
                     check(arrow.GetComponentInChildren<MeshFilter>().sharedMesh==w.nockedArrow.GetComponent<MeshFilter>().sharedMesh,"Fired arrow retains the visible arrow geometry");
                     check(Vector3.Distance(arrow.transform.lossyScale,w.nockedArrow.lossyScale)<.001f,"Fired arrow retains the visible arrow scale");
                     check(Vector3.Dot(arrow.transform.forward,arrow.GetComponent<Rigidbody>().linearVelocity.normalized)>.999f,"Fired arrow points in its travel direction");
+                    check(Mathf.Abs(arrow.GetComponent<Rigidbody>().linearVelocity.magnitude - 64f) < .1f,"Fully drawn arrow launches at 64 m/s");
                 }
             }
             var attackStart=Field(w,"attackStarted");
@@ -132,7 +145,17 @@ public static class WeaponMotionChecks
             check(!w.IsAttacking&&!w.GetComponent<Collider>().enabled,type+" attack returns to idle with hitbox closed");
             check(Quaternion.Angle(w.visual.localRotation,idleRot)<.5f,type+" attack restores its resting orientation");
             InputSystem.QueueStateEvent(two,new GamepadState{rightTrigger=1});yield return .1d;
-            check(w2.IsAttacking,type+" second player has the same attack motion");InputSystem.QueueStateEvent(two,new GamepadState());yield return .8d;
+            if (type == PieceType.Hisya)
+            {
+                // The previous frame is captured to disk. Wait for the simulation,
+                // rather than the editor clock, to process the queued trigger.
+                double deadline = Time.realtimeSinceStartupAsDouble + 3;
+                while (other.BowDrawAmount < .12f && Time.realtimeSinceStartupAsDouble < deadline) yield return .04d;
+                check(other.BowDrawAmount > 0f && !w2.IsAttacking,
+                    $"Second player draws before the bow releases (draw={other.BowDrawAmount:F2}, firing={w2.IsAttacking})");
+            }
+            InputSystem.QueueStateEvent(two,new GamepadState());yield return .08d;
+            check(w2.IsAttacking,type+" second player has the same attack motion");yield return .8d;
             var secondary=(ISecondaryAction)Field(p,"currentSecondaryAction");secondary.SecondaryAction(p,p.playerStatus);yield return .18d;
             Sample(w,"07-secondary",trace,shot,type.ToString());
             check(Changed(w,idlePos,idleRot),type+" secondary action changes the weapon stance");
@@ -197,13 +220,17 @@ public static class WeaponMotionChecks
                 check(other.playerStatus.Hp.Current==hp,type+" nock behind thin cover cannot damage the target beyond it");
                 check(!UnityEngine.Object.FindObjectsByType<ProjectileArrow>(FindObjectsSortMode.None).Any(a=>a.GetComponent<CombatVisualLifetime>()?.owner==p),type+" shot is consumed by cover between camera and bow");
                 UnityEngine.Object.Destroy(wall.gameObject);
-                yield return .8d;w.RefreshPose();
+                yield return .8d;
+                var heldBow = (BowPrimary)primary;
+                heldBow.BeginDraw(p,p.playerStatus);
+                yield return 1.35d;
+                w.RefreshPose();
                 var toNock=w.nockedArrow.position-view.transform.position;
                 wall=new GameObject("Low cover across nock only").AddComponent<BoxCollider>();
                 wall.transform.position=view.transform.position+toNock*.6f;wall.transform.rotation=Quaternion.LookRotation(toNock);wall.size=new Vector3(2,.12f,.02f);
                 Physics.SyncTransforms();hp=other.playerStatus.Hp.Current;
                 check(!ShotPhysics.Raycast(new Ray(view.transform.position,view.transform.forward),10,~0,p,out var reticleHit)||reticleHit.collider!=wall,"Low cover leaves the reticle aim unobstructed");
-                new BowPrimary().PrimaryAction(p,p.playerStatus);
+                heldBow.ReleaseDraw();
                 var blockedArrow=UnityEngine.Object.FindObjectsByType<ProjectileArrow>(FindObjectsSortMode.None).FirstOrDefault(a=>a.GetComponent<CombatVisualLifetime>()?.owner==p);
                 check(blockedArrow==null||!Physics.ComputePenetration(blockedArrow.GetComponent<Collider>(),blockedArrow.transform.position,blockedArrow.transform.rotation,wall,wall.transform.position,wall.transform.rotation,out _,out _),"Bow does not spawn its solid projectile intersecting low cover");
                 yield return .45d;
