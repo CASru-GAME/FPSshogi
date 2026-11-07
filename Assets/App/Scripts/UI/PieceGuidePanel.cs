@@ -54,7 +54,8 @@ namespace App.UI
             bool zoom=type==PieceType.Hisya||type==PieceType.Kakugyo||type==PieceType.Kyosya;
             UiTheme.Symbol(detail,"Secondary icon",zoom?UiSymbol.Kind.Zoom:UiSymbol.Kind.Shield,965,275,65);UiTheme.Label(detail,"Secondary name",zoom?"ズーム":"防御",1050,277,420,60,30);
             UiTheme.Symbol(detail,"Skill icon",PiecePresentation.SkillSymbol(type),965,405,65);UiTheme.Label(detail,"Skill name",PiecePresentation.Skill(type),1050,407,420,60,30);
-            UiTheme.Label(detail,"Cooldown explanation","アイコンの円が消えると\n再び使えます。",965,535,490,110,27,UiTheme.Muted);
+            UiTheme.Label(detail,"Matchup tip",PiecePresentation.DuelTip(type),965,505,490,98,25);
+            UiTheme.Label(detail,"Cooldown explanation","アイコンの円が消えると再使用できます。",965,610,490,54,22,UiTheme.Muted);
             UiTheme.Label(detail,"Promotion note","成れる駒は、敵陣に入る・敵陣から動くと自動で成ります。",48,675,1410,50,25,UiTheme.Muted);
             for(int i=0;i<choices.Length;i++)UiTheme.Current(choices[i],types[i]==type);
         }

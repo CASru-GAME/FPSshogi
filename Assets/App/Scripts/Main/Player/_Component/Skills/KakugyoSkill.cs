@@ -14,9 +14,10 @@ namespace App.Main.Player
         public float cooldownTimer { get; private set; } = 0f;
 
         // 距離／時間で制御するパラメータ
-        public float ascendHeight = 10f;      // 上昇する高さ（メートル）
+        public float ascendHeight = 8f;       // 上昇する高さ（メートル）
         public float ascendDuration = 0.3f;   // 上昇にかける時間（秒）
-        public float hoverDuration = 2f;      // 滞空時間（秒）
+        public float hoverDuration = 2.4f;    // 滞空時間（秒）
+        public float horizontalSpeedScale = .35f;
         public float hoverYVelocity = 0f;     // 滞空中に維持する垂直速度（通常 0）
 
         // 実行状態
@@ -45,7 +46,7 @@ namespace App.Main.Player
             float ascendVel = ascendHeight / ascendDuration; // m/s
 
             // Yのみ上書きして上昇フェーズ開始
-            player.SetMovementYOverride(ascendVel, ascendDuration);
+            player.SetMovementYOverride(ascendVel, ascendDuration, horizontalSpeedScale);
 
             phase = Phase.Ascending;
             skillActive = true;
@@ -85,7 +86,7 @@ namespace App.Main.Player
                     phaseTimer = 0f;
 
                     // 滞空時も水平入力で移動可能にするため Y のみ上書き
-                    player.SetMovementYOverride(hoverYVelocity, hoverDuration);
+                    player.SetMovementYOverride(hoverYVelocity, hoverDuration, horizontalSpeedScale);
                 }
             }
             else if (phase == Phase.Hovering)

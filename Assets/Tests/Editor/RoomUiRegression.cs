@@ -185,9 +185,17 @@ public static class RoomUiRegression
         tap=Tap(two,GamepadButton.South);while(tap.MoveNext())yield return tap.Current;yield return .3d;Check("Both confirmations resume existing board",!GameSessionUI.BlocksGameplay&&Visible("Turn label"));
         var board=Find<ShogiBoard>();board.MovePiece(0,2,0,3,PlayerType.PlayerOne);board.MovePiece(0,6,0,5,PlayerType.PlayerTwo);board.MovePiece(0,3,0,4,PlayerType.PlayerOne);board.MovePiece(0,5,0,4,PlayerType.PlayerTwo);yield return .3d;Shot("14-countdown");yield return .15d;
         Check("Countdown blocks gameplay",GameSessionUI.BlocksGameplay&&Visible("Countdown"));yield return 3.5d;
-        Shot("15-duel");yield return .15d;var p1=Find<PlayerManager>().PlayerOne.GetComponent<Player>();var damageCamera=p1.GetComponentInChildren<Camera>();p1.playerStatus.TakeDamage(20,damageCamera.transform.position+damageCamera.transform.right*5);yield return .12d;
+        Shot("15-duel");yield return .15d;
+        var p1=Find<PlayerManager>().PlayerOne.GetComponent<Player>();
+        var damageCamera=p1.GetComponentInChildren<Camera>();
+        var healthBar=GameObject.Find("P1 health bar").GetComponent<RectTransform>();
+        var hpBefore=p1.playerStatus.Hp.Current;
+        float widthBefore=healthBar.sizeDelta.x;
+        p1.playerStatus.TakeDamage(20,damageCamera.transform.position+damageCamera.transform.right*5);yield return .12d;
         Check("Damage feedback points toward the actual source",GameObject.Find("P1 damage edge 1").GetComponent<Image>().color.a>0&&GameObject.Find("P1 damage edge 0").GetComponent<Image>().color.a==0);
-        Check("HP gauge follows damage without numeric text",Mathf.Abs(GameObject.Find("P1 health bar").GetComponent<RectTransform>().sizeDelta.x-212)<1&&!Visible("P1 HP"));Shot("16-damage");yield return .15d;
+        float expectedWidth=widthBefore*(hpBefore-20)/hpBefore;
+        Check("HP gauge follows damage without numeric text",widthBefore>0&&p1.playerStatus.Hp.Current==hpBefore-20&&
+            Mathf.Abs(healthBar.sizeDelta.x-expectedWidth)<1&&!Visible("P1 HP"));Shot("16-damage");yield return .15d;
         InputSystem.QueueStateEvent(one,new GamepadState{rightTrigger=1});yield return .14d;InputSystem.QueueStateEvent(one,new GamepadState());yield return .12d;
         Check("Cooldown arc reflects the actual attack",p1.PrimaryCooldown>0&&GameObject.Find("P1 cooldown 0").GetComponent<UiSymbol>().Fill>0);Shot("17-cooldown");yield return .15d;
         var secondCamera = Find<PlayerManager>().PlayerTwo.GetComponentInChildren<Camera>();

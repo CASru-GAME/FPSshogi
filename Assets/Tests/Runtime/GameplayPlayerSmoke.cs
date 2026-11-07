@@ -16,7 +16,7 @@ using UnityEngine.SceneManagement;
 using State = App.Main.GameMaster.GameStateHolder.GameState;
 
 // Compiled only into the separate verification player, never the delivered game.
-public sealed class GameplayPlayerSmoke : MonoBehaviour
+public sealed partial class GameplayPlayerSmoke : MonoBehaviour
 {
     readonly List<string> results = new(), errors = new();
     string output;
@@ -29,7 +29,7 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
 
     void Awake()
     {
-        output = Path.GetFullPath(Path.Combine(Application.dataPath, "../../../GameplayReview/PlayerSmoke"));
+        output = Path.GetFullPath(Path.Combine(Application.dataPath, "../../../GameplayReview", matchupRun ? "Matchups" : "PlayerSmoke"));
         Directory.CreateDirectory(output);
         if (File.Exists(Path.Combine(output, "complete.txt"))) File.Delete(Path.Combine(output, "complete.txt"));
         began = Time.realtimeSinceStartup;
@@ -77,6 +77,12 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         SceneManager.LoadScene("Title"); yield return new WaitForSecondsRealtime(.6f);
         var join=SelectionTestInput.TwoGamepads(first,second);while(join.MoveNext())yield return new WaitForSecondsRealtime((float)(double)join.Current);
         Check(Find<ShogiBoard>().GetBoard().Cast<IPiece>().Count(piece => piece != null) == 40, "Native initial board contains forty pieces");
+        if (matchupRun)
+        {
+            yield return CheckMatchups();
+            Finish();
+            yield break;
+        }
         StartDuel(new Kyosya(PlayerType.PlayerTwo)); yield return new WaitForSecondsRealtime(3.6f);
         var one = One(); var two = Two(); Shot("duel"); yield return new WaitForSecondsRealtime(.2f);
         Check(!App.UI.GameSessionUI.BlocksGameplay && one.GetComponentInChildren<Camera>().enabled, "Native countdown enables split-screen combat");

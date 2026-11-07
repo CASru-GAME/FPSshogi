@@ -9,8 +9,8 @@ namespace App.Main.Player
         public bool isOnCooldown => cooldownTimer > 0f;
         public PlayerStatus playerStatus { get; private set; }
         public Player player { get; private set; }
-        int amount = 10;
-        float duration = 4f;
+        int amount = 16;
+        float duration = 3.5f;
         float timer;
 
         public void UseSkill(Player player, PlayerStatus playerStatus)

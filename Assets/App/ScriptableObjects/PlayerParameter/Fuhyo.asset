@@ -16,8 +16,8 @@ MonoBehaviour:
   hpMax: 120
   attackPointDefault: 32
   defensePointDefault: 0
-  moveSpeedDefault: 6.6
+  moveSpeedDefault: 7.4
   hpMaxUra: 140
   attackPointDefaultUra: 36
   defensePointDefaultUra: 0
-  moveSpeedDefaultUra: 7
+  moveSpeedDefaultUra: 7.7

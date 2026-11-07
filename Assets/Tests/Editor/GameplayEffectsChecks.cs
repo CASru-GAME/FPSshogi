@@ -176,8 +176,11 @@ public static class GameplayEffectsChecks
             check("effects: guard cleanup targets the status it buffed (defense=" + status.DefensePoint.Current + ")", status.DefensePoint.Current == 7);
             check("effects: rejected guard activation leaves other status untouched (defense=" + otherStatus.DefensePoint.Current + ")", otherStatus.DefensePoint.Current == 0);
 
+            const int baseDefense = 7;
+            const int goldArmor = 16;
+            const int silverGuard = 99999;
             status = Status(player);
-            status.DefensePoint.Add(7);
+            status.DefensePoint.Add(baseDefense);
             var gin = new GinSkill();
             var kin = new KinSkill();
             guard = new SecondaryGuard();
@@ -187,16 +190,18 @@ public static class GameplayEffectsChecks
             gin.UseSkill(player, status);
             kin.UseSkill(player, status);
             guard.SecondaryAction(player, status);
-            check("effects: cooldown blocks duplicate Gin Kin and guard buffs", status.DefensePoint.Current == 101015);
+            Equal(check, "cooldown blocks duplicate Gin Kin and guard buffs", status.DefensePoint.Current,
+                baseDefense + goldArmor + silverGuard + guard.defenseIncrease);
             Expire(gin, "timer");
             gin.UpdateSkill();
-            check("effects: Gin expiry preserves Kin guard and base defense", status.DefensePoint.Current == 1016);
+            Equal(check, "Gin expiry preserves Kin guard and base defense", status.DefensePoint.Current,
+                baseDefense + goldArmor + guard.defenseIncrease);
             Expire(guard, "buffTimer");
             guard.UpdateSecondaryAction();
-            check("effects: guard expiry preserves Kin and base defense", status.DefensePoint.Current == 17);
+            Equal(check, "guard expiry preserves Kin and base defense", status.DefensePoint.Current, baseDefense + goldArmor);
             Expire(kin, "timer");
             kin.UpdateSkill();
-            check("effects: all defense buffs expire back to base defense", status.DefensePoint.Current == 7);
+            Equal(check, "all defense buffs expire back to base defense", status.DefensePoint.Current, baseDefense);
 
             var physicsChecks = RunPhysicsFieldChecks(check, owned);
             while (physicsChecks.MoveNext()) yield return physicsChecks.Current;

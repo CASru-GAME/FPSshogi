@@ -13,6 +13,7 @@ using Object = UnityEngine.Object;
 public static class GameplayBalanceChecks
 {
     static readonly FieldInfo Primary = typeof(Player).GetField("currentPrimaryAction", BindingFlags.NonPublic | BindingFlags.Instance);
+    static readonly FieldInfo MoveInput = typeof(Player).GetField("moveInput", BindingFlags.NonPublic | BindingFlags.Instance);
     static readonly Vector3 Origin = new Vector3(2100f, 200f, 2000f);
 
     // Use the action selected by the real match, with an unobstructed body as the target.
@@ -51,7 +52,7 @@ public static class GameplayBalanceChecks
 
     public static IEnumerator Run(Action<string, bool> check)
     {
-        var profiles = new List<(PieceType type, bool promoted, int hp, int damage, float interval)>();
+        var profiles = new List<(PieceType type, bool promoted, int hp, int damage, float interval, float speed)>();
         var openingShots = new List<(PieceType type, bool promoted, int damage)>();
         foreach (PieceType type in Enum.GetValues(typeof(PieceType)))
         {
@@ -78,6 +79,22 @@ public static class GameplayBalanceChecks
                 var two = manager.PlayerTwo.GetComponent<Player>();
                 var status = one.playerStatus;
                 string name = type + (promoted ? "+" : "");
+                // Exercise the movement step with the actual duel loadout on both seats.
+                float Walk(Player fighter, Vector2 input)
+                {
+                    var body = fighter.GetComponent<Rigidbody>();
+                    Vector3 previous = body.linearVelocity;
+                    MoveInput.SetValue(fighter,input);
+                    fighter.SendMessage("FixedUpdate");
+                    var velocity = body.linearVelocity;
+                    fighter.ResetInput();
+                    body.linearVelocity = previous;
+                    return new Vector2(velocity.x,velocity.z).magnitude;
+                }
+                float speed = Walk(one, Vector2.one);
+                float halfSpeed = Walk(two, Vector2.up * .5f);
+                check($"balance: {name} full diagonal {speed:F2} m/s, half stick {halfSpeed:F2} m/s",
+                    Mathf.Abs(speed - status.MoveSpeed.Current) < .02f && Mathf.Abs(halfSpeed - speed * .5f) < .02f);
                 check($"balance: {name} has the same loadout and stats for both seats",
                     one.PieceType == type && two.PieceType == type && status.Hp.Max == two.playerStatus.Hp.Max &&
                     status.AttackPoint.Current == two.playerStatus.AttackPoint.Current &&
@@ -89,7 +106,7 @@ public static class GameplayBalanceChecks
                 while (near.MoveNext()) yield return near.Current;
                 check($"balance: {name} HP={status.Hp.Max}, contact damage={damage}, interval={one.PrimaryCooldownDuration:F2}s",
                     damage > 0 && damage == status.AttackPoint.Current && one.PrimaryCooldownDuration > 0);
-                profiles.Add((type, promoted, status.Hp.Max, damage, one.PrimaryCooldownDuration));
+                profiles.Add((type, promoted, status.Hp.Max, damage, one.PrimaryCooldownDuration, speed));
                 if (Primary.GetValue(two) is CloseWeaponPrimary) continue;
                 float openingDistance = Vector3.Distance(one.transform.position, two.transform.position);
                 int atSpawn = 0;
@@ -101,6 +118,14 @@ public static class GameplayBalanceChecks
             }
         }
         check("balance: covered all 14 playable forms", profiles.Count == 14);
+        foreach (var promoted in new[] { false, true })
+        {
+            float Speed(PieceType type) => profiles.Single(p => p.type == type && p.promoted == promoted).speed;
+            check($"balance: fast knight can run down an archer, pawn and silver can catch a lance (promoted={promoted})",
+                Speed(PieceType.Keima) > Speed(PieceType.Fuhyo) && Speed(PieceType.Fuhyo) > Speed(PieceType.Gin) &&
+                Speed(PieceType.Gin) > Speed(PieceType.Kyosya) && Speed(PieceType.Kyosya) > Speed(PieceType.Hisya) &&
+                Speed(PieceType.Hisya) > Speed(PieceType.Kakugyo));
+        }
         var pawn = profiles.Single(p => p.type == PieceType.Fuhyo && !p.promoted);
         var king = profiles.Single(p => p.type == PieceType.King);
         foreach (var attacker in profiles)

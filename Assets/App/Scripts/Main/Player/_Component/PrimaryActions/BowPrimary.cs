@@ -27,6 +27,7 @@ namespace App.Main.Player
         float drawStarted;
         public bool IsDrawing { get; private set; }
         public float DrawAmount => IsDrawing ? Mathf.Clamp01((Time.time - drawStarted) / FullDrawSeconds) : 0f;
+        public float MovementScale => Mathf.Lerp(1f, .75f, DrawAmount);
         public float CooldownRemaining => Mathf.Max(0f, cooldown - (Time.time - lastUseTime));
         public float CooldownDuration => cooldown;
 

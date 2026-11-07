@@ -4,7 +4,7 @@ namespace App.Main.Player
     public class GinSkill : ISkill
     {
         public string skillName => "GinSkill";
-        public float cooldownTime => 15f;
+        public float cooldownTime => 12f;
         public float cooldownTimer { get; private set; }
         public bool isOnCooldown => cooldownTimer > 0f;
         public PlayerStatus playerStatus { get; private set; }

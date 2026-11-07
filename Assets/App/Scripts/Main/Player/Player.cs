@@ -91,6 +91,7 @@ namespace App.Main.Player
         private bool movementYOverrideActive = false;
         private float movementYOverrideVelocity = 0f;
         private float movementYOverrideRemaining = 0f;
+        private float horizontalControl = 1f;
 
         public GameObject WeaponObject { get; private set; }
         public GameObject SubWeaponObject { get; private set; }
@@ -258,14 +259,15 @@ namespace App.Main.Player
             forward.y = 0f; right.y = 0f;
             forward.Normalize(); right.Normalize();
 
-            Vector3 desired = right * moveInput.x + forward * moveInput.y;
+            Vector3 desired = Vector3.ClampMagnitude(right * moveInput.x + forward * moveInput.y, 1f);
             Vector3 targetVel = desired * playerStatus.MoveSpeed.Current;
+            if (currentPrimaryAction is BowPrimary bow) targetVel *= bow.MovementScale;
 
             // 優先度: Y-only 上書き > フル上書き > 通常移動
             if (movementYOverrideActive)
             {
                 // 水平方向は通常移動（入力）で決め、Yだけ上書きする
-                Vector3 v = targetVel;
+                Vector3 v = targetVel * horizontalControl;
                 v.y = movementYOverrideVelocity;
                 rb.linearVelocity = v;
 
@@ -330,9 +332,10 @@ namespace App.Main.Player
         }
 
         // Yのみ上書きを設定（滞空中に水平操作を許可したい場合に使う）
-        public void SetMovementYOverride(float yVelocity, float durationSeconds)
+        public void SetMovementYOverride(float yVelocity, float durationSeconds, float horizontalScale = 1f)
         {
             movementYOverrideVelocity = yVelocity;
+            horizontalControl = Mathf.Clamp01(horizontalScale);
             movementYOverrideRemaining = Mathf.Max(0f, durationSeconds);
             movementYOverrideActive = movementYOverrideRemaining > 0f;
         }

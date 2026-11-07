@@ -17,7 +17,7 @@ namespace App.Main.Player
         public Player player { get; private set; }
 
         // 移動・攻撃パラメータ
-        public float moveDistance = 10f;     // 前方に移動する距離
+        public float moveDistance = 12f;     // 前方に移動する距離
         public float moveSpeed = 50f;       // 水平方向の速度（m/s）
         public float attackRadius = 3.5f;  // 到達地点での攻撃半径
         public float damageMultiplier = 1.35f; // 自身の AttackPoint に対する倍率

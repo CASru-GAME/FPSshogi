@@ -11,9 +11,9 @@ namespace App.Main.Player
         public PlayerStatus playerStatus { get; private set; }
 
         // 調整パラメータ
-        public float cooldown = 1.4f;               // 発射間隔（秒）
+        public float cooldown = 1.0f;               // 発射間隔（秒）
         public float maxRange = 50f;                  // ヒットスキャン最大距離
-        public float falloffStart = 12f;              // ここからダメージ減衰開始
+        public float falloffStart = 24f;              // ここからダメージ減衰開始
         public float minDamageMultiplier = 0.3f;      // 最大距離での最小倍率
         public float damageMultiplier = 1f;           // 基本倍率（AttackPoint に掛ける）
         public LayerMask hitLayers = ~0;              // レイヤーフィルタ

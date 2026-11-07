@@ -21,6 +21,17 @@ namespace App.UI
             PieceType.Hisya => "減速フィールド", PieceType.King => "援護砲台", _ => "スキル"
         };
         public static bool CanPromote(PieceType type) => type!=PieceType.King && type!=PieceType.Kin && type!=PieceType.None;
+        public static string DuelTip(PieceType type) => type switch {
+            PieceType.Fuhyo => "角が着地したら、跳び込みで槍の間合いへ。",
+            PieceType.Kyosya => "浮いた角を短銃で狙う。遠いうちは駒陰から近づく。",
+            PieceType.Keima => "弓を引いた飛車に突進。角が飛んだら着地を待つ。",
+            PieceType.Gin => "飛車が矢を放つ瞬間に無敵防御。その隙に距離を詰める。",
+            PieceType.Kin => "香車の連射には防御強化。効いている間に前へ。",
+            PieceType.Kakugyo => "近接攻撃は上昇でかわす。香車の射線上では滞空に注意。",
+            PieceType.Hisya => "弓を引くと足が遅くなる。桂馬が詰めてくる道に減速フィールドを置く。",
+            PieceType.King => "砲台の射線で敵を迎える。砲台が消えたら歩の槍に注意。",
+            _ => ""
+        };
         public static string Name(PieceType type,bool promoted) => !promoted?Name(type):type switch {
             PieceType.Fuhyo=>"と金",PieceType.Kyosya=>"成香",PieceType.Keima=>"成桂",PieceType.Gin=>"成銀",PieceType.Hisya=>"龍王",PieceType.Kakugyo=>"龍馬",_=>Name(type)
         };
