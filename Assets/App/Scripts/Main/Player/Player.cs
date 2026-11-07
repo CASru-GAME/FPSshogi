@@ -52,6 +52,7 @@ namespace App.Main.Player
         public PlayerStatus playerStatus;
         public float PrimaryCooldown => currentPrimaryAction?.CooldownRemaining ?? 0f;
         public float BowDrawAmount => currentPrimaryAction is BowPrimary bow ? bow.DrawAmount : 0f;
+        public bool IsAimingFlashbang => currentSkill is KyosyaSkill { IsAiming: true };
         public float SecondaryCooldown => currentSecondaryAction?.CooldownRemaining ?? 0f;
         public float SkillCooldown => Mathf.Max(0f, currentSkill?.cooldownTimer ?? 0f);
         public float PrimaryCooldownDuration => currentPrimaryAction?.CooldownDuration ?? 0f;
@@ -72,6 +73,7 @@ namespace App.Main.Player
             moveInput = lookInput = Vector2.zero;
             climbInput = IsClimbing = false;
             (currentPrimaryAction as BowPrimary)?.CancelDraw();
+            (currentSkill as KyosyaSkill)?.CancelAim();
         }
         void OnDisable() => ResetInput();
         void OnApplicationFocus(bool focused) { if (!focused) ResetInput(); }
@@ -186,6 +188,7 @@ namespace App.Main.Player
 
         public void SetSkill(ISkill skill)
         {
+            (currentSkill as KyosyaSkill)?.CancelAim();
             currentSkill = skill;
         }
 
@@ -246,7 +249,11 @@ namespace App.Main.Player
                     }
                     break;
                 case "WeaponActionMain":
-                    if (currentPrimaryAction is BowPrimary bow)
+                    if (currentSkill is KyosyaSkill { IsAiming: true } flashbang)
+                    {
+                        if (context.performed) flashbang.Throw();
+                    }
+                    else if (currentPrimaryAction is BowPrimary bow)
                     {
                         if (context.performed) bow.BeginDraw(this, playerStatus);
                         else if (context.canceled) bow.ReleaseDraw();
@@ -365,6 +372,8 @@ namespace App.Main.Player
             movementYOverrideActive = false;
             movementYOverrideRemaining = 0f;
         }
+
+        void LateUpdate() => (currentSkill as KyosyaSkill)?.RefreshAim();
 
         void Update()
         {

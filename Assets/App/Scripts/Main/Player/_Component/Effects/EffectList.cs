@@ -47,7 +47,11 @@ namespace App.Main.Player
 
         public T GetEffect<T>() where T : class, IEffect
         {
-            return effects.OfType<T>().FirstOrDefault();
+            foreach (var effect in effects)
+            {
+                if (effect is T match) return match;
+            }
+            return null;
         }
 
         public void ClearEffects()

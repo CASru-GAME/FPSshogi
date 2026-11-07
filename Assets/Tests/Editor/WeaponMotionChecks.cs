@@ -302,7 +302,24 @@ public static class WeaponMotionChecks
             yield return 1.1d;if(p.SecondaryName=="ズーム"){secondary.SecondaryAction(p,p.playerStatus);yield return .3d;}
             body.constraints=constraints;
             if(type==PieceType.Hisya){Set(p,"pitch",30f);yield return .15d;}
+            if (type == PieceType.Kyosya)
+            {
+                other.transform.position = p.transform.position + p.transform.forward * 14f + p.transform.right * 3.5f;
+                Set(p,"pitch",4f);
+                Physics.SyncTransforms();
+                yield return .1d;
+            }
             idlePos=w.visual.localPosition;idleRot=w.visual.localRotation;skill.UseSkill(p,p.playerStatus);
+            if (type == PieceType.Kyosya)
+            {
+                check(p.IsAimingFlashbang && skill.cooldownTimer == 0, "Lance can hold the grenade before starting its throw motion");
+                yield return .12d;
+                shot("Kyosya-aim");
+                yield return .1d;
+                InputSystem.QueueStateEvent(one,new GamepadState { rightTrigger = 1 });
+                yield return .05d;
+                InputSystem.QueueStateEvent(one,new GamepadState());
+            }
             float cooldown=skill.cooldownTimer;yield return .12d;
             w.RefreshPose();
             Sample(w,"08-skill-start",trace,shot,type.ToString());
@@ -400,6 +417,12 @@ public static class WeaponMotionChecks
             {
                 if(type==PieceType.Hisya&&action=="skill"){Set(p,"pitch",30f);yield return .2d;}
                 var state=action=="attack" ? new GamepadState{rightTrigger=1} : action=="secondary" ? new GamepadState{leftTrigger=1} : new GamepadState().WithButton(GamepadButton.East);
+                if (type == PieceType.Kyosya && action == "skill")
+                {
+                    InputSystem.QueueStateEvent(pad,state);yield return .1d;
+                    InputSystem.QueueStateEvent(pad,new GamepadState());yield return .1d;
+                    state=new GamepadState{rightTrigger=1};
+                }
                 File.WriteAllText(dir+"progress.txt",type+"-"+action);
                 recorder.Record(dir+"VideoFrames/"+type+"-"+action,action=="skill"?90:60,
                     ()=>InputSystem.QueueStateEvent(pad,state),()=>InputSystem.QueueStateEvent(pad,new GamepadState()));

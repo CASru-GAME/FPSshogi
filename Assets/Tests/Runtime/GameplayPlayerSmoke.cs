@@ -29,7 +29,7 @@ public sealed partial class GameplayPlayerSmoke : MonoBehaviour
 
     void Awake()
     {
-        string suite = dashRun ? "DashContact" : reachRun ? "MeleeReach" : openingRun ? "DuelOpenings" : matchupRun ? "Matchups" : "PlayerSmoke";
+        string suite = flashRun ? "FlashThrow" : dashRun ? "DashContact" : reachRun ? "MeleeReach" : openingRun ? "DuelOpenings" : matchupRun ? "Matchups" : "PlayerSmoke";
         output = Path.GetFullPath(Path.Combine(Application.dataPath, "../../../GameplayReview", suite));
         Directory.CreateDirectory(output);
         if (File.Exists(Path.Combine(output, "complete.txt"))) File.Delete(Path.Combine(output, "complete.txt"));
@@ -78,6 +78,12 @@ public sealed partial class GameplayPlayerSmoke : MonoBehaviour
         SceneManager.LoadScene("Title"); yield return new WaitForSecondsRealtime(.6f);
         var join=SelectionTestInput.TwoGamepads(first,second);while(join.MoveNext())yield return new WaitForSecondsRealtime((float)(double)join.Current);
         Check(Find<ShogiBoard>().GetBoard().Cast<IPiece>().Count(piece => piece != null) == 40, "Native initial board contains forty pieces");
+        if (flashRun)
+        {
+            yield return CheckFlashThrows();
+            Finish();
+            yield break;
+        }
         if (dashRun)
         {
             yield return CheckDashContacts();

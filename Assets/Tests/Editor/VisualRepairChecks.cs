@@ -172,6 +172,11 @@ public static class VisualRepairChecks
             }
             if(type==PieceType.Hisya){Set(p,"pitch",30f);yield return .15;}
             InputSystem.QueueStateEvent(pad1,new GamepadState().WithButton(GamepadButton.East));yield return .22;
+            if (type == PieceType.Kyosya)
+            {
+                InputSystem.QueueStateEvent(pad1,new GamepadState());Shot("Kyosya-aim");yield return .15;
+                InputSystem.QueueStateEvent(pad1,new GamepadState{rightTrigger=1});yield return .1;
+            }
             InputSystem.QueueStateEvent(pad1,new GamepadState());Shot(type+"-skill");yield return .35;
             if(type==PieceType.King)
             {

@@ -52,13 +52,12 @@ public static class GameplayMovementChecks
             check("Mouse travel while zoomed keeps its configured mouse sensitivity", zoom.IsZoomed &&
                 Mathf.Abs((float)Get(player,"yaw") - beforeZoomedMouse - deltas[1]) < .01f);
             var flash=new FlashBangEffect();player.playerStatus.EffectList.AddEffect(flash);
-            var overlay=(GameObject)Get(flash,"overlayRoot");
+            check("Flash starts at full opacity", Mathf.Approximately(flash.Opacity, 1f));
             new GinSkill().UseSkill(player,player.playerStatus);
             player.ResetDuelPresentation();
             check("Duel reset clears active effect speed changes",Mathf.Approximately(player.playerStatus.MoveSpeed.Current,player.playerStatus.MoveSpeed.Default));
             check("Duel reset restores defense after discarding active skill",player.playerStatus.DefensePoint.Current==0);
-            yield return .1d;
-            check("Duel reset removes temporary flash overlay",overlay==null);
+            check("Duel reset clears flash opacity", flash.Opacity == 0f && player.playerStatus.EffectList.GetEffect<FlashBangEffect>() == null);
         }
         finally
         {

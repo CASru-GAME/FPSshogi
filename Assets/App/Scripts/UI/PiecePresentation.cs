@@ -24,7 +24,7 @@ namespace App.UI
         public static bool CanPromote(PieceType type) => type!=PieceType.King && type!=PieceType.Kin && type!=PieceType.None;
         public static string SkillDescription(PieceType type) => type switch {
             PieceType.Fuhyo => "向いている方向へ跳び込む。",
-            PieceType.Kyosya => "閃光弾を投げる。爆発範囲にいる駒は視界が白くなり、移動が遅くなる。",
+            PieceType.Kyosya => "閃光弾を構え、通常攻撃で投げる。半径5mの駒は2秒間、視界が白くなり移動が遅くなる。",
             PieceType.Keima => "前方へ12m突進し、進路上と終点の周囲にいる相手を一度だけ攻撃する。",
             PieceType.Gin => "1.5秒間、受けるダメージを無効にする。",
             PieceType.Kin => "3.5秒間、受けるダメージを1回につき16減らす。",

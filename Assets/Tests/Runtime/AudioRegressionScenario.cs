@@ -151,12 +151,39 @@ public static class AudioRegressionScenario
                 var manager=Find<PlayerManager>();var one=manager.PlayerOne.GetComponent<Player>();var two=manager.PlayerTwo.GetComponent<Player>();
                 one.GetComponent<Rigidbody>().constraints=two.GetComponent<Rigidbody>().constraints=RigidbodyConstraints.FreezeAll;
                 GameAudio.Register(one);GameAudio.Register(two);
+                BoxCollider shotTarget = null;
+                if (types[index] == PieceType.Kyosya || types[index] == PieceType.Hisya)
+                {
+                    // The adjacent board capture spawns an opponent straight ahead. Exercise an actual world impact too.
+                    var eye = one.GetComponentInChildren<Camera>().transform;
+                    shotTarget = new GameObject("Impact audio target").AddComponent<BoxCollider>();
+                    shotTarget.transform.SetPositionAndRotation(eye.position + eye.forward * 2.5f, eye.rotation);
+                    shotTarget.size = new Vector3(5f, 5f, .1f);
+                    Physics.SyncTransforms();
+                }
                 played.Clear();probe?.Begin();
                 var primary=(IPrimaryAction)Get(one,"currentPrimaryAction");primary.PrimaryAction(one,one.playerStatus);primary.PrimaryAction(one,one.playerStatus);
                 check(Count(attacks[index])==1,types[index]+" accepted attack sounds once; cooldown press is silent");
                 yield return .75d;
+                if (shotTarget != null)
+                {
+                    var impactCue = types[index] == PieceType.Hisya ? SoundCue.ArrowImpact : SoundCue.BulletImpact;
+                    check(Count(impactCue) == 1, types[index] + " sounds once on a solid surface");
+                    shotTarget.enabled = false;
+                    UnityEngine.Object.Destroy(shotTarget.gameObject);
+                }
                 if(types[index]==PieceType.Hisya)check(Count(SoundCue.BowNock)==1,"Arrow re-nocking sounds once despite fixed and late pose updates");
-                var skill=(ISkill)Get(one,"currentSkill");skill.UseSkill(one,one.playerStatus);skill.UseSkill(one,one.playerStatus);
+                var skill=(ISkill)Get(one,"currentSkill");skill.UseSkill(one,one.playerStatus);
+                if (types[index] == PieceType.Kyosya)
+                {
+                    skill.UseSkill(one,one.playerStatus);
+                    check(Count(SoundCue.Throw) == 0 && skill.cooldownTimer == 0, "Preparing and cancelling a grenade make no throw sound");
+                    skill.UseSkill(one,one.playerStatus);
+                    InputSystem.QueueStateEvent(first,new GamepadState { rightTrigger = 1 });
+                    yield return .09d;
+                    InputSystem.QueueStateEvent(first,new GamepadState());
+                }
+                skill.UseSkill(one,one.playerStatus);
                 check(Count(skills[index])==1,types[index]+" accepted skill sounds once; cooldown press is silent");
                 yield return types[index]==PieceType.Kyosya?2.3d:.8d;
                 if(types[index]==PieceType.Kyosya)check(Count(SoundCue.FlashBurst)==1,"Flash grenade sounds once at detonation");

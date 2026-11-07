@@ -11,6 +11,8 @@ namespace App.UI
         readonly LocalMatchDevices devices;
         readonly Text[] hp=new Text[2],title=new Text[2],climb=new Text[2],menu=new Text[2];
         readonly Image[] health=new Image[2];
+        readonly Image[] flashbangOverlays = new Image[2];
+        readonly Text[] throwControls = new Text[2];
         readonly Image[] drawTrack = new Image[2], drawBar = new Image[2];
         readonly GameObject[] reachMarks = new GameObject[2], equipped = new GameObject[2];
         readonly PlayerWeapon[] weapons = new PlayerWeapon[2];
@@ -66,8 +68,12 @@ namespace App.UI
                     rings[p,a]=UiTheme.Symbol(actions,$"P{p+1} cooldown {a}",UiSymbol.Kind.Ring,21+a*100,11,66,UiTheme.PlayerColor(p));rings[p,a].Fill=0;
                     keys[p,a]=UiTheme.Key(actions,$"P{p+1} action key {a}","",17+a*100,83,76,29);
                 }
+                throwControls[p] = UiTheme.Label(actions, $"P{p+1} throw controls", "", 0, -42, 322, 38, 22, UiTheme.Ink, TextAnchor.MiddleCenter);
+                throwControls[p].gameObject.SetActive(false);
                 var climbPanel=UiTheme.Rect(half,$"P{p+1} climb backing",0,0,210,45);Anchor(climbPanel,new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(0,182));
                 climb[p]=UiTheme.Label(climbPanel,$"P{p+1} climb","",10,0,190,45,23,UiTheme.Ink,TextAnchor.MiddleCenter);
+                flashbangOverlays[p] = UiTheme.Box(half, $"P{p+1} flashbang", 0, 0, 0, 0, new Color(1f, 1f, 1f, 0f));
+                UiTheme.Stretch(flashbangOverlays[p].rectTransform);
             }
             var divider=UiTheme.Box(root,"Screen divider",0,0,2,0,UiTheme.Shadow).rectTransform;
             divider.anchorMin=new Vector2(.5f,0);divider.anchorMax=new Vector2(.5f,1);divider.pivot=new Vector2(.5f,.5f);divider.anchoredPosition=Vector2.zero;
@@ -76,7 +82,10 @@ namespace App.UI
         {
             root.gameObject.SetActive(visible);if(!visible){previousHp[0]=previousHp[1]=-1;return;}
             for(int i=0;i<2;i++){
-                var p=players[i];var status=p.playerStatus;if(status==null)continue;
+                var p=players[i];var status=p.playerStatus;
+                var flashbang = status?.EffectList.GetEffect<FlashBangEffect>();
+                flashbangOverlays[i].color = new Color(1f, 1f, 1f, flashbang?.Opacity ?? 0f);
+                if(status==null)continue;
                 if(lastStatus[i]!=status){lastStatus[i]=status;lastImpact[i]=0;damageUntil[i]=0;damageEdge[i]=-1;blockedImpact[i]=false;}
                 if(previousHp[i]>=0&&status.Hp.Current<previousHp[i]){damageUntil[i]=Time.unscaledTime+.4f;damageEdge[i]=-1;blockedImpact[i]=false;}previousHp[i]=status.Hp.Current;
                 if(status.ImpactVersion!=lastImpact[i]){
@@ -93,6 +102,9 @@ namespace App.UI
                 health[i].rectTransform.sizeDelta=new Vector2(265f*Mathf.Clamp01((float)status.Hp.Current/Mathf.Max(1,status.Hp.Max)),14);
                 health[i].color=status.Hp.Current<=status.Hp.Max*.25f?new Color(.7f,.18f,.1f):UiTheme.PlayerColor(i);
                 bool pad=devices.IsGamepad(i);menu[i].text=pad?"START":"Esc";
+                bool aiming = p.IsAimingFlashbang && !GameSessionUI.BlocksGameplay;
+                throwControls[i].gameObject.SetActive(aiming);
+                if (aiming) throwControls[i].text = pad ? "RT 投げる　B 取消" : "左クリック 投げる　E 取消";
                 float draw = p.BowDrawAmount;
                 drawTrack[i].gameObject.SetActive(draw > 0f);
                 if (draw > 0f)
