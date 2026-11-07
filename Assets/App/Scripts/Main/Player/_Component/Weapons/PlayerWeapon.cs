@@ -17,7 +17,12 @@ namespace App.Main.Player
 
         Animator animator;
         Collider hitCollider;
+        WeaponPresentation presentation;
+        MeleeStroke stroke;
         Action completed;
+
+        public bool CanReachOpponent => stroke != null && owner != null && owner.Opponent != null &&
+                                        stroke.CanReach(owner.Opponent, hitLayers);
 
         // ヒットを通知するイベント（外部で購読してダメージ等を処理する）
         public event Action<Player> OnPlayerHit;
@@ -25,6 +30,7 @@ namespace App.Main.Player
         void Awake()
         {
             animator = GetComponent<Animator>();
+            presentation = GetComponent<WeaponPresentation>();
 
             // 既存のコライダを利用するか、無ければ自前で SphereCollider を作る
             hitCollider = GetComponent<Collider>();
@@ -48,7 +54,6 @@ namespace App.Main.Player
         // 使い方例: duration = weapon.PlayAnimation(weapon.attackAnimationName);
         public float PlayAnimation(string clipName)
         {
-            var presentation=GetComponent<WeaponPresentation>();
             if(presentation!=null)return presentation.Attack();
             float duration = fallbackAttackDuration;
             if (animator != null && animator.runtimeAnimatorController != null && !string.IsNullOrEmpty(clipName))
@@ -94,7 +99,7 @@ namespace App.Main.Player
 
         IEnumerator ActivateRoutine(float duration, Action onCompleted)
         {
-            var presentation=GetComponent<WeaponPresentation>();
+            float started = Time.time;
             if(presentation!=null)
             {
                 yield return new WaitForSeconds(presentation.hitStart);
@@ -103,10 +108,32 @@ namespace App.Main.Player
             presentation?.RefreshPose();
             hitCollider.enabled = true;
 
-            // 即時重なり判定：コライダーに既に入っている相手にもヒット通知を出す
-            DoImmediateOverlapHits();
-
-            yield return new WaitForSeconds(Mathf.Max(0.01f, duration));
+            if (stroke != null && owner != null && owner.Opponent != null)
+            {
+                Player target = owner.Opponent;
+                MeleeBody surface = MeleeBody.For(target);
+                int next = 0;
+                bool hit = false;
+                do
+                {
+                    float age = Time.time - started;
+                    while (next < stroke.Count && stroke.Age(next) <= age)
+                    {
+                        if (!hit && target != null && stroke.Touches(next, target, surface, hitLayers))
+                        {
+                            hit = true;
+                            OnPlayerHit?.Invoke(target);
+                        }
+                        next++;
+                    }
+                    if (next < stroke.Count) yield return null;
+                } while (next < stroke.Count);
+            }
+            else
+            {
+                DoImmediateOverlapHits();
+                yield return new WaitForSeconds(Mathf.Max(0.01f, duration));
+            }
 
             hitCollider.enabled = false;
             completed=null;
@@ -162,6 +189,7 @@ namespace App.Main.Player
 
         void OnTriggerEnter(Collider other)
         {
+            if (stroke != null && owner != null && owner.Opponent != null) return;
             if (hitCollider == null || !hitCollider.enabled) return;
             if (other == null || other.isTrigger) return;
 
@@ -200,7 +228,14 @@ namespace App.Main.Player
         // 所有者を設定するユーティリティ
         public void SetOwner(Player p)
         {
+            if (owner == p && stroke != null) return;
             owner = p;
+            stroke = null;
+            if (p == null || presentation == null || presentation.visual == null ||
+                presentation.motion is not (WeaponPresentation.Motion.Thrust or WeaponPresentation.Motion.Slash or WeaponPresentation.Motion.Knife)) return;
+            var camera = p.DuelCamera;
+            if (camera == null) return;
+            stroke = new MeleeStroke(p, camera.transform, presentation);
         }
     }
 }

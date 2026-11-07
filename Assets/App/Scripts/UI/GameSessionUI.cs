@@ -122,8 +122,17 @@ namespace App.UI
             var player = (slot == 0 ? players.PlayerOne : players.PlayerTwo).GetComponent<Player>();
             player.LookSensitivity = Sensitivity(slot);
             player.GamepadZoomSensitivity = ZoomSensitivity(slot);
+            player.FieldOfView = FieldOfView(slot);
         }
         static string ZoomKey(int slot) => "FPSshogi.GamepadZoomSensitivity." + slot;
+        static string FieldOfViewKey(int slot) => "FPSshogi.FieldOfView." + slot;
+        public int FieldOfView(int slot) => Mathf.Clamp(Mathf.RoundToInt(PlayerPrefs.GetFloat(FieldOfViewKey(slot),
+            Player.DefaultFieldOfView)), Player.MinFieldOfView, Player.MaxFieldOfView);
+        public void SetFieldOfView(int slot, int degrees)
+        {
+            PlayerPrefs.SetFloat(FieldOfViewKey(slot), Mathf.Clamp(degrees, Player.MinFieldOfView, Player.MaxFieldOfView));
+            ApplyLookSettings(slot);
+        }
         public float Sensitivity(int slot) => Mathf.Clamp(PlayerPrefs.GetFloat("FPSshogi.Sensitivity." + slot,
             Player.DefaultLookSensitivity), Player.MinLookSensitivity, Player.MaxLookSensitivity);
         public float ZoomSensitivity(int slot)
@@ -149,6 +158,7 @@ namespace App.UI
             {
                 SetSensitivity(slot, Player.DefaultLookSensitivity);
                 SetZoomSensitivity(slot, Player.DefaultLookSensitivity * Player.InitialZoomFraction);
+                SetFieldOfView(slot, Player.DefaultFieldOfView);
             }
             ShowHpNumbers = false;
             GameAudio.ResetVolumes();
@@ -209,6 +219,8 @@ namespace App.UI
             }
             ApplyBlock();if(state!=null){bool duel=state.CurrentState==State.Duel;bool showHud=page==Page.None&&transitionRemaining<=0;boardHud.Tick(showHud&&!duel);duelHud.Tick(showHud&&duel);}
         }
+        // Sample the view after both players have applied this frame's look input.
+        void LateUpdate() => duelHud?.RefreshReach();
         bool RefreshDevices()=>Devices.Refresh(waitingReconnect,SeatDisconnected,SeatReconnected);
         static void SeatDisconnected(int seat)=>GameAudio.PlayForSeat(SoundCue.Disconnect,seat);
         static void SeatReconnected(int seat)=>GameAudio.PlayForSeat(SoundCue.PlayerJoin,seat);

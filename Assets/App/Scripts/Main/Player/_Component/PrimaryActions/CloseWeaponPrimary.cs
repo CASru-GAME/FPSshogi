@@ -34,9 +34,8 @@ namespace App.Main.Player
             if (Time.time - lastUseTime < cooldown) return;
 
             // Player（owner）から PlayerWeapon を探す
-            PlayerWeapon weapon = player.GetComponentInChildren<PlayerWeapon>();
-            if (weapon == null && player.WeaponObject != null)
-                weapon = player.WeaponObject.GetComponentInChildren<PlayerWeapon>();
+            PlayerWeapon weapon = player.WeaponObject != null ? player.WeaponObject.GetComponentInChildren<PlayerWeapon>() : null;
+            if (weapon == null) weapon = player.GetComponentInChildren<PlayerWeapon>();
 
             if (weapon == null)
             {

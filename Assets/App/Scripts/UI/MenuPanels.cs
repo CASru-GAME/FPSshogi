@@ -17,6 +17,7 @@ namespace App.UI
         readonly Text[] connectionStates=new Text[2];
         Text connection;
         PieceGuidePanel guide;
+        enum SliderUnit { Sensitivity, Degrees, Percent }
         string lastExport;
         public bool Visible=>root.gameObject.activeSelf;
         public MenuPanels(RectTransform parent,GameSessionUI session){this.session=session;root=UiTheme.Rect(parent,"Menus",0,0,1920,1080);}
@@ -96,7 +97,7 @@ namespace App.UI
                 UiTheme.Label(sheet,"FPS controls",pad?"左スティック　移動 / 右スティック　視点\nRT　攻撃　　LT　防御・ズーム\nB　スキル　　A　登る\nSTART　メニュー":"WASD　移動 / マウス　視点\n左クリック　攻撃 / 右クリック　防御・ズーム\nE　スキル　　Space　登る\nEsc　メニュー",30,375,680,224,26);
                 if(pad)UiTheme.Label(sheet,"Button convention","Xbox表記",30,620,680,36,23,UiTheme.Muted);
             }
-            UiTheme.Label(root,"Cooldown explanation","攻撃やスキルは、アイコンの円が消えると再び使えます。",220,960,1480,54,24,UiTheme.Muted,TextAnchor.MiddleCenter);
+            UiTheme.Label(root,"Cooldown explanation","近接攻撃が届くと、照準の左右に括弧が付きます。　攻撃やスキルは、アイコンの円が消えると再び使えます。",160,960,1600,54,24,UiTheme.Muted,TextAnchor.MiddleCenter);
         }
         public void Pieces()
         {
@@ -106,26 +107,28 @@ namespace App.UI
         {
             Clear();
             var back = Header("設定");
-            var panel = UiTheme.Rect(root, "Settings content", 350, 180, 1220, 760);
+            var panel = UiTheme.Rect(root, "Settings content", 350, 164, 1220, 866);
             var controls = new List<Selectable>();
             float y = 0;
 
-            void AddSlider(string name, string label, float initial, float min, float max, bool sensitivity, System.Action<float> apply)
+            void AddSlider(string name, string label, float initial, float min, float max, SliderUnit unit, System.Action<float> apply)
             {
-                string Format(float v) => sensitivity ? $"{v:0.0}" : $"{v * 100:0}%";
-                UiTheme.Label(panel, name + " label", label, 0, y, 420, 70, 28);
-                var value = UiTheme.Label(panel, name + " value", Format(initial), 1100, y, 120, 70, 28, UiTheme.Ink, TextAnchor.MiddleRight);
-                var row = UiTheme.Box(panel, name, 450, y, 590, 70, Color.clear, true).rectTransform;
-                UiTheme.Box(row, "Track", 0, 33, 590, 4, UiTheme.Track);
-                var area = UiTheme.Rect(row, "Handle area", 0, 17, 590, 36);
+                string Format(float v) => unit switch {
+                    SliderUnit.Sensitivity => $"{v:0.0}", SliderUnit.Degrees => $"{v:0}°", _ => $"{v * 100:0}%"
+                };
+                UiTheme.Label(panel, name + " label", label, 0, y, 420, 64, 28);
+                var value = UiTheme.Label(panel, name + " value", Format(initial), 1100, y, 120, 64, 28, UiTheme.Ink, TextAnchor.MiddleRight);
+                var row = UiTheme.Box(panel, name, 450, y, 590, 64, Color.clear, true).rectTransform;
+                UiTheme.Box(row, "Track", 0, 30, 590, 4, UiTheme.Track);
+                var area = UiTheme.Rect(row, "Handle area", 0, 14, 590, 36);
                 var handle = UiTheme.Box(area, "Handle", 0, 0, 14, 0, Color.white, true);
                 handle.rectTransform.pivot = new Vector2(.5f, .5f);
                 var slider = row.gameObject.AddComponent<Slider>();
                 slider.handleRect = handle.rectTransform;
                 slider.targetGraphic = handle;
                 // A whole-number slider moves one unit per D-pad press. Use tenths for sensitivity.
-                float scale = sensitivity ? 10f : 1f;
-                slider.wholeNumbers = sensitivity;
+                float scale = unit == SliderUnit.Sensitivity ? 10f : 1f;
+                slider.wholeNumbers = unit != SliderUnit.Percent;
                 slider.minValue = min * scale;
                 slider.maxValue = max * scale;
                 slider.SetValueWithoutNotify(initial * scale);
@@ -138,23 +141,29 @@ namespace App.UI
                     float selected = raw / scale;
                     apply(selected);
                     value.text = Format(selected);
-                    if (sensitivity) GameAudio.Play(SoundCue.UiNavigate);
+                    if (unit != SliderUnit.Percent) GameAudio.Play(SoundCue.UiNavigate);
                 });
                 controls.Add(slider);
-                UiTheme.Box(panel, name + " rule", 0, y + 72, 1220, 1, UiTheme.Rule);
-                y += 80;
+                UiTheme.Box(panel, name + " rule", 0, y + 66, 1220, 1, UiTheme.Rule);
+                y += 70;
             }
 
             for (int i = 0; i < 2; i++)
             {
                 int slot = i;
                 AddSlider("Sensitivity slider " + slot, $"{slot+1}P 視点感度", session.Sensitivity(slot),
-                    Player.MinLookSensitivity, Player.MaxLookSensitivity, true, v => session.SetSensitivity(slot, v));
+                    Player.MinLookSensitivity, Player.MaxLookSensitivity, SliderUnit.Sensitivity, v => session.SetSensitivity(slot, v));
                 AddSlider("Zoom sensitivity slider " + slot, $"{slot+1}P ズーム感度（パッド）", session.ZoomSensitivity(slot),
-                    Player.MinZoomSensitivity, Player.MaxLookSensitivity, true, v => session.SetZoomSensitivity(slot, v));
+                    Player.MinZoomSensitivity, Player.MaxLookSensitivity, SliderUnit.Sensitivity, v => session.SetZoomSensitivity(slot, v));
+            }
+            for (int slot = 0; slot < 2; slot++)
+            {
+                int seat = slot;
+                AddSlider("Field of view slider " + seat, $"{seat+1}P 垂直視野角（FOV）", session.FieldOfView(seat),
+                    Player.MinFieldOfView, Player.MaxFieldOfView, SliderUnit.Degrees, v => session.SetFieldOfView(seat, Mathf.RoundToInt(v)));
             }
             y += 14;
-            void AddVolume(string label, AudioBus bus) => AddSlider("Audio slider " + bus, label, GameAudio.GetVolume(bus), 0, 1, false,
+            void AddVolume(string label, AudioBus bus) => AddSlider("Audio slider " + bus, label, GameAudio.GetVolume(bus), 0, 1, SliderUnit.Percent,
                 v => { GameAudio.SetVolume(bus, v); GameAudio.PreviewVolume(bus); });
             AddVolume("全体音量", AudioBus.Master);
             AddVolume("効果音", AudioBus.Effects);

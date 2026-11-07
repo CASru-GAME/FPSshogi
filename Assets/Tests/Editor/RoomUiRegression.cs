@@ -63,6 +63,8 @@ public static class RoomUiRegression
     static void Check(string name,bool pass){results.Add((pass?"PASS ":"FAIL ")+name);File.WriteAllLines(dir+"results.txt",results);}
     static T Find<T>() where T:UnityEngine.Object=>UnityEngine.Object.FindFirstObjectByType<T>();
     static bool Visible(string name)=>GameObject.Find(name)!=null;
+    static Slider FovSlider(int slot) => GameObject.Find("Field of view slider " + slot)?.GetComponent<Slider>();
+    static string FovLabel(int slot) => GameObject.Find("Field of view slider " + slot + " value")?.GetComponent<Text>().text;
     static void CheckGuideForm(PieceType type, bool promoted)
     {
         Canvas.ForceUpdateCanvases();
@@ -110,13 +112,35 @@ public static class RoomUiRegression
     {
         one=InputSystem.AddDevice<Gamepad>("Room First");two=InputSystem.AddDevice<Gamepad>("Room Second");keyboard=InputSystem.AddDevice<Keyboard>("Room Keyboard");mouse=InputSystem.AddDevice<Mouse>("Room Mouse");
         foreach (string key in new[] { "FPSshogi.Sensitivity.0", "FPSshogi.Sensitivity.1", "FPSshogi.GamepadZoomSensitivity.0",
-            "FPSshogi.GamepadZoomSensitivity.1", "FPSshogi.Audio.Master", "FPSshogi.Audio.Effects", "FPSshogi.Audio.Interface" })
+            "FPSshogi.GamepadZoomSensitivity.1", "FPSshogi.FieldOfView.0", "FPSshogi.FieldOfView.1",
+            "FPSshogi.Audio.Master", "FPSshogi.Audio.Effects", "FPSshogi.Audio.Interface" })
             savedSettings[key] = PlayerPrefs.HasKey(key) ? PlayerPrefs.GetFloat(key) : null;
+        PlayerPrefs.DeleteKey("FPSshogi.FieldOfView.0");PlayerPrefs.DeleteKey("FPSshogi.FieldOfView.1");
         hpNumbers=Session.ShowHpNumbers;Session.ShowHpNumbers=false;
         Resolution(1920,1080);yield return .5d;Shot("01-title");yield return .15d;yield return .2d;
         Check("Title stages all forty real pieces",GameObject.Find("Title board pieces")?.transform.childCount==40);
         var shade=GameObject.Find("Title shade").GetComponent<UiSymbol>();Check("Title shade has rendered geometry",shade.canvasRenderer!=null&&shade.canvasRenderer.GetMesh()?.vertexCount>0);
         var titleStart=GameObject.Find("Start button").GetComponent<RectTransform>();Check("Title action is on left",titleStart.position.x<Screen.width*.3f);
+        Session.OpenSettings();yield return .25d;
+        var titleOne = FovSlider(0); var titleTwo = FovSlider(1);
+        Check("Title offers each seat the original 60-degree duel FOV", FovLabel(0) == "60°" && FovLabel(1) == "60°");
+        if (titleOne != null && titleTwo != null)
+        {
+            Session.Focus(titleOne);yield return .2d;
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.RightArrow));yield return .12d;
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return .15d;
+            var bounds = ScreenBounds(titleTwo.GetComponent<RectTransform>());
+            foreach (var x in new[]{bounds.xMin + 1, bounds.xMax - 1})
+            {
+                var pointer = new MouseState{position = new Vector2(x,bounds.center.y)};
+                InputSystem.QueueStateEvent(mouse,pointer);yield return .1d;
+                InputSystem.QueueStateEvent(mouse,pointer.WithButton(MouseButton.Left));yield return .12d;
+                InputSystem.QueueStateEvent(mouse,pointer.WithButton(MouseButton.Left,false));yield return .12d;
+                Check("Mouse selects the end of the FOV track at " + x, FovLabel(1) == (x < bounds.center.x ? "50°" : "90°"));
+            }
+            Check("Keyboard changes only the first FOV by one degree", FovLabel(0) == "61°" && FovLabel(1) == "90°");
+        }
+        Session.Back();yield return .2d;
         foreach(var resolution in new[]{new Vector2Int(2560,1080),new Vector2Int(1280,1024)}){
             Resolution(resolution.x,resolution.y);yield return .3d;Shot("01-title-"+resolution.x+"x"+resolution.y);yield return .15d;
         }
@@ -188,10 +212,26 @@ public static class RoomUiRegression
         var players = Find<PlayerManager>();
         Check("Four independent settings reach the paired players", Mathf.Approximately(players.PlayerOne.GetComponent<Player>().GamepadZoomSensitivity,.9f) &&
             Mathf.Approximately(players.PlayerTwo.GetComponent<Player>().GamepadZoomSensitivity,.7f) && Mathf.Approximately(players.PlayerOne.GetComponent<Player>().LookSensitivity,2.1f) && Mathf.Approximately(players.PlayerTwo.GetComponent<Player>().LookSensitivity,2.1f));
+        var firstView = players.PlayerOne.GetComponentInChildren<Camera>();
+        var secondView = players.PlayerTwo.GetComponentInChildren<Camera>();
+        float boardFov = Camera.main.fieldOfView;
+        Check("Both title FOV settings reach the new match", firstView.fieldOfView == 61 && secondView.fieldOfView == 90);
+        if (FovSlider(0) != null && FovSlider(1) != null)
+        {
+            tap=Tap(one,GamepadButton.DpadDown);while(tap.MoveNext())yield return tap.Current;
+            tap=Tap(one,GamepadButton.DpadRight);while(tap.MoveNext())yield return tap.Current;
+            tap=Tap(one,GamepadButton.DpadDown);while(tap.MoveNext())yield return tap.Current;
+            tap=Tap(one,GamepadButton.DpadLeft);while(tap.MoveNext())yield return tap.Current;
+            Check("D-pad adjusts both seat FOVs independently and leaves the board camera alone",
+                firstView.fieldOfView == 62 && secondView.fieldOfView == 89 && Camera.main.fieldOfView == boardFov);
+        }
         Session.Back();yield return .2d;Session.OpenSettings();yield return .2d;
         Check("Both zoom values survive reopening settings", GameObject.Find("Zoom sensitivity slider 0 value").GetComponent<Text>().text=="0.9" && GameObject.Find("Zoom sensitivity slider 1 value").GetComponent<Text>().text=="0.7");
+        Check("Pause retains both FOV values when reopened", FovLabel(0) == "62°" && FovLabel(1) == "89°");
         Session.SetSensitivity(0,4);Session.ShowHpNumbers=true;GameObject.Find("Reset settings button").GetComponent<Button>().onClick.Invoke();yield return .2d;
         Check("Nested settings keep gameplay HUD hidden",!Visible("Board HUD")&&!Visible("Duel HUD"));
+        Check("Reset returns both duel cameras and labels to 60 degrees", FovLabel(0) == "60°" && FovLabel(1) == "60°" &&
+            firstView.fieldOfView == 60 && secondView.fieldOfView == 60);
         Check("Reset restores both normal values to 2.0, zoom to 0.8 and HP preference",Session.Sensitivity(0)==2&&Session.Sensitivity(1)==2&&Mathf.Approximately(Session.ZoomSensitivity(0),.8f)&&Mathf.Approximately(Session.ZoomSensitivity(1),.8f)&&!Session.ShowHpNumbers);
         Session.Back();yield return .25d;Check("Settings returns to pause",Visible("Resume button"));
         Session.ConfirmReturn();yield return .25d;Shot("11-return-confirm");yield return .15d;Session.Back();yield return .25d;Check("Cancelled return restores pause",Visible("Resume button"));
@@ -208,6 +248,20 @@ public static class RoomUiRegression
         Check("Countdown blocks gameplay",GameSessionUI.BlocksGameplay&&Visible("Countdown"));yield return 3.5d;
         Shot("15-duel");yield return .15d;
         var p1=Find<PlayerManager>().PlayerOne.GetComponent<Player>();
+        var p2=p1.Opponent;
+        Check("Both spears show their brackets at the opening of an adjacent pawn capture",
+            Visible("P1 melee reach") && Visible("P2 melee reach"));
+        p1.FieldOfView=50;p2.FieldOfView=90;yield return .15d;
+        Check("Changing either FOV preserves the spear's physical reach",
+            Visible("P1 melee reach") && Visible("P2 melee reach"));
+        p1.FieldOfView=Session.FieldOfView(0);p2.FieldOfView=Session.FieldOfView(1);
+        var otherBody=p2.GetComponent<Rigidbody>();
+        Vector3 start=otherBody.position;
+        otherBody.position=start+(start-p1.transform.position).normalized*8f;
+        Physics.SyncTransforms();yield return .2d;
+        Check("Both reticles return to a plain crosshair beyond spear reach",!Visible("P1 melee reach")&&!Visible("P2 melee reach"));
+        Shot("15-duel-out-of-reach");yield return .15d;
+        otherBody.position=start;Physics.SyncTransforms();yield return .2d;
         var damageCamera=p1.GetComponentInChildren<Camera>();
         var healthBar=GameObject.Find("P1 health bar").GetComponent<RectTransform>();
         var hpBefore=p1.playerStatus.Hp.Current;

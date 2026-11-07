@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using State=App.Main.GameMaster.GameStateHolder.GameState;
 
 public static class GameplayDuelChecks
@@ -15,6 +16,11 @@ public static class GameplayDuelChecks
     static T Find<T>() where T:UnityEngine.Object=>UnityEngine.Object.FindFirstObjectByType<T>();
     static Player One()=>Find<PlayerManager>().PlayerOne.GetComponent<Player>();
     static Player Two()=>Find<PlayerManager>().PlayerTwo.GetComponent<Player>();
+    static IEnumerator ToggleZoom(Gamepad pad)
+    {
+        InputSystem.QueueStateEvent(pad,new GamepadState{leftTrigger=1});yield return .14d;
+        InputSystem.QueueStateEvent(pad,new GamepadState());yield return .18d;
+    }
     static IEnumerator CheckZoomTurn(Player actor, Player other, int slot, float expectedRatio, Action<string,bool> check)
     {
         var pad = actor.GetComponent<PlayerInput>().devices.OfType<Gamepad>().Single();
@@ -59,11 +65,38 @@ public static class GameplayDuelChecks
     public static IEnumerator Run(Action<string,bool> check)
     {
         SceneManager.LoadScene("Main");yield return .8d;Start(PlayerType.PlayerOne);yield return 3.5d;
-        App.UI.GameSessionUI.Instance.OpenPause();Two().playerStatus.TakeDamage(10000);yield return .2d;
-        check("Paused duel defers death resolution",Find<GameStateHolder>().CurrentState==State.Duel);
-        GameplayRegressionRunner.Shot("paused-duel");
-        App.UI.GameSessionUI.Instance.Resume();yield return 2.7d;
-        check("Resuming resolves pending death and returns to next turn",Find<GameStateHolder>().CurrentState==State.PlayerTwoTurn);
+        const string fovKey = "FPSshogi.FieldOfView.0";
+        bool hadFov = PlayerPrefs.HasKey(fovKey); float savedFov = PlayerPrefs.GetFloat(fovKey);
+        try
+        {
+            var session = App.UI.GameSessionUI.Instance;
+            var camera = One().GetComponentInChildren<Camera>();
+            var otherCamera = Two().GetComponentInChildren<Camera>();
+            float otherFov = otherCamera.fieldOfView;
+            var pad = One().GetComponent<PlayerInput>().devices.OfType<Gamepad>().Single();
+            var toggle = ToggleZoom(pad);while(toggle.MoveNext())yield return toggle.Current;
+            session.OpenPause();session.OpenSettings();yield return .2d;
+            var fov = GameObject.Find("Field of view slider 0")?.GetComponent<Slider>();
+            if (fov != null) fov.value = 84;
+            check("Changing normal FOV during zoom immediately updates only that player's zoomed camera",
+                camera.fieldOfView == 42 && otherCamera.fieldOfView == otherFov);
+            session.Back();session.Resume();yield return .4d;
+            toggle=ToggleZoom(pad);while(toggle.MoveNext())yield return toggle.Current;
+            check("Releasing zoom restores the FOV selected during zoom", camera.fieldOfView == 84);
+            toggle=ToggleZoom(pad);while(toggle.MoveNext())yield return toggle.Current;
+            check("Entering zoom again uses the new FOV", camera.fieldOfView == 42);
+            session.OpenPause();Two().playerStatus.TakeDamage(10000);yield return .2d;
+            check("Paused duel defers death resolution",Find<GameStateHolder>().CurrentState==State.Duel);
+            GameplayRegressionRunner.Shot("paused-duel");
+            session.Resume();yield return 2.7d;
+            check("Resuming resolves pending death and returns to next turn",Find<GameStateHolder>().CurrentState==State.PlayerTwoTurn);
+            check("Ending a zoomed duel restores the latest normal FOV", camera.fieldOfView == 84 && !camera.enabled);
+        }
+        finally
+        {
+            if (hadFov) PlayerPrefs.SetFloat(fovKey,savedFov); else PlayerPrefs.DeleteKey(fovKey);
+            PlayerPrefs.Save();
+        }
         foreach(var attacker in new[]{PlayerType.PlayerOne,PlayerType.PlayerTwo})
         {
             SceneManager.LoadScene("Main");yield return .8d;Start(attacker);yield return 3.5d;

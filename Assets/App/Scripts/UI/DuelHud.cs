@@ -12,6 +12,8 @@ namespace App.UI
         readonly Text[] hp=new Text[2],title=new Text[2],climb=new Text[2],menu=new Text[2];
         readonly Image[] health=new Image[2];
         readonly Image[] drawTrack = new Image[2], drawBar = new Image[2];
+        readonly GameObject[] reachMarks = new GameObject[2], equipped = new GameObject[2];
+        readonly PlayerWeapon[] weapons = new PlayerWeapon[2];
         readonly UiSymbol[,] icons=new UiSymbol[2,3],rings=new UiSymbol[2,3];
         readonly Text[,] keys=new Text[2,3];
         readonly Image[,] hurt=new Image[2,4];
@@ -46,6 +48,11 @@ namespace App.UI
                 var cross=UiTheme.Rect(half,$"P{p+1} Crosshair",0,0,28,28);Anchor(cross,new Vector2(.5f,.5f),new Vector2(.5f,.5f),Vector2.zero);
                 UiTheme.Box(cross,"Shadow horizontal",0,11,28,6,UiTheme.Shadow);UiTheme.Box(cross,"Shadow vertical",11,0,6,28,UiTheme.Shadow);
                 UiTheme.Box(cross,"Horizontal",2,13,24,2,Color.white);UiTheme.Box(cross,"Vertical",13,2,2,24,Color.white);
+                reachMarks[p] = UiTheme.Symbol(cross, $"P{p+1} melee reach", UiSymbol.Kind.MeleeReach, -10, -10, 48, Color.white).gameObject;
+                var outline = reachMarks[p].AddComponent<Outline>();
+                outline.effectColor = UiTheme.Shadow;
+                outline.effectDistance = new Vector2(1.25f, -1.25f);
+                reachMarks[p].SetActive(false);
                 drawTrack[p] = UiTheme.Box(cross, $"P{p+1} bow draw track", -16, 40, 60, 6, UiTheme.Shadow);
                 drawBar[p] = UiTheme.Box(drawTrack[p].transform, "Charge", 1, 1, 0, 4, UiTheme.Ink);
                 drawTrack[p].gameObject.SetActive(false);
@@ -97,6 +104,20 @@ namespace App.UI
                 icons[i,0].SetShape(PiecePresentation.WeaponSymbol(p.PieceType));icons[i,1].SetShape(p.SecondaryName=="ズーム"?UiSymbol.Kind.Zoom:UiSymbol.Kind.Shield);icons[i,2].SetShape(PiecePresentation.SkillSymbol(p.PieceType));
                 Cooldown(i,0,p.PrimaryCooldown,p.PrimaryCooldownDuration);Cooldown(i,1,p.SecondaryCooldown,p.SecondaryCooldownDuration);Cooldown(i,2,p.SkillCooldown,p.SkillCooldownDuration);
                 climb[i].transform.parent.gameObject.SetActive(!GameSessionUI.BlocksGameplay&&p.ClimbAvailable);climb[i].text=(pad?"A":"Space")+"　登る";
+            }
+        }
+        public void RefreshReach()
+        {
+            if (!root.gameObject.activeInHierarchy) return;
+            for (int i = 0; i < players.Length; i++)
+            {
+                var weapon = players[i].WeaponObject;
+                if (equipped[i] != weapon)
+                {
+                    equipped[i] = weapon;
+                    weapons[i] = weapon != null ? weapon.GetComponent<PlayerWeapon>() : null;
+                }
+                reachMarks[i].SetActive(weapons[i] != null && weapons[i].CanReachOpponent);
             }
         }
         void Cooldown(int p,int action,float remaining,float duration){rings[p,action].Fill=duration>0?remaining/duration:0;icons[p,action].color=remaining>.05f?UiTheme.Muted:UiTheme.Ink;}

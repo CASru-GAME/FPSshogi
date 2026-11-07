@@ -80,6 +80,9 @@ public static class GameplayBalanceChecks
                 var two = manager.PlayerTwo.GetComponent<Player>();
                 var status = one.playerStatus;
                 string name = type + (promoted ? "+" : "");
+                if (!promoted && Primary.GetValue(one) is CloseWeaponPrimary)
+                    WeaponMotionChecks.CheckMeleeStroke(one.WeaponObject.GetComponent<WeaponPresentation>(),
+                        one.GetComponentInChildren<Camera>(), (passed, label) => check(name + " " + label, passed));
                 var cells = Object.FindFirstObjectByType<ViewPiece>().boardCellPositions;
                 float expectedGap = Vector3.Distance(cells[4,4], cells[4+delta[0],4+delta[1]]);
                 check($"balance: {name} starts at its capture distance of {expectedGap:F2} m",

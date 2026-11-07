@@ -90,6 +90,10 @@ namespace App.Main.Player
             SetSpawnPositions();
             PlayerOne = CreatePlayer(PlayerOneSpawnPosition, PlayerOneSpawnRotation);
             PlayerTwo = CreatePlayer(PlayerTwoSpawnPosition, PlayerTwoSpawnRotation);
+            var first = PlayerOne.GetComponent<Player>();
+            var second = PlayerTwo.GetComponent<Player>();
+            first.Opponent = second;
+            second.Opponent = first;
             PlayerIndexPlayerOne = PlayerOne.GetComponent<PlayerInput>().playerIndex;
             PlayerIndexPlayerTwo = PlayerTwo.GetComponent<PlayerInput>().playerIndex;
             RefreshDuelCameras();
@@ -181,13 +185,15 @@ namespace App.Main.Player
 
         private void SetPlayerModel(GameObject player, GameObject pieceObject, bool isPromoted, bool isPlayerOne)
         {
+            RemovePlayerModel(isPlayerOne ? PlayerOnePieceObject : PlayerTwoPieceObject);
             GameObject go = Instantiate(pieceObject);
             go.transform.SetParent(player.transform);
             go.transform.localPosition = Vector3.zero;
             go.transform.localRotation = Quaternion.identity;
             // Each split-screen view hides its own body; the opponent still sees it.
             int bodyLayer=isPlayerOne?30:31;
-            player.GetComponent<Player>().BodyLayer=bodyLayer;
+            var actor = player.GetComponent<Player>();
+            actor.BodyLayer=bodyLayer;
             foreach(var node in go.GetComponentsInChildren<Transform>(true))node.gameObject.layer=bodyLayer;
             var ownCamera=player.GetComponentInChildren<Camera>(true);
             if(ownCamera!=null)ownCamera.cullingMask&=~(1<<bodyLayer);
@@ -196,6 +202,7 @@ namespace App.Main.Player
                 // 成り後のモデル調整処理
                 go.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
             }
+            MeleeBody.Bind(actor, go);
             if (isPlayerOne)
             {
                 PlayerOnePieceObject = go;
@@ -219,19 +226,20 @@ namespace App.Main.Player
             CursorEnable();
 
             // PlayerOne/Two に割り当てたピースオブジェクトを削除（子オブジェクトも含む）
-            if (PlayerOnePieceObject != null)
-            {
-                DestroyObjectWithChildren(PlayerOnePieceObject);
-                PlayerOnePieceObject = null;
-            }
-            if (PlayerTwoPieceObject != null)
-            {
-                DestroyObjectWithChildren(PlayerTwoPieceObject);
-                PlayerTwoPieceObject = null;
-            }
+            RemovePlayerModel(PlayerOnePieceObject);
+            RemovePlayerModel(PlayerTwoPieceObject);
+            PlayerOnePieceObject = null;
+            PlayerTwoPieceObject = null;
 
             DestroyChildrenSafe(PlayerOne);
             DestroyChildrenSafe(PlayerTwo);
+        }
+
+        private void RemovePlayerModel(GameObject model)
+        {
+            if (model == null) return;
+            model.SetActive(false);
+            DestroyObjectWithChildren(model);
         }
 
         private void OnEndGame()

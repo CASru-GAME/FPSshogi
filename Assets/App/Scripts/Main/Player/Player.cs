@@ -13,6 +13,9 @@ namespace App.Main.Player
         public const float MinLookSensitivity = .5f;
         public const float MinZoomSensitivity = .1f;
         public const float MaxLookSensitivity = 5f;
+        public const int DefaultFieldOfView = 60;
+        public const int MinFieldOfView = 50;
+        public const int MaxFieldOfView = 90;
         [SerializeField] private Transform cameraTransform; // InspectorでMainCameraを割り当てる
         [SerializeField] private float lookSensitivity = DefaultLookSensitivity;
         private float gamepadZoomSensitivity = DefaultLookSensitivity * InitialZoomFraction;
@@ -32,7 +35,19 @@ namespace App.Main.Player
         private InputDevice lookDevice;
         private float yaw = 0f;
         private float pitch = 0f;
-        private float normalFieldOfView = 60f;
+        private int normalFieldOfView = DefaultFieldOfView;
+        internal Camera DuelCamera { get; private set; }
+        public int FieldOfView
+        {
+            get => normalFieldOfView;
+            set { normalFieldOfView = Mathf.Clamp(value, MinFieldOfView, MaxFieldOfView); RefreshFieldOfView(); }
+        }
+        internal void RefreshFieldOfView()
+        {
+            if (DuelCamera == null) return;
+            float magnification = currentSecondaryAction is SecondaryZoom { IsZoomed: true } zoom ? zoom.zoomMultiplier : 1f;
+            DuelCamera.fieldOfView = normalFieldOfView / Mathf.Max(.0001f, magnification);
+        }
 
         public PlayerStatus playerStatus;
         public float PrimaryCooldown => currentPrimaryAction?.CooldownRemaining ?? 0f;
@@ -48,6 +63,7 @@ namespace App.Main.Player
         public string SecondaryName => currentSecondaryAction?.secondaryActionName == "SecondaryZoom" ? "ズーム" : "防御";
         public App.Main.ShogiThings.PieceType PieceType { get; set; }
         public int BodyLayer { get; set; }
+        public Player Opponent { get; internal set; }
         public float LookSensitivity { get => lookSensitivity; set => lookSensitivity = Mathf.Clamp(value, MinLookSensitivity, MaxLookSensitivity); }
         public float GamepadZoomSensitivity { get => gamepadZoomSensitivity; set => gamepadZoomSensitivity = Mathf.Clamp(value, MinZoomSensitivity, MaxLookSensitivity); }
         public bool IsClimbing { get; private set; }
@@ -69,13 +85,8 @@ namespace App.Main.Player
             CombatVisuals.Clear(this);
             GameAudio.StopCombat(this);
             yaw=transform.eulerAngles.y; pitch=0;
-            if(cameraTransform!=null)
-            {
-                cameraTransform.localRotation=Quaternion.identity;
-                var camera=cameraTransform.GetComponent<Camera>();
-                if(camera!=null)camera.fieldOfView=normalFieldOfView;
-            }
-            currentSkill=null;currentPrimaryAction=null;currentSecondaryAction=null;
+            if(cameraTransform!=null)cameraTransform.localRotation=Quaternion.identity;
+            currentSkill=null;currentPrimaryAction=null;SetSecondaryAction(null);
             SubWeaponObject=null;ObjectForKingSkill=null;
             if(rb!=null)rb.linearVelocity=Vector3.zero;
         }
@@ -107,8 +118,10 @@ namespace App.Main.Player
             rb.useGravity = true;
             rb.constraints = RigidbodyConstraints.FreezeRotation;
 
-            if (cameraTransform == null && Camera.main != null)
-                cameraTransform = Camera.main.transform;
+            if (cameraTransform == null)
+                cameraTransform = GetComponentInChildren<Camera>(true)?.transform;
+            DuelCamera = cameraTransform != null ? cameraTransform.GetComponent<Camera>() : null;
+            RefreshFieldOfView();
 
             pi = GetComponent<PlayerInput>();
             if (pi != null)
@@ -117,8 +130,6 @@ namespace App.Main.Player
             yaw = transform.eulerAngles.y;
             if (cameraTransform != null)
             {
-                var camera=cameraTransform.GetComponent<Camera>();
-                if(camera!=null)normalFieldOfView=camera.fieldOfView;
                 pitch = cameraTransform.localEulerAngles.x;
                 if (pitch > 180f) pitch -= 360f;
             }
@@ -186,6 +197,7 @@ namespace App.Main.Player
         public void SetSecondaryAction(ISecondaryAction action)
         {
             currentSecondaryAction = action;
+            RefreshFieldOfView();
         }
 
         public void OnDestroy()

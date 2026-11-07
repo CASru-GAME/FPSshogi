@@ -37,6 +37,126 @@ public static class WeaponMotionChecks
         Find<GameStateHolder>().ChangeStateIntoDuel();
     }
     static Vector3 Tip(WeaponPresentation w)=>w.visual.TransformPoint(Vector3.up*w.visual.GetComponent<MeshFilter>().sharedMesh.bounds.max.y);
+
+    public static void CheckMeleeStroke(WeaponPresentation weapon, Camera camera, Action<bool,string> check)
+    {
+        if (weapon.motion is not (WeaponPresentation.Motion.Thrust or WeaponPresentation.Motion.Slash or WeaponPresentation.Motion.Knife)) return;
+        float previousStart = (float)Field(weapon, "attackStarted");
+        Vector3 previousGrip = (Vector3)Field(weapon, "attackFromGrip");
+        Quaternion previousRotation = (Quaternion)Field(weapon, "attackFromRotation");
+        float previousFov = camera.fieldOfView;
+        var mesh = weapon.visual.GetComponent<MeshFilter>().sharedMesh.bounds;
+        string name = weapon.gameObject.name;
+
+        void Sample(float age)
+        {
+            Set(weapon, "attackStarted", Time.time - age);
+            weapon.RefreshPose();
+        }
+        Vector3 LocalGrip() => weapon.transform.InverseTransformPoint(weapon.visual.TransformPoint(weapon.GripLocal));
+        Vector3 LocalTip() => weapon.transform.InverseTransformPoint(Tip(weapon));
+        try
+        {
+            if (!weapon.IsAttacking)
+            {
+                Set(weapon, "attackFromGrip", LocalGrip());
+                Set(weapon, "attackFromRotation", weapon.visual.localRotation);
+            }
+            Sample(weapon.hitStart);
+            Vector3 windGrip = LocalGrip(), windTip = LocalTip();
+            Sample(Mathf.Lerp(weapon.hitStart, weapon.hitEnd, .6f));
+            Vector3 contactGrip = LocalGrip(), contactTip = LocalTip();
+            Sample(weapon.hitEnd);
+            Vector3 finishGrip = LocalGrip(), finishTip = LocalTip();
+
+            if (weapon.motion == WeaponPresentation.Motion.Slash)
+            {
+                check(windGrip.x - finishGrip.x > .32f && windGrip.y - finishGrip.y > .30f,
+                    name + " hand carries the cut diagonally from high right to low left");
+            }
+            else
+            {
+                float travel = weapon.motion == WeaponPresentation.Motion.Thrust ? 1.05f : .80f;
+                check(contactGrip.z - windGrip.z > travel && Vector3.Angle(windTip, contactTip) > 7f,
+                    name + " pulls back visibly before extending toward the aim");
+            }
+            check(Vector3.Distance(contactTip, finishTip) > .14f,
+                name + " continues moving through the last part of the contact window");
+
+            var trigger = weapon.GetComponent<BoxCollider>();
+            bool sameBox = true, poseUntouched = true, triggerCoversBlade = true;
+            float farthestForward = 0;
+            for (int frame = 0; frame <= 8; frame++)
+            {
+                float age = Mathf.Lerp(weapon.hitStart, weapon.hitEnd, frame / 8f);
+                Vector3 oldPosition = weapon.visual.localPosition, oldCenter = trigger.center, oldSize = trigger.size;
+                Quaternion oldRotation = weapon.visual.localRotation;
+                weapon.GetMeleeBox(age, out var center, out var half, out var rotation);
+                poseUntouched &= weapon.visual.localPosition == oldPosition && weapon.visual.localRotation == oldRotation &&
+                    trigger.center == oldCenter && trigger.size == oldSize;
+
+                Sample(age);
+                Vector3 MeshPoint(Vector3 local) => weapon.transform.InverseTransformPoint(weapon.visual.TransformPoint(local));
+                Vector3 actualCenter = MeshPoint(mesh.center);
+                sameBox &= Vector3.Distance(center, actualCenter) < .001f &&
+                    Quaternion.Angle(rotation, weapon.visual.localRotation) < .1f;
+                for (int axis = 0; axis < 3; axis++)
+                {
+                    Vector3 face = mesh.center;
+                    face[axis] += mesh.extents[axis];
+                    sameBox &= Mathf.Abs(Vector3.Distance(MeshPoint(face), actualCenter) + .06f - half[axis]) < .001f;
+                }
+                Bounds cover = new Bounds(trigger.center, trigger.size + Vector3.one * .002f);
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    Vector3 offset = new Vector3((corner & 1) == 0 ? -half.x : half.x,
+                        (corner & 2) == 0 ? -half.y : half.y, (corner & 4) == 0 ? -half.z : half.z);
+                    Vector3 point = center + rotation * offset;
+                    triggerCoversBlade &= cover.Contains(point);
+                    farthestForward = Mathf.Max(farthestForward, point.z);
+                }
+            }
+            check(sameBox, name + " predicted contact matches the displayed, padded blade throughout the hit window");
+            check(poseUntouched, name + " prediction preserves the current visual and trigger pose");
+            check(triggerCoversBlade, name + " trigger covers the corners of the moving contact box");
+            bool polearm = weapon.GetComponentInParent<Player>()?.PieceType is PieceType.Gin or PieceType.Kin;
+            float originalReach = weapon.motion switch {
+                WeaponPresentation.Motion.Thrust => 4.15f, WeaponPresentation.Motion.Knife => 2.79f,
+                _ => polearm ? 3.83f : 3.57f
+            };
+            check(Mathf.Abs(farthestForward - originalReach) < .12f,
+                $"{name} retains its forward contact range ({farthestForward:F2} weapon-local units)");
+
+            foreach (float fov in new[] { 50f, 60f, 90f })
+            {
+                camera.fieldOfView = fov;
+                int leastVisible = 13;
+                for (int frame = 0; frame <= 24; frame++)
+                {
+                    Sample(weapon.attackDuration * frame / 24f);
+                    int visible = 0;
+                    for (int part = 0; part <= 12; part++)
+                    {
+                        float alongBlade = Mathf.Lerp(mesh.min.y, mesh.max.y, part / 12f);
+                        Vector3 mark = weapon.visual.TransformPoint(new Vector3(mesh.center.x, alongBlade, mesh.center.z));
+                        Vector3 p = camera.WorldToViewportPoint(mark);
+                        if (p.z > camera.nearClipPlane && p.x > .01f && p.x < .99f && p.y > .02f && p.y < .98f) visible++;
+                    }
+                    leastVisible = Mathf.Min(leastVisible, visible);
+                }
+                check(leastVisible >= 3, $"{name} keeps a visible section in the split view at {fov}° ({leastVisible}/13 samples)");
+            }
+        }
+        finally
+        {
+            camera.fieldOfView = previousFov;
+            Set(weapon, "attackStarted", previousStart);
+            Set(weapon, "attackFromGrip", previousGrip);
+            Set(weapon, "attackFromRotation", previousRotation);
+            weapon.RefreshPose();
+        }
+    }
+
     public static IEnumerator Flight(Action<bool,string> check,Action<string> shot)
     {
         SceneManager.LoadScene("Main");yield return .7d;Duel(PieceType.Hisya);yield return 3.9d;
@@ -102,6 +222,7 @@ public static class WeaponMotionChecks
             // Pause the simulation and sample the real presentation's clock at known times;
             // the input/physics checks below still run with the ordinary game clock.
             var session=GameSessionUI.Instance;session.enabled=false;Time.timeScale=0;
+            CheckMeleeStroke(w, p.GetComponentInChildren<Camera>(), check);
             void Pose(float elapsed,string label)
             {
                 Set(w,"attackStarted",Time.time-elapsed);w.SendMessage("LateUpdate");Sample(w,label,trace,shot,type.ToString());
@@ -171,8 +292,9 @@ public static class WeaponMotionChecks
                 var guardedRotation=w.visual.localRotation;new KeimaSkill().UseSkill(p,p.playerStatus);w.RefreshPose();
                 check(Quaternion.Angle(guardedRotation,w.visual.localRotation)<3,"Keima dash starts smoothly from an active guard");
                 var start=Field(w,"skillStarted");session.enabled=false;Time.timeScale=0;
-                Set(w,"skillStarted",Time.time-.64f);w.RefreshPose();var beforeEnd=w.visual.localRotation;
-                Set(w,"skillStarted",Time.time-.66f);w.RefreshPose();
+                float duration = (float)Field(w,"skillDuration");
+                Set(w,"skillStarted",Time.time-duration+.01f);w.RefreshPose();var beforeEnd=w.visual.localRotation;
+                Set(w,"skillStarted",Time.time-duration-.01f);w.RefreshPose();
                 check(Quaternion.Angle(beforeEnd,w.visual.localRotation)<3,"Keima dash recovers smoothly to its still-active guard");
                 Set(w,"skillStarted",start);session.enabled=true;Time.timeScale=1;
             }
@@ -181,10 +303,12 @@ public static class WeaponMotionChecks
             if(type==PieceType.Hisya){Set(p,"pitch",30f);yield return .15d;}
             idlePos=w.visual.localPosition;idleRot=w.visual.localRotation;skill.UseSkill(p,p.playerStatus);
             float cooldown=skill.cooldownTimer;yield return .12d;
+            w.RefreshPose();
             Sample(w,"08-skill-start",trace,shot,type.ToString());
-            check(Changed(w,idlePos,idleRot),type+" accepted skill animates its held weapon");
+            bool skillMoved = Changed(w,idlePos,idleRot);
             skill.UseSkill(p,p.playerStatus);check(skill.cooldownTimer<=cooldown,type+" cooldown skill input does not restart the effect");
-            yield return .12d;Sample(w,"09-skill-action",trace,shot,type.ToString());
+            yield return .12d;w.RefreshPose();Sample(w,"09-skill-action",trace,shot,type.ToString());
+            check(cooldown > 0f && (skillMoved || Changed(w,idlePos,idleRot)),type+" accepted skill animates its held weapon");
             var pausedPos=w.visual.localPosition;var pausedRot=w.visual.localRotation;
             GameSessionUI.Instance.OpenPause();yield return .25d;
             check(Vector3.Distance(w.visual.localPosition,pausedPos)<.03f&&Quaternion.Angle(w.visual.localRotation,pausedRot)<2,type+" pause freezes the current motion");
@@ -251,6 +375,11 @@ public static class WeaponMotionChecks
             Duel(type,true);yield return 3.9d;
             var p=One();var w=p.WeaponObject.GetComponent<WeaponPresentation>();
             InputSystem.QueueStateEvent(one,new GamepadState{rightTrigger=1});yield return .1d;
+            if (type == PieceType.Hisya)
+            {
+                check(p.BowDrawAmount > 0f && !w.IsAttacking,"Promoted rook draws while RT is held");
+                InputSystem.QueueStateEvent(one,new GamepadState());yield return .1d;
+            }
             check(w.IsAttacking&&p.PieceType==type,type+" promoted piece retains its weapon attack");
             InputSystem.QueueStateEvent(one,new GamepadState());
             SceneManager.LoadScene("Main");yield return .7d;

@@ -1,5 +1,4 @@
 using App.Audio;
-using System;
 using UnityEngine;
 
 namespace App.Main.Player
@@ -22,10 +21,6 @@ namespace App.Main.Player
         private bool zoomActive = false;
         public bool IsZoomed => zoomActive;
         private float zoomTimer = 0f;
-
-        // カメラの元のFOVを保持して正確に復元する
-        private Camera cachedCamera = null;
-        private float originalFOV = -1f;
 
         public void SecondaryAction(Player player, PlayerStatus playerStatus)
         {
@@ -79,17 +74,10 @@ namespace App.Main.Player
 
         private void ActivateZoom()
         {
-            if (zoomActive) return;
-
-            cachedCamera = player.GetComponentInChildren<Camera>();
-            if (cachedCamera == null) return;
-
-            // 元のFOVを保存してから変更（重ね掛けを避ける）
-            originalFOV = cachedCamera.fieldOfView;
-            cachedCamera.fieldOfView = originalFOV / Mathf.Max(0.0001f, zoomMultiplier);
-            player.WeaponObject?.GetComponent<WeaponPresentation>()?.SetAiming(true);
-
+            if (zoomActive || player.DuelCamera == null) return;
             zoomActive = true;
+            player.RefreshFieldOfView();
+            player.WeaponObject?.GetComponent<WeaponPresentation>()?.SetAiming(true);
             GameAudio.Play(SoundCue.AimIn,player);
             zoomTimer = (zoomDuration > 0f) ? zoomDuration : Mathf.Infinity;
         }
@@ -97,26 +85,11 @@ namespace App.Main.Player
         private void DeactivateZoom()
         {
             if (!zoomActive) return;
-
-            player.WeaponObject?.GetComponent<WeaponPresentation>()?.SetAiming(false);
-
-            if (cachedCamera != null)
-            {
-                try
-                {
-                    // 元のFOV が有効なら戻す
-                    if (originalFOV > 0f)
-                        cachedCamera.fieldOfView = originalFOV;
-                }
-                catch { }
-            }
-
-            // 状態リセット
             zoomActive = false;
+            player.RefreshFieldOfView();
+            player.WeaponObject?.GetComponent<WeaponPresentation>()?.SetAiming(false);
             GameAudio.Play(SoundCue.AimOut,player);
             zoomTimer = 0f;
-            originalFOV = -1f;
-            cachedCamera = null;
         }
     }
 }

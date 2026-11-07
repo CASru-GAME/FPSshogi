@@ -13,6 +13,7 @@ public static class GameplayMeleeChecks
 
     public static IEnumerator Run(Action<string, bool> check)
     {
+        MeleeBodyChecks.Run(check);
         using (var fixture = new Fixture())
         {
             var owner = fixture.Player("Owner", Origin);

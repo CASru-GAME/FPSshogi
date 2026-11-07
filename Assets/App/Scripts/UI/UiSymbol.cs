@@ -7,7 +7,7 @@ namespace App.UI
     [RequireComponent(typeof(CanvasRenderer))]
     public sealed class UiSymbol : MaskableGraphic
     {
-        public enum Kind { Heart, Bow, Gun, Sword, Shield, Zoom, Jump, Dash, Flash, Slow, Turret, Gamepad, Keyboard, Check, Pause, Ring, LeftShade, RightShade, TopShade, BottomShade }
+        public enum Kind { Heart, Bow, Gun, Sword, Shield, Zoom, Jump, Dash, Flash, Slow, Turret, Gamepad, Keyboard, Check, Pause, Ring, LeftShade, RightShade, TopShade, BottomShade, MeleeReach }
         public Kind Shape;
         public float Solid;
         float fill=1;
@@ -53,6 +53,9 @@ namespace App.UI
                     if(solid>0)ShadeQuad(vh,0,solid,color,color);
                     ShadeQuad(vh,solid,1,color,clear);break;
                 case Kind.Ring: Circle(vh,.5f,.5f,.45f,fill,.055f);break;
+                case Kind.MeleeReach:
+                    Path(vh,.18f,.67f,.045f,.67f,.045f,.33f,.18f,.33f);
+                    Path(vh,.82f,.67f,.955f,.67f,.955f,.33f,.82f,.33f);break;
                 case Kind.Heart:
                     Vector2 last=Vector2.zero;for(int i=0;i<=64;i++){float t=i*Mathf.PI*2/64f;var p=new Vector2(.5f+Mathf.Pow(Mathf.Sin(t),3)*.39f,.52f+(13*Mathf.Cos(t)-5*Mathf.Cos(2*t)-2*Mathf.Cos(3*t)-Mathf.Cos(4*t))*.026f);if(i>0)Line(vh,last.x,last.y,p.x,p.y);last=p;}break;
                 case Kind.Bow: Path(vh,.25f,.12f,.43f,.23f,.58f,.5f,.43f,.77f,.25f,.88f,.25f,.12f);Path(vh,.1f,.5f,.9f,.5f,.74f,.65f);Line(vh,.9f,.5f,.74f,.35f);break;
