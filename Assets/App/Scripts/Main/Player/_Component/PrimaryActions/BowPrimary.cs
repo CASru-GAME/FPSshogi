@@ -76,6 +76,7 @@ namespace App.Main.Player
                 Debug.LogWarning("[BowPrimary] SubWeaponObject (arrow prefab) is not assigned on player.");
                 lastUseTime=Time.time;return;
             }
+            App.PlayData.PlayRecorder.Current?.Attack(playerStatus);
             GameAudio.Play(SoundCue.BowRelease,player);
             // 射撃アニメ（武器に PlayerWeapon があれば優先して再生）
             try
@@ -99,7 +100,7 @@ namespace App.Main.Player
             {
                 var target = blockedLaunch.collider.GetComponentInParent<Player>();
                 if (target != null && target != player)
-                    target.playerStatus?.TakeDamage(Mathf.CeilToInt(playerStatus.AttackPoint.Current * damageMultiplier), cam.transform.position);
+                    target.playerStatus?.TakeDamage(Mathf.CeilToInt(playerStatus.AttackPoint.Current * damageMultiplier), cam.transform.position, playerStatus);
                 CombatVisuals.Impact(player, blockedLaunch.point);
                 if(target==null)GameAudio.Play(SoundCue.ArrowImpact,player,blockedLaunch.point);
                 lastUseTime = Time.time;

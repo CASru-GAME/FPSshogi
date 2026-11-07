@@ -78,6 +78,7 @@ namespace App.Main.Player
             // クールダウン開始
             isOnCooldown = true;
             cooldownTimer = cooldownTime;
+            App.PlayData.PlayRecorder.Current?.Skill(playerStatus);
             GameAudio.Play(SoundCue.Dash,player);
             player.WeaponObject?.GetComponent<WeaponPresentation>()?.PlaySkill(WeaponPresentation.SkillMotion.Dash, moveDuration + .45f, moveDuration);
         }
@@ -140,7 +141,7 @@ namespace App.Main.Player
                 // ダメージを適用（PlayerStatus.TakeDamage を使う）
                 try
                 {
-                    targetStatus.TakeDamage(damage, player.transform.position);
+                    targetStatus.TakeDamage(damage, player.transform.position, playerStatus, App.PlayData.HitKind.Skill);
                     Debug.Log("[KeimaSkill] Applied " + damage + " damage to " + p.name);
                 }
                 catch (Exception)

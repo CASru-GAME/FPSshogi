@@ -146,7 +146,7 @@ namespace App.Main.Player
                 var ts = target.playerStatus;
                 if (ts != null)
                 {
-                    ts.TakeDamage(damage, launchPosition);
+                    ts.TakeDamage(damage, launchPosition, ownerStatus);
                 }
             }
             catch { }

@@ -46,6 +46,7 @@ namespace App.Main.Player
 
             // 所有者をセット
             weapon.SetOwner(player);
+            App.PlayData.PlayRecorder.Current?.Attack(playerStatus);
 
             // アニメ再生して再生時間を取得（ヒット有効時間に使う）
             float attackDuration = weapon.PlayAnimation(weapon.attackAnimationName);
@@ -82,7 +83,7 @@ namespace App.Main.Player
                 var ts = target.playerStatus;
                 if (ts != null)
                 {
-                    try { ts.TakeDamage(damage, player.transform.position); }
+                    try { ts.TakeDamage(damage, player.transform.position, playerStatus); }
                     catch (Exception) { }
                 }
             };

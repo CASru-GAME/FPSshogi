@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using App.Audio;
+using App.PlayData;
 using App.Main.Player;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +17,7 @@ namespace App.UI
         readonly Text[] connectionStates=new Text[2];
         Text connection;
         PieceGuidePanel guide;
+        string lastExport;
         public bool Visible=>root.gameObject.activeSelf;
         public MenuPanels(RectTransform parent,GameSessionUI session){this.session=session;root=UiTheme.Rect(parent,"Menus",0,0,1920,1080);}
         void Clear(bool shade=true)
@@ -161,11 +163,58 @@ namespace App.UI
             hp.onClick.AddListener(()=>{session.ShowHpNumbers=!session.ShowHpNumbers;SetLabel();});
             UiTheme.Box(panel,"HP setting rule",0,y + 72,1220,1,UiTheme.Rule);
             var reset=UiTheme.Button(panel,"Reset settings button","初期値に戻す",850,y + 100,370,65,()=>{session.ResetSettings();Settings();});
+            var feedback = UiTheme.Label(panel, "Play data status", "", 0, y + 171, 1220, 45, 23, UiTheme.Muted);
+            var export = UiTheme.Button(panel, "Export play data", "プレイ記録をCSV出力", 0, y + 100, 428, 65, null);
+            export.onClick.AddListener(() => ExportRecords(export, feedback));
+            var folder = UiTheme.Button(panel, "Open play data folder", "出力先を開く", 448, y + 100, 316, 65, () => OpenRecords(feedback));
             controls.Add(hp);
+            controls.Add(export);
+            controls.Add(folder);
             controls.Add(reset);
             controls.Add(back);
             UiTheme.VerticalNavigation(controls.ToArray());
             session.Focus(controls[0]);
+        }
+        async void ExportRecords(Button button, Text feedback)
+        {
+            button.interactable = false;
+            feedback.text = "書き出し中…";
+            try
+            {
+                var result = await PlayDataFiles.ExportAsync();
+                if (result.directory != null) lastExport = result.directory;
+                if (feedback != null)
+                {
+                    feedback.text = result.matches == 0 ? "書き出せる対局はありません。" :
+                        $"{result.matches}局・{result.duels}決闘を書き出しました。";
+                    if (result.skipped > 0) feedback.text += $"　読み込めない記録 {result.skipped}件";
+                }
+            }
+            catch (System.Exception ex)
+            {
+                if (feedback != null) feedback.text = "書き出せませんでした。保存先の空き容量と書き込み権限を確認してください。";
+                Debug.LogWarning("プレイ記録のCSV出力に失敗しました。 " + ex.Message);
+            }
+            finally { if (button != null) button.interactable = true; }
+        }
+
+        void OpenRecords(Text feedback)
+        {
+            try
+            {
+                string path = System.IO.Directory.Exists(lastExport) ? lastExport : PlayDataFiles.ExportsDirectory;
+                System.IO.Directory.CreateDirectory(path);
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = path, UseShellExecute = true })?.Dispose();
+#else
+                Application.OpenURL(new System.Uri(path + System.IO.Path.DirectorySeparatorChar).AbsoluteUri);
+#endif
+            }
+            catch (System.Exception ex)
+            {
+                feedback.text = "出力先を開けませんでした。";
+                Debug.LogWarning("プレイ記録の出力先を開けませんでした。 " + ex.Message);
+            }
         }
         public void Selection(){Clear();Header("プレイヤー選択","Selection back button",session.CancelSelection);selection=new PlayerSelectionPanel(root,session);}
         public void Connection()

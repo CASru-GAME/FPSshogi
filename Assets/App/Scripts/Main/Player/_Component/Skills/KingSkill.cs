@@ -23,6 +23,7 @@ namespace App.Main.Player
         {
             if(isOnCooldown||player==null||playerStatus==null)return;
             this.player=player;this.playerStatus=playerStatus;cooldownTimer=cooldownTime;
+            App.PlayData.PlayRecorder.Current?.Skill(playerStatus);
             GameAudio.Play(SoundCue.Command,player);
             player.WeaponObject?.GetComponent<WeaponPresentation>()?.PlaySkill(WeaponPresentation.SkillMotion.Command,.85f);
             if(gunbaiPrefab!=null)

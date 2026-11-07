@@ -94,6 +94,7 @@ namespace App.Main.Player
 
             // 即時ヒットスキャン
             Ray ray = new Ray(muzzle.position, aimDir);
+            App.PlayData.PlayRecorder.Current?.TurretShot(ownerStatus);
             if (ShotPhysics.Raycast(ray, range, hitLayers, owner, out RaycastHit hit, transform))
             {
                 var hitPlayer = hit.collider.GetComponentInParent<Player>();
@@ -176,7 +177,7 @@ namespace App.Main.Player
                 var ts = target.playerStatus;
                 if (ts != null)
                 {
-                    ts.TakeDamage(damage, transform.position);
+                    ts.TakeDamage(damage, transform.position, ownerStatus, App.PlayData.HitKind.Turret);
                 }
             }
             catch { }

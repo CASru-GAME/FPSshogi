@@ -148,6 +148,7 @@ namespace App.Main.Player
             RefreshDuelCameras();
             CursorDisable();
             SetPlayerCondition();
+            App.PlayData.PlayRecorder.Current?.BeginDuel(shogiBoard, PlayerOne.GetComponent<Player>(), PlayerTwo.GetComponent<Player>());
         }
 
         //プレイヤーのプレハブをスポーンポジションに戻す

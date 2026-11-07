@@ -8,6 +8,7 @@ using System.Reflection;
 using App.Main.GameMaster;
 using App.Main.Player;
 using App.Main.ShogiThings;
+using App.PlayData;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
@@ -85,6 +86,18 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         Check(GameObject.Find("Zoom sensitivity slider 0") != null && GameObject.Find("Screen divider") == null &&
             Camera.main != null && !one.GetComponentInChildren<Camera>().enabled && !two.GetComponentInChildren<Camera>().enabled,
             "Native controller opens duel settings over a continuous room view");
+        var export = GameObject.Find("Export play data").GetComponent<UnityEngine.UI.Button>();
+        Check(export != null && GameObject.Find("Open play data folder") != null, "Native settings expose local play record export");
+        export.onClick.Invoke();
+        yield return WaitForExport(export);
+        var snapshot = ReadMatches().Single();
+        Check(snapshot.result == "unfinished" && snapshot.duels.Single().result == "unfinished",
+            "Native mid-match export preserves an unfinished duel");
+        double pausedSeconds = snapshot.duels[0].seconds;
+        yield return new WaitForSecondsRealtime(.5f);
+        export.onClick.Invoke();
+        yield return WaitForExport(export);
+        Check(Math.Abs(ReadMatches().Single().duels[0].seconds - pausedSeconds) < .01, "Native exported combat clock excludes time in settings");
         Shot("duel-settings"); yield return new WaitForSecondsRealtime(.25f);
         yield return Tap(one, GamepadButton.East);
         yield return Tap(one, GamepadButton.Start);
@@ -105,6 +118,12 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         Input(two, new GamepadState { rightTrigger = 1 }); yield return new WaitForSecondsRealtime(.15f); Input(two, new GamepadState());
         Check(one.playerStatus.Hp.Current < beforeOne, "Native second gamepad fires the gun through a trigger");
         Destroy(field);
+        // An early press is rejected. The next accepted shot points away from the opponent.
+        yield return new WaitForSecondsRealtime(.08f);
+        Input(two, new GamepadState {rightTrigger=1}); yield return new WaitForSecondsRealtime(.1f); Input(two, new GamepadState());
+        yield return new WaitForSecondsRealtime(two.PrimaryCooldown + .12f);
+        Place(two, two.transform.position, 90);
+        Input(two, new GamepadState {rightTrigger=1}); yield return new WaitForSecondsRealtime(.12f); Input(two, new GamepadState());
 
         var initialPosition = one.transform.position;
         Input(one, new GamepadState { leftStick = Vector2.up }); yield return new WaitForSecondsRealtime(.2f); Input(one, new GamepadState());
@@ -130,6 +149,11 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         Check(Find<GameStateHolder>().CurrentState == State.PlayerTwoTurn && Find<ShogiBoard>().GetCapturedPieces(PlayerType.PlayerOne).Count == 1, "Native resume resolves the capture and changes turn");
         Check(one.playerStatus.MoveSpeed.Current == one.playerStatus.MoveSpeed.Default && !one.GetComponentInChildren<Camera>().enabled, "Native duel end removes slow and restores board presentation");
 
+        var resumedBoard = Find<ShogiBoard>();
+        resumedBoard.GetBoard()[0,6] = new Fuhyo(PlayerType.PlayerTwo);
+        Check(resumedBoard.MovePiece(0,6,0,5,PlayerType.PlayerTwo) == ShogiBoard.MoveResult.NormalMove &&
+            resumedBoard.SetPiece(2,4,PieceType.Kyosya,PlayerType.PlayerOne) == ShogiBoard.MoveResult.NormalMove,
+            "Native board accepts a move and a captured-piece drop before leaving the match");
         SceneManager.LoadScene("Main"); yield return new WaitForSecondsRealtime(.8f); StartDuel(new Gin(PlayerType.PlayerTwo)); yield return new WaitForSecondsRealtime(3.6f);
         One().playerStatus.TakeDamage(10000); Two().playerStatus.TakeDamage(10000); yield return new WaitForSecondsRealtime(.2f); Shot("draw");
         var drawBoard = Find<ShogiBoard>();
@@ -156,6 +180,10 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         Place(king, new Vector3(contact.x, origin.y, contact.z), 180);
         var kingHp = king.playerStatus.Hp;
         Check(kingHp.Current == 160, "Native king starts the spear exchange at full health");
+        Input(king, new GamepadState {leftTrigger=1}); yield return new WaitForSecondsRealtime(.10f); Input(king, new GamepadState());
+        Input(pawn, new GamepadState {rightTrigger=1}); yield return new WaitForSecondsRealtime(.45f); Input(pawn, new GamepadState());
+        Check(kingHp.Current == 160, "Native guarded spear contact removes no HP");
+        yield return new WaitForSecondsRealtime(.75f);
         for (int hit = 1; hit <= 5; hit++)
         {
             Input(pawn, new GamepadState { rightTrigger = 1 });
@@ -167,7 +195,81 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         Shot("king-victory"); yield return new WaitForSecondsRealtime(.2f);
         Check(Find<GameStateHolder>().CurrentState == State.PlayerOneWin, "Native king defeat ends the match with the correct winner");
         SceneManager.LoadScene("Title"); yield return new WaitForSecondsRealtime(.6f); Shot("title"); yield return new WaitForSecondsRealtime(.2f);
+        yield return CheckRecords(supportDamage);
         Finish();
+    }
+
+    static MatchRecord[] ReadMatches() => Directory.GetFiles(PlayDataFiles.RecordsDirectory, "*.json")
+        .Select(file => JsonUtility.FromJson<MatchRecord>(File.ReadAllText(file))).ToArray();
+
+    static IEnumerator WaitForExport(UnityEngine.UI.Button button)
+    {
+        float deadline = Time.realtimeSinceStartup + 10f;
+        while (!button.interactable && Time.realtimeSinceStartup < deadline) yield return null;
+    }
+
+    IEnumerator CheckRecords(int supportDamage)
+    {
+        var matches = ReadMatches();
+        Check(matches.Length == 3 && matches.Select(m => m.id).Distinct().Count() == 3 &&
+            matches.All(m => m.device1 == "gamepad" && m.device2 == "gamepad"), "Native disk records separate three matches and both gamepad seats");
+        var ranged = matches.Single(m => m.duels.Single().seats[1].piece == "香車");
+        var duel = ranged.duels[0];
+        Check(ranged.result == "interrupted" && ranged.moves == 3 && ranged.drops == 1 && duel.move == 1 && duel.attackingSeat == 1 &&
+            duel.result == "1P", "Native interrupted match retains its completed duel, turns and drop");
+        Check(duel.seats[0].attacks == 1 && duel.seats[0].hits == 1 && duel.seats[0].primaryDamage == 44 &&
+            duel.seats[1].attacks == 2 && duel.seats[1].hits == 1 && duel.seats[1].primaryDamage == 36 &&
+            duel.seats[1].hitDistanceSum > 0, "Native history includes a miss and excludes the rejected cooldown press");
+        Check(matches.Single(m => m.duels[0].result == "draw").result == "interrupted", "Native draw does not become a win in saved history");
+        var winner = matches.Single(m => m.result == "1P");
+        var pawn = winner.duels[0].seats[0]; var king = winner.duels[0].seats[1];
+        Check(pawn.hits == 6 && pawn.attacks == 6 && pawn.primaryDamage == 160 && king.hitsBlocked == 1 &&
+            king.damageTaken == 160 && king.hpLeft == 0, "Native history distinguishes contact, guard and effective damage");
+        Check(king.skillUses == 1 && king.attacks == 0 && king.turretShots >= king.turretHits && king.turretHits > 0 &&
+            king.turretDamage == supportDamage && pawn.damageTaken == supportDamage && pawn.hpLeft == pawn.hpMax - supportDamage,
+            "Native turret activity stays separate from personal accuracy and matches HP lost");
+
+        // Join a new match through the lobby with a different device pair. Start
+        // a second duel from the other side, then leave while it is still active.
+        var keyboard = Keyboard.current ?? InputSystem.AddDevice<Keyboard>();
+        if (Mouse.current == null) InputSystem.AddDevice<Mouse>();
+        App.UI.GameSessionUI.Instance.StartMatch();
+        yield return new WaitForSecondsRealtime(.4f);
+        foreach (var device in new InputDevice[] {keyboard, second, keyboard, second})
+        {
+            var tap = SelectionTestInput.Tap(device);
+            while (tap.MoveNext()) yield return new WaitForSecondsRealtime((float)(double)tap.Current);
+        }
+        yield return new WaitForSecondsRealtime(1.5f);
+        StartDuel(new Gin(PlayerType.PlayerTwo));
+        yield return new WaitForSecondsRealtime(3.6f);
+        One().playerStatus.TakeDamage(10000);
+        yield return new WaitForSecondsRealtime(2.7f);
+        var board = Find<ShogiBoard>(); var grid = board.GetBoard();
+        Array.Clear(grid, 0, grid.Length);
+        grid[4,4] = new Keima(PlayerType.PlayerOne); grid[4,4].Promote();
+        grid[4,5] = new Hisya(PlayerType.PlayerTwo); grid[4,5].Promote();
+        Check(board.MovePiece(4,5,4,4,PlayerType.PlayerTwo) == ShogiBoard.MoveResult.DuelMove,
+            "Native second seat starts a duel between promoted pieces");
+        App.UI.GameSessionUI.Instance.ReturnTitle();
+        yield return new WaitForSecondsRealtime(.8f);
+        var mixed = ReadMatches().Single(m => m.device1 == "keyboard_mouse");
+        var last = mixed.duels.Last();
+        Check(mixed.device2 == "gamepad" && mixed.result == "interrupted" && mixed.moves == 2 &&
+            mixed.duels.Count == 2 && mixed.duels[0].result == "2P" && last.result == "interrupted" && last.number == 2 &&
+            last.move == 2 && last.attackingSeat == 2 && last.seats.All(s => s.promoted && s.hpLeft == s.hpMax) &&
+            last.seats[0].piece == "桂馬" && last.seats[1].piece == "飛車",
+            "Native mixed-input history preserves both duels, seat order, promotions and a mid-duel exit");
+
+        // A damaged source record must not hide valid history or break the menu.
+        File.WriteAllText(Path.Combine(PlayDataFiles.RecordsDirectory,"damaged.json"), "{");
+        App.UI.GameSessionUI.Instance.OpenSettings();
+        var button = GameObject.Find("Export play data").GetComponent<UnityEngine.UI.Button>();
+        button.onClick.Invoke();
+        yield return WaitForExport(button);
+        string message = GameObject.Find("Play data status").GetComponent<UnityEngine.UI.Text>().text;
+        Check(message.Contains("4局・5決闘") && message.Contains("1件"), "Native settings export all valid records and report a damaged file");
+        File.WriteAllText(Path.Combine(output,"play-data-root.txt"), PlayDataFiles.Root);
     }
     void Finish()
     {

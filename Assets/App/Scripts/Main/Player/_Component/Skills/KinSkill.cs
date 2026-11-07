@@ -26,6 +26,7 @@ namespace App.Main.Player
 
             // クールダウンを開始
             cooldownTimer = cooldownTime;
+            App.PlayData.PlayRecorder.Current?.Skill(playerStatus);
             GameAudio.Play(SoundCue.KinShield,player);
             timer = duration;
             CombatVisuals.Aura(player,"KinSkill_Aura",new UnityEngine.Color(1f,.75f,.25f,.9f),duration);

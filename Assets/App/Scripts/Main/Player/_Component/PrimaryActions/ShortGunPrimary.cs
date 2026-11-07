@@ -45,6 +45,7 @@ namespace App.Main.Player
             }
 
             // アニメ再生（PlayerWeapon があればそれを優先してクリップ長を取得して再生）
+            App.PlayData.PlayRecorder.Current?.Attack(playerStatus);
             float animDuration = 0f;
             PlayerWeapon pw = null;
             if (player.WeaponObject != null)
@@ -126,7 +127,7 @@ namespace App.Main.Player
                         var ts = targetPlayer.playerStatus;
                         if (ts != null)
                         {
-                            ts.TakeDamage(damage, player.transform.position);
+                            ts.TakeDamage(damage, player.transform.position, playerStatus);
                         }
                     }
                     catch (Exception ex)
