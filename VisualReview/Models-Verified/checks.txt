@@ -1,0 +1,173 @@
+PASS Bow bends in the arrow's vertical flight plane
+PASS Bow has one dynamic string, no baked duplicate
+PASS Bow string attached to limb tip 0
+PASS Bow string attached to limb tip 2
+PASS Nocked arrow tail meets string
+PASS Assets/App/Prefabs/MainWeapons/Arrow.prefab shares the held arrow mesh
+PASS Assets/App/Prefabs/MainWeapons/Arrow.prefab points forward on local Z
+PASS Assets/App/Prefabs/MainWeapons/Arrow.prefab shares held arrow materials
+PASS Assets/App/Prefabs/SubWeapons/Arrow.prefab shares the held arrow mesh
+PASS Assets/App/Prefabs/SubWeapons/Arrow.prefab points forward on local Z
+PASS Assets/App/Prefabs/SubWeapons/Arrow.prefab shares held arrow materials
+PASS Gun_long muzzle is centered on barrel opening
+PASS Gun_short muzzle is centered on barrel opening
+PASS Katana blade has no new open seams (0.257 versus source 0.257)
+PASS Spear/Model has no collapsed triangles (0)
+PASS Spear/Model finite vertices and valid indices
+PASS Gun_short/Model has no collapsed triangles (0)
+PASS Gun_short/Model finite vertices and valid indices
+PASS Katana/Model has no collapsed triangles (0)
+PASS Katana/Model finite vertices and valid indices
+PASS Naginata_red/Model has no collapsed triangles (0)
+PASS Naginata_red/Model finite vertices and valid indices
+PASS Naginata_blue/Model has no collapsed triangles (0)
+PASS Naginata_blue/Model finite vertices and valid indices
+PASS Gun_long/Model has no collapsed triangles (0)
+PASS Gun_long/Model finite vertices and valid indices
+PASS Bow/Model has no collapsed triangles (0)
+PASS Bow/Model finite vertices and valid indices
+PASS Bow/NockedArrow has no collapsed triangles (0)
+PASS Bow/NockedArrow finite vertices and valid indices
+PASS knife/Model has no collapsed triangles (0)
+PASS knife/Model finite vertices and valid indices
+PASS Gunbai/Fan0 has no collapsed triangles (0)
+PASS Gunbai/Fan0 finite vertices and valid indices
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker9 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker8 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker7 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker6 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker5 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker4 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker3 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker2 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker1 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker9 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker8 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker7 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker6 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker5 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker4 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker3 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker2 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker1 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker9 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker8 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker7 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker6 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker5 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker4 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker3 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker2 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker1 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker9 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker8 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker7 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker6 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker5 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker4 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker3 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker2 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker1 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker9 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker8 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker7 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker6 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker5 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker4 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker3 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker2 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker1 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker9 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker8 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker7 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker6 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker5 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker4 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker3 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker2 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker1 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker9 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker8 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker7 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker6 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker5 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker4 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker3 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker2 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker1 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker9 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker8 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker7 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker6 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker5 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker4 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker3 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker2 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker1 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker9 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker8 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker7 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker6 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker5 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker4 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker3 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker2 mesh/material assignments intact
+PASS Assets/App/Prefabs\boardSquarePostitionMarkers.prefab/Marker1 mesh/material assignments intact
+PASS Assets/App/Prefabs\CapturedPiecePointer.prefab/CapturedPiecePointer mesh/material assignments intact
+PASS Assets/App/Prefabs\CapturedPiecePositionMarkers.prefab/Marker mesh/material assignments intact
+PASS Assets/App/Prefabs\CapturedPiecePositionMarkers.prefab/Marker (1) mesh/material assignments intact
+PASS Assets/App/Prefabs\CapturedPiecePositionMarkers.prefab/Marker (2) mesh/material assignments intact
+PASS Assets/App/Prefabs\CapturedPiecePositionMarkers.prefab/Marker (3) mesh/material assignments intact
+PASS Assets/App/Prefabs\CapturedPiecePositionMarkers.prefab/Marker (4) mesh/material assignments intact
+PASS Assets/App/Prefabs\CapturedPiecePositionMarkers.prefab/Marker (5) mesh/material assignments intact
+PASS Assets/App/Prefabs\CapturedPiecePositionMarkers.prefab/Marker (6) mesh/material assignments intact
+PASS Assets/App/Prefabs\CapturedPiecePositionMarkers.prefab/Marker (7) mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/トロフィー mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/円柱.002 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/壁 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/天井 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/床 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/座布団 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/LOD1 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/LOD2 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/座布団.001 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/LOD1 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/LOD2 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/掛け軸 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/掛け軸床 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/本 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/LOD1 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/LOD2 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/柱 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/箪笥 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/LOD1 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/LOD2 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/襖 mesh/material assignments intact
+PASS Assets/App/Prefabs\Field2.prefab/障子 mesh/material assignments intact
+PASS Assets/App/Prefabs\fuhyo.prefab/fuhyo mesh/material assignments intact
+PASS Assets/App/Prefabs\gin.prefab/gin mesh/material assignments intact
+PASS Assets/App/Prefabs\gyoku.prefab/gyoku mesh/material assignments intact
+PASS Assets/App/Prefabs\hisya.prefab/hisya mesh/material assignments intact
+PASS Assets/App/Prefabs\kakugyo.prefab/kakugyo mesh/material assignments intact
+PASS Assets/App/Prefabs\kakugyo_black.prefab/kakugyo_black mesh/material assignments intact
+PASS Assets/App/Prefabs\keima.prefab/keima mesh/material assignments intact
+PASS Assets/App/Prefabs\kin.prefab/kin mesh/material assignments intact
+PASS Assets/App/Prefabs\kyosya.prefab/kyosya mesh/material assignments intact
+PASS Assets/App/Prefabs\Marker.prefab/Marker mesh/material assignments intact
+PASS Assets/App/Prefabs\ou.prefab/ou mesh/material assignments intact
+PASS Assets/App/Prefabs\ShogiPointer.prefab/ShogiPointer mesh/material assignments intact
+PASS Assets/App/Prefabs\MainWeapons\Arrow.prefab/Arrow mesh/material assignments intact
+PASS Assets/App/Prefabs\SubWeapons\Arrow.prefab/Arrow mesh/material assignments intact
+PASS Assets/App/Prefabs\SubWeapons\tetuhau.prefab/tetuhau mesh/material assignments intact
+PASS Assets/App/Art/Weapons\Bow.prefab/Model mesh/material assignments intact
+PASS Assets/App/Art/Weapons\Bow.prefab/NockedArrow mesh/material assignments intact
+PASS Assets/App/Art/Weapons\Gunbai.prefab/Fan0 mesh/material assignments intact
+PASS Assets/App/Art/Weapons\Gun_long.prefab/Model mesh/material assignments intact
+PASS Assets/App/Art/Weapons\Gun_short.prefab/Model mesh/material assignments intact
+PASS Assets/App/Art/Weapons\Katana.prefab/Model mesh/material assignments intact
+PASS Assets/App/Art/Weapons\KingTurret.prefab/Body mesh/material assignments intact
+PASS Assets/App/Art/Weapons\KingTurret.prefab/Gun mesh/material assignments intact
+PASS Assets/App/Art/Weapons\knife.prefab/Model mesh/material assignments intact
+PASS Assets/App/Art/Weapons\Naginata_blue.prefab/Model mesh/material assignments intact
+PASS Assets/App/Art/Weapons\Naginata_red.prefab/Model mesh/material assignments intact
+PASS Assets/App/Art/Weapons\Spear.prefab/Model mesh/material assignments intact

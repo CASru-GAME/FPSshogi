@@ -11,6 +11,7 @@ using App.Main.GameMaster;
 using App.Main.Player;
 using App.Main.ShogiThings;
 using State=App.Main.GameMaster.GameStateHolder.GameState;
+using App.Audio;
 
 namespace App.UI
 {
@@ -40,6 +41,8 @@ namespace App.UI
         InputSystemUIInputModule module;
         InputDevice menuOwner, requestedMenuDevice;
         float transitionRemaining;
+        int countdownBeat;
+        bool duelCountdown,pendingDuelWin;
         bool releaseGate, previousReady, pendingNewMatch, waitingReconnect, quitting;
         float releaseAfter, menuNavigationAfter;
         Selectable defaultFocus;
@@ -107,11 +110,47 @@ namespace App.UI
         {
             if(players==null)return;
             Devices.Pair(players.PlayerOne.GetComponent<PlayerInput>(),0);Devices.Pair(players.PlayerTwo.GetComponent<PlayerInput>(),1);
-            players.PlayerOne.GetComponent<Player>().LookSensitivity=Sensitivity(0);players.PlayerTwo.GetComponent<Player>().LookSensitivity=Sensitivity(1);
+            ApplyLookSettings(0);
+            ApplyLookSettings(1);
         }
-        public float Sensitivity(int player)=>PlayerPrefs.GetFloat("FPSshogi.Sensitivity."+player,2f);
-        public void SetSensitivity(int player,float value){PlayerPrefs.SetFloat("FPSshogi.Sensitivity."+player,Mathf.Clamp(value,.5f,5));PairPlayers();}
-        public void ResetSettings(){SetSensitivity(0,2);SetSensitivity(1,2);ShowHpNumbers=false;PlayerPrefs.Save();}
+        void ApplyLookSettings(int slot)
+        {
+            if (players == null) return;
+            var player = (slot == 0 ? players.PlayerOne : players.PlayerTwo).GetComponent<Player>();
+            player.LookSensitivity = Sensitivity(slot);
+            player.GamepadZoomSensitivity = ZoomSensitivity(slot);
+        }
+        static string ZoomKey(int slot) => "FPSshogi.GamepadZoomSensitivity." + slot;
+        public float Sensitivity(int slot) => Mathf.Clamp(PlayerPrefs.GetFloat("FPSshogi.Sensitivity." + slot,
+            Player.DefaultLookSensitivity), Player.MinLookSensitivity, Player.MaxLookSensitivity);
+        public float ZoomSensitivity(int slot)
+        {
+            float initial = Mathf.Round(Sensitivity(slot) * Player.InitialZoomFraction * 10f) / 10f;
+            return Mathf.Clamp(PlayerPrefs.GetFloat(ZoomKey(slot), initial), Player.MinZoomSensitivity, Player.MaxLookSensitivity);
+        }
+        public void SetSensitivity(int slot, float value)
+        {
+            // Anchor the initial zoom value to the player's old setting before changing normal look.
+            if (!PlayerPrefs.HasKey(ZoomKey(slot))) PlayerPrefs.SetFloat(ZoomKey(slot), ZoomSensitivity(slot));
+            PlayerPrefs.SetFloat("FPSshogi.Sensitivity." + slot, Mathf.Clamp(value, Player.MinLookSensitivity, Player.MaxLookSensitivity));
+            ApplyLookSettings(slot);
+        }
+        public void SetZoomSensitivity(int slot, float value)
+        {
+            PlayerPrefs.SetFloat(ZoomKey(slot), Mathf.Clamp(value, Player.MinZoomSensitivity, Player.MaxLookSensitivity));
+            ApplyLookSettings(slot);
+        }
+        public void ResetSettings()
+        {
+            for (int slot = 0; slot < 2; slot++)
+            {
+                SetSensitivity(slot, Player.DefaultLookSensitivity);
+                SetZoomSensitivity(slot, Player.DefaultLookSensitivity * Player.InitialZoomFraction);
+            }
+            ShowHpNumbers = false;
+            GameAudio.ResetVolumes();
+            PlayerPrefs.Save();
+        }
         bool GateDevice(InputDevice device)=>device!=null&&(IsTitle||pendingNewMatch||Devices.PlayerFor(device)>=0);
         bool ControlsHeld()
         {
@@ -124,7 +163,8 @@ namespace App.UI
         void ArmSelection(){selectionInputArmed=false;selectionStartAt=-1;menuNavigationAfter=Time.unscaledTime+.2f;keyboardSelectionFrame=-1;}
         void Update()
         {
-            bool changed=Devices.Refresh(waitingReconnect);
+            if(pendingDuelWin){pendingDuelWin=false;GameAudio.Play(SoundCue.DuelWin);}
+            bool changed=RefreshDevices();
             if(changed){PairPlayers();if(waitingReconnect){ArmSelection();if(!Devices.Ready)Devices.BeginSelection(true);}}
             if(!IsTitle&&!Devices.Ready&&previousReady&&!pendingNewMatch&&page!=Page.Result&&page!=Page.Loading){
                 waitingReconnect=true;Devices.BeginSelection(true);history.Clear();page=Page.Connection;ArmSelection();RenderPage();
@@ -134,7 +174,12 @@ namespace App.UI
                 string focus=EventSystem.current?.currentSelectedGameObject?.name;menuOwner=null;RenderPage(focus);
             }
             if(releaseGate&&Time.unscaledTime>=releaseAfter&&!ControlsHeld())releaseGate=false;
-            if(transitionRemaining>0&&page==Page.None&&Devices.Ready){transitionRemaining=Mathf.Max(0,transitionRemaining-Time.unscaledDeltaTime);if(transitionRemaining==0)GateRelease();}
+            if(transitionRemaining>0&&page==Page.None&&Devices.Ready){
+                transitionRemaining=Mathf.Max(0,transitionRemaining-Time.unscaledDeltaTime);
+                int beat=Mathf.CeilToInt(transitionRemaining);
+                if(duelCountdown&&beat<countdownBeat){countdownBeat=beat;GameAudio.Play(beat>0?SoundCue.Countdown:SoundCue.DuelStart);}
+                if(transitionRemaining==0){duelCountdown=false;GateRelease();}
+            }
             transition.Tick(transitionRemaining,page==Page.None);
             if(page==Page.Selection){if(PollSelection())return;}else if(page==Page.Connection)PollConnection();
             if(Time.unscaledTime>menuNavigationAfter&&!loading){
@@ -158,25 +203,33 @@ namespace App.UI
                 EventSystem.current.sendNavigationEvents=navigation&&Time.unscaledTime>menuNavigationAfter;
                 if(navigation&&EventSystem.current.currentSelectedGameObject==null&&defaultFocus!=null&&defaultFocus.interactable)EventSystem.current.SetSelectedGameObject(defaultFocus.gameObject);
             }
-            ApplyBlock();if(state!=null){bool duel=state.CurrentState==State.Duel;boardHud.Tick(!duel);duelHud.Tick(duel);}
+            ApplyBlock();if(state!=null){bool duel=state.CurrentState==State.Duel;bool showHud=page==Page.None&&transitionRemaining<=0;boardHud.Tick(showHud&&!duel);duelHud.Tick(showHud&&duel);}
         }
+        bool RefreshDevices()=>Devices.Refresh(waitingReconnect,SeatDisconnected,SeatReconnected);
+        static void SeatDisconnected(int seat)=>GameAudio.PlayForSeat(SoundCue.Disconnect,seat);
+        static void SeatReconnected(int seat)=>GameAudio.PlayForSeat(SoundCue.PlayerJoin,seat);
         void ApplyBlock()
         {
             bool blocked=Blocked;if(players!=null)players.SetUiBlocked(blocked);Time.timeScale=blocked?0:1;
+            GameAudio.SetCombatPaused(blocked||IsTitle);
             bool locked=!IsTitle&&state!=null&&state.CurrentState==State.Duel&&!blocked;
             Cursor.lockState=locked?CursorLockMode.Locked:CursorLockMode.None;Cursor.visible=!locked;
         }
         void StateChanged(State from,State to)
         {
-            if(to==State.Duel){var pieces=FindFirstObjectByType<ShogiBoard>().GetDuelPiece();transition.Duel(pieces[PlayerType.PlayerOne],pieces[PlayerType.PlayerTwo]);transitionRemaining=3;}
-            if(to==State.DuelPlayerOneWin||to==State.DuelPlayerTwoWin){transition.Result(to==State.DuelPlayerOneWin?0:1);transitionRemaining=2;}
-            if(to==State.DuelDraw){transition.Result(-1);transitionRemaining=2;}
+            if(from==State.Duel&&to!=State.Duel){GameAudio.StopCombat();duelCountdown=false;}
+            if(to==State.Duel){var pieces=FindFirstObjectByType<ShogiBoard>().GetDuelPiece();transition.Duel(pieces[PlayerType.PlayerOne],pieces[PlayerType.PlayerTwo]);transitionRemaining=3;duelCountdown=true;countdownBeat=3;GameAudio.Play(SoundCue.Countdown);}
+            if(to==State.DuelPlayerOneWin||to==State.DuelPlayerTwoWin){transition.Result(to==State.DuelPlayerOneWin?0:1);transitionRemaining=2;pendingDuelWin=true;}
+            if(to==State.DuelDraw){transition.Result(-1);transitionRemaining=2;GameAudio.Play(SoundCue.DuelDraw);}
             if(transitionRemaining>0&&(to==State.PlayerOneTurn||to==State.PlayerTwoTurn))transition.NextTurn(to==State.PlayerOneTurn?1:2);
-            if(to==State.PlayerOneWin||to==State.PlayerTwoWin){transitionRemaining=0;winner=to==State.PlayerOneWin?1:2;history.Clear();page=Page.Result;RenderPage();}
+            if(to==State.PlayerOneWin||to==State.PlayerTwoWin){pendingDuelWin=false;transitionRemaining=0;winner=to==State.PlayerOneWin?1:2;history.Clear();page=Page.Result;GameAudio.Play(SoundCue.MatchWin);RenderPage();}
             ApplyBlock();
         }
         void RenderPage(string focus=null)
         {
+            bool menuOpen = page != Page.None;
+            players?.SetMenuOpen(menuOpen);
+            if (menuOpen) duelHud?.Tick(false);
             SetMenuDevices();defaultFocus=null;
             switch(page){
                 case Page.None:menus.Hide();break;case Page.Title:menus.Title();break;case Page.Pause:menus.Pause();break;
@@ -191,6 +244,7 @@ namespace App.UI
         void Open(Page target)
         {
             if(loading||page==target)return;ClaimMenu();
+            GameAudio.Play(SoundCue.UiOpen);
             history.Push(new PageFrame{page=page,focus=EventSystem.current?.currentSelectedGameObject?.name});page=target;RenderPage();
         }
         public void OpenPause(){if(IsTitle||page==Page.Result||waitingReconnect)return;Open(Page.Pause);}
@@ -213,6 +267,7 @@ namespace App.UI
             if(IsTitle||page==Page.Result||page==Page.Selection||loading)return;
             if(pendingNewMatch){StartMatch();return;}
             if(!Devices.Ready||waitingReconnect&&!Devices.AllPrepared){page=Page.Connection;RenderPage();return;}
+            if(!waitingReconnect)GameAudio.Play(SoundCue.UiBack);
             waitingReconnect=false;history.Clear();page=Page.None;RenderPage();GateRelease();ApplyBlock();
         }
         public void StartMatch()
@@ -223,6 +278,7 @@ namespace App.UI
         public void CancelSelection()
         {
             if(page!=Page.Selection)return;
+            GameAudio.Play(SoundCue.UiBack);
             Devices.BeginSelection(false);pendingNewMatch=false;selectionStartAt=-1;history.Clear();
             if(IsTitle){page=Page.Title;RenderPage();}else ReturnTitle();
         }
@@ -231,8 +287,14 @@ namespace App.UI
         {
             if(page!=Page.Selection||!selectionInputArmed||device==null)return;
             if(device is Keyboard){if(keyboardSelectionFrame==Time.frameCount)return;keyboardSelectionFrame=Time.frameCount;}
+            int beforeSlot=Devices.PlayerFor(device);bool wasPrepared=beforeSlot>=0&&Devices.IsPrepared(beforeSlot);
             if(cancel){if(!Devices.Cancel(device)&&!Devices.HasParticipants){CancelSelection();return;}}else Devices.Confirm(device);
-            UiFeedback.Play(cancel);menus.UpdateDevices();
+            int afterSlot=Devices.PlayerFor(device);
+            if(cancel){if(beforeSlot>=0)GameAudio.PlayForSeat(wasPrepared?SoundCue.UiBack:SoundCue.PlayerLeave,beforeSlot);}
+            else if(beforeSlot<0&&afterSlot>=0)GameAudio.PlayForSeat(SoundCue.PlayerJoin,afterSlot);
+            else if(afterSlot>=0&&!wasPrepared&&Devices.IsPrepared(afterSlot))GameAudio.PlayForSeat(SoundCue.PlayerReady,afterSlot);
+            else if(afterSlot<0)GameAudio.Play(SoundCue.UiInvalid);
+            menus.UpdateDevices();
         }
         bool PollSelection()
         {
@@ -242,13 +304,14 @@ namespace App.UI
             if(page!=Page.Selection)return false;menus.UpdateDevices();
             if(!Devices.AllPrepared){selectionStartAt=-1;return false;}if(selectionStartAt<0)selectionStartAt=Time.unscaledTime+1;
             if(Time.unscaledTime<selectionStartAt)return false;
-            Devices.Refresh();if(!Devices.AllPrepared){selectionStartAt=-1;return false;}
+            RefreshDevices();if(!Devices.AllPrepared){selectionStartAt=-1;return false;}
             pendingNewMatch=false;LoadScene("Main");return true;
         }
         public void ConfirmReconnect(InputDevice device)
         {
             if(page!=Page.Connection||!selectionInputArmed||Devices.PlayerFor(device)<0)return;
-            Devices.Confirm(device);UiFeedback.Play(false);menus.UpdateDevices();if(Devices.AllPrepared)Resume();
+            bool wasPrepared=Devices.IsPrepared(Devices.PlayerFor(device));
+            Devices.Confirm(device);if(!wasPrepared)GameAudio.PlayForSeat(SoundCue.PlayerReady,Devices.PlayerFor(device));menus.UpdateDevices();if(Devices.AllPrepared)Resume();
         }
         void PollConnection()
         {
@@ -259,7 +322,7 @@ namespace App.UI
         void CancelReconnect(InputDevice device)
         {
             if(page!=Page.Connection)return;int slot=Devices.PlayerFor(device);if(slot<0)return;
-            if(Devices.IsPrepared(slot))Devices.Cancel(device);else{requestedMenuDevice=device;ConfirmReturn();}
+            if(Devices.IsPrepared(slot)){Devices.Cancel(device);GameAudio.Play(SoundCue.UiBack);}else{requestedMenuDevice=device;ConfirmReturn();}
         }
         void LoadScene(string name){if(loading)return;loading=true;loadError=null;history.Clear();page=Page.Loading;RenderPage();PlayerPrefs.Save();StartCoroutine(Load(name));}
         IEnumerator Load(string name)

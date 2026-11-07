@@ -1,0 +1,34 @@
+FAIL Bow bends in the arrow's vertical flight plane
+FAIL Bow has one dynamic string, no baked duplicate
+FAIL Bow string attached to limb tip 0
+FAIL Bow string attached to limb tip 2
+PASS Nocked arrow tail meets string
+FAIL Assets/App/Prefabs/MainWeapons/Arrow.prefab shares the held arrow mesh
+PASS Assets/App/Prefabs/MainWeapons/Arrow.prefab points forward on local Z
+FAIL Assets/App/Prefabs/MainWeapons/Arrow.prefab shares held arrow materials
+FAIL Assets/App/Prefabs/SubWeapons/Arrow.prefab shares the held arrow mesh
+PASS Assets/App/Prefabs/SubWeapons/Arrow.prefab points forward on local Z
+FAIL Assets/App/Prefabs/SubWeapons/Arrow.prefab shares held arrow materials
+FAIL Gun_long muzzle is centered on barrel opening
+FAIL Gun_short muzzle is centered on barrel opening
+PASS Katana blade has no new open seams (0.257 versus source 0.257)
+PASS Spear/Model has no collapsed triangles (0)
+PASS Spear/Model finite vertices and valid indices
+FAIL Gun_short/Model has no collapsed triangles (4)
+PASS Gun_short/Model finite vertices and valid indices
+FAIL Katana/Model has no collapsed triangles (264)
+PASS Katana/Model finite vertices and valid indices
+FAIL Naginata_red/Model has no collapsed triangles (2)
+PASS Naginata_red/Model finite vertices and valid indices
+FAIL Naginata_blue/Model has no collapsed triangles (18)
+PASS Naginata_blue/Model finite vertices and valid indices
+FAIL Gun_long/Model has no collapsed triangles (3)
+PASS Gun_long/Model finite vertices and valid indices
+PASS Bow/Model has no collapsed triangles (0)
+PASS Bow/Model finite vertices and valid indices
+PASS Bow/NockedArrow has no collapsed triangles (0)
+PASS Bow/NockedArrow finite vertices and valid indices
+FAIL knife/Model has no collapsed triangles (3)
+PASS knife/Model finite vertices and valid indices
+FAIL Gunbai/Fan0 has no collapsed triangles (16)
+PASS Gunbai/Fan0 finite vertices and valid indices

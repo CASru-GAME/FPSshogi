@@ -60,7 +60,7 @@ namespace App.UI
             else { slots[slot] = null; schemes[slot] = null; wasConnected[slot] = false; }
             return true;
         }
-        public bool Refresh(bool reconnectMissing = false)
+        public bool Refresh(bool reconnectMissing = false,System.Action<int> disconnected=null,System.Action<int> reconnected=null)
         {
             bool changed = false;
             var used = new HashSet<InputDevice>();
@@ -68,7 +68,10 @@ namespace App.UI
             for (int i=0; i<2; i++)
             {
                 bool connected = Connected(i);
-                if (connected != wasConnected[i]) { changed = true; wasConnected[i] = connected; }
+                if (connected != wasConnected[i]) {
+                    changed = true; wasConnected[i] = connected;
+                    if(connected)reconnected?.Invoke(i);else disconnected?.Invoke(i);
+                }
                 if (connected) continue;
                 prepared[i] = false;
                 if (!reconnectMissing || slots[i] == null) continue;
@@ -82,6 +85,7 @@ namespace App.UI
                 { replacement = new InputDevice[]{Keyboard.current, Mouse.current}; scheme = "Keyboard&Mouse"; }
                 if (replacement == null) continue;
                 slots[i] = replacement; schemes[i] = scheme; changed = true; wasConnected[i] = true;
+                reconnected?.Invoke(i);
                 foreach (var d in replacement) used.Add(d);
             }
             return changed;

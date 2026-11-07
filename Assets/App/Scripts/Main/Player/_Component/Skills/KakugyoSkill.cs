@@ -1,3 +1,4 @@
+using App.Audio;
 using System;
 using UnityEngine;
 
@@ -53,6 +54,8 @@ namespace App.Main.Player
             // クールダウン開始
             isOnCooldown = true;
             cooldownTimer = cooldownTime;
+            GameAudio.Play(SoundCue.Ascend,player);
+            player.WeaponObject?.GetComponent<WeaponPresentation>()?.PlaySkill(WeaponPresentation.SkillMotion.Ascend, ascendDuration + .25f, ascendDuration);
         }
 
         public void UpdateSkill()

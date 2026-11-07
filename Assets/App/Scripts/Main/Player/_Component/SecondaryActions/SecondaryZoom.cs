@@ -1,3 +1,4 @@
+using App.Audio;
 using System;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ namespace App.Main.Player
         public float CooldownDuration => cooldown;
         private float cooldownTimer = 0f;
         private bool zoomActive = false;
+        public bool IsZoomed => zoomActive;
         private float zoomTimer = 0f;
 
         // カメラの元のFOVを保持して正確に復元する
@@ -85,14 +87,18 @@ namespace App.Main.Player
             // 元のFOVを保存してから変更（重ね掛けを避ける）
             originalFOV = cachedCamera.fieldOfView;
             cachedCamera.fieldOfView = originalFOV / Mathf.Max(0.0001f, zoomMultiplier);
+            player.WeaponObject?.GetComponent<WeaponPresentation>()?.SetAiming(true);
 
             zoomActive = true;
+            GameAudio.Play(SoundCue.AimIn,player);
             zoomTimer = (zoomDuration > 0f) ? zoomDuration : Mathf.Infinity;
         }
 
         private void DeactivateZoom()
         {
             if (!zoomActive) return;
+
+            player.WeaponObject?.GetComponent<WeaponPresentation>()?.SetAiming(false);
 
             if (cachedCamera != null)
             {
@@ -107,6 +113,7 @@ namespace App.Main.Player
 
             // 状態リセット
             zoomActive = false;
+            GameAudio.Play(SoundCue.AimOut,player);
             zoomTimer = 0f;
             originalFOV = -1f;
             cachedCamera = null;

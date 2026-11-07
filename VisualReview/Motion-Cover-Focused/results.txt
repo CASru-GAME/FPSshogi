@@ -1,0 +1,18 @@
+PASS Bow projectile starts at the visible nocked arrow
+PASS Hisya cooldown input does not restart attack
+PASS Hisya attack returns to idle with hitbox closed
+PASS Hisya attack restores its resting orientation
+PASS Hisya second player has the same attack motion
+PASS Hisya secondary action changes the weapon stance
+PASS Hisya accepted skill animates its held weapon
+PASS Hisya cooldown skill input does not restart the effect
+PASS Hisya pause freezes the current motion
+PASS Hisya skill does not create an unintended primary hitbox
+PASS Hisya nock behind thin cover cannot damage the target beyond it
+PASS Hisya shot is consumed by cover between camera and bow
+PASS Low cover leaves the reticle aim unobstructed
+FAIL Bow does not spawn its solid projectile intersecting low cover
+PASS Bow nock below the reticle cannot shoot through low cover
+PASS Bow launch against low cover is consumed at the obstruction
+PASS Changing duel clears temporary skill visuals
+PASS No motion runtime errors

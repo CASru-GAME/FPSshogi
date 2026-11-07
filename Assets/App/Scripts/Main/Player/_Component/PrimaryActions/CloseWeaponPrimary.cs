@@ -1,3 +1,4 @@
+using App.Audio;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -54,6 +55,13 @@ namespace App.Main.Player
             if(onPlayerHitHandler!=null)weapon.OnPlayerHit-=onPlayerHitHandler;
             hitTargets.Clear();
             lastUseTime = Time.time;
+            var cue=player.PieceType switch {
+                App.Main.ShogiThings.PieceType.Fuhyo=>SoundCue.SpearSwing,
+                App.Main.ShogiThings.PieceType.Keima=>SoundCue.SwordSwing,
+                App.Main.ShogiThings.PieceType.King=>SoundCue.KnifeSwing,
+                _=>SoundCue.NaginataSwing
+            };
+            GameAudio.Play(cue,player);
 
             // ヒット通知イベントを購読（ラムダで重複ヒット防止とダメージ適用を行う）
             onPlayerHitHandler = (Player target) =>

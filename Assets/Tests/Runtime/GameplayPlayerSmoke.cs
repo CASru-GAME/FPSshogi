@@ -48,6 +48,11 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
     static Player Two() => Find<PlayerManager>().PlayerTwo.GetComponent<Player>();
     static Gamepad Pad(Player player) => player.GetComponent<PlayerInput>().devices.OfType<Gamepad>().First();
     static void Input(Player player, GamepadState state) => InputSystem.QueueStateEvent(Pad(player), state);
+    static IEnumerator Tap(Player player, GamepadButton button)
+    {
+        Input(player, new GamepadState().WithButton(button)); yield return new WaitForSecondsRealtime(.14f);
+        Input(player, new GamepadState()); yield return new WaitForSecondsRealtime(.22f);
+    }
     void Check(bool pass, string name) { results.Add((pass ? "PASS " : "FAIL ") + name); File.WriteAllLines(Path.Combine(output, "results.txt"), results); }
     void Shot(string name) => ScreenCapture.CaptureScreenshot(Path.Combine(output, name + ".png"));
     static void Place(Player player, Vector3 position, float yaw)
@@ -74,6 +79,18 @@ public sealed class GameplayPlayerSmoke : MonoBehaviour
         StartDuel(new Kyosya(PlayerType.PlayerTwo)); yield return new WaitForSecondsRealtime(3.6f);
         var one = One(); var two = Two(); Shot("duel"); yield return new WaitForSecondsRealtime(.2f);
         Check(!App.UI.GameSessionUI.BlocksGameplay && one.GetComponentInChildren<Camera>().enabled, "Native countdown enables split-screen combat");
+        yield return Tap(one, GamepadButton.Start);
+        yield return Tap(one, GamepadButton.DpadDown);
+        yield return Tap(one, GamepadButton.South);
+        Check(GameObject.Find("Zoom sensitivity slider 0") != null && GameObject.Find("Screen divider") == null &&
+            Camera.main != null && !one.GetComponentInChildren<Camera>().enabled && !two.GetComponentInChildren<Camera>().enabled,
+            "Native controller opens duel settings over a continuous room view");
+        Shot("duel-settings"); yield return new WaitForSecondsRealtime(.25f);
+        yield return Tap(one, GamepadButton.East);
+        yield return Tap(one, GamepadButton.Start);
+        Check(!App.UI.GameSessionUI.BlocksGameplay && GameObject.Find("Screen divider") != null &&
+            one.GetComponentInChildren<Camera>().enabled && two.GetComponentInChildren<Camera>().enabled,
+            "Native resume restores both split views and the divider");
 
         // Keep the real players, configured actions, input pairing and projectile prefabs.
         var origin = new Vector3(3000, 200, 2000); Place(one, origin, 0); Place(two, origin + Vector3.forward * 8, 180);

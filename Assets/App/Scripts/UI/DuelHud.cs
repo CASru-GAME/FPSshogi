@@ -24,8 +24,13 @@ namespace App.UI
         {
             this.devices=devices;players=new[]{manager.PlayerOne.GetComponent<Player>(),manager.PlayerTwo.GetComponent<Player>()};
             root=UiTheme.Rect(parent,"Duel HUD",0,0,0,0);UiTheme.Stretch(root);
+            root.SetAsFirstSibling(); // Draw the divider and combat overlays beneath full-screen menus.
             for(int p=0;p<2;p++){
                 var half=UiTheme.Rect(root,$"P{p+1} viewport HUD",0,0,0,0);half.anchorMin=new Vector2(p*.5f,0);half.anchorMax=new Vector2((p+1)*.5f,1);half.offsetMin=half.offsetMax=Vector2.zero;
+                var topShade=UiTheme.Shade(half,"HUD top shade",0,0,0,180,UiSymbol.Kind.TopShade,.8f,.25f);
+                topShade.anchorMin=Vector2.up;topShade.anchorMax=Vector2.one;topShade.offsetMin=new Vector2(0,-180);topShade.offsetMax=Vector2.zero;
+                var bottomShade=UiTheme.Shade(half,"HUD bottom shade",0,0,0,250,UiSymbol.Kind.BottomShade,.9f,.25f);
+                bottomShade.anchorMin=Vector2.zero;bottomShade.anchorMax=Vector2.right;bottomShade.offsetMin=Vector2.zero;bottomShade.offsetMax=new Vector2(0,250);
                 for(int e=0;e<4;e++){
                     hurt[p,e]=UiTheme.Box(half,$"P{p+1} damage edge {e}",0,0,0,0,Color.clear);var r=hurt[p,e].rectTransform;
                     r.anchorMin=e==0||e==2?Vector2.zero:e==1?Vector2.right:Vector2.up;
@@ -33,27 +38,27 @@ namespace App.UI
                     r.pivot=e==0?new Vector2(0,.5f):e==1?new Vector2(1,.5f):e==2?new Vector2(.5f,0):new Vector2(.5f,1);
                     r.sizeDelta=e<2?new Vector2(8,0):new Vector2(0,8);r.anchoredPosition=Vector2.zero;
                 }
-                var identity=UiTheme.Box(half,$"P{p+1} identity backing",30,28,320,54,UiTheme.Panel).rectTransform;
-                UiTheme.Box(identity,"Player stripe",0,0,5,54,UiTheme.PlayerColor(p));title[p]=UiTheme.Label(identity,$"P{p+1} identity","",20,4,285,46,28);
-                var menuPanel=UiTheme.Box(half,"Menu hint backing",0,0,175,44,UiTheme.Panel).rectTransform;Anchor(menuPanel,Vector2.one,Vector2.one,new Vector2(-30,-30));
+                var identity=UiTheme.Rect(half,$"P{p+1} identity backing",30,28,320,54);
+                title[p]=UiTheme.Label(identity,$"P{p+1} identity","",0,4,320,46,28,UiTheme.PlayerColor(p));
+                var menuPanel=UiTheme.Rect(half,"Menu hint backing",0,0,175,44);Anchor(menuPanel,Vector2.one,Vector2.one,new Vector2(-30,-30));
                 UiTheme.Symbol(menuPanel,"Pause symbol",UiSymbol.Kind.Pause,9,8,28);menu[p]=UiTheme.Label(menuPanel,$"P{p+1} menu key","",45,2,121,40,22);
                 var cross=UiTheme.Rect(half,$"P{p+1} Crosshair",0,0,28,28);Anchor(cross,new Vector2(.5f,.5f),new Vector2(.5f,.5f),Vector2.zero);
-                UiTheme.Box(cross,"Shadow horizontal",0,11,28,6,UiTheme.Ink);UiTheme.Box(cross,"Shadow vertical",11,0,6,28,UiTheme.Ink);
+                UiTheme.Box(cross,"Shadow horizontal",0,11,28,6,UiTheme.Shadow);UiTheme.Box(cross,"Shadow vertical",11,0,6,28,UiTheme.Shadow);
                 UiTheme.Box(cross,"Horizontal",2,13,24,2,Color.white);UiTheme.Box(cross,"Vertical",13,2,2,24,Color.white);
-                var status=UiTheme.Box(half,$"P{p+1} status backing",0,0,370,82,UiTheme.Panel).rectTransform;Anchor(status,Vector2.zero,Vector2.zero,new Vector2(30,30));
+                var status=UiTheme.Rect(half,$"P{p+1} status backing",0,0,370,82);Anchor(status,Vector2.zero,Vector2.zero,new Vector2(30,30));
                 UiTheme.Symbol(status,"Heart",UiSymbol.Kind.Heart,18,22,40,UiTheme.PlayerColor(p));
                 UiTheme.Box(status,"HP track",78,34,265,14,UiTheme.Track);health[p]=UiTheme.Box(status,$"P{p+1} health bar",78,34,265,14,UiTheme.PlayerColor(p));
                 hp[p]=UiTheme.Label(status,$"P{p+1} HP","",78,50,265,28,18,UiTheme.Muted,TextAnchor.MiddleRight);
-                var actions=UiTheme.Box(half,$"P{p+1} actions",0,0,322,122,UiTheme.Panel).rectTransform;Anchor(actions,Vector2.right,Vector2.right,new Vector2(-30,30));
+                var actions=UiTheme.Rect(half,$"P{p+1} actions",0,0,322,122);Anchor(actions,Vector2.right,Vector2.right,new Vector2(-30,30));
                 for(int a=0;a<3;a++){
                     icons[p,a]=UiTheme.Symbol(actions,$"P{p+1} action {a}",UiSymbol.Kind.Sword,30+a*100,20,48);
                     rings[p,a]=UiTheme.Symbol(actions,$"P{p+1} cooldown {a}",UiSymbol.Kind.Ring,21+a*100,11,66,UiTheme.PlayerColor(p));rings[p,a].Fill=0;
                     keys[p,a]=UiTheme.Key(actions,$"P{p+1} action key {a}","",17+a*100,83,76,29);
                 }
-                var climbPanel=UiTheme.Box(half,$"P{p+1} climb backing",0,0,210,45,UiTheme.Panel).rectTransform;Anchor(climbPanel,new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(0,182));
+                var climbPanel=UiTheme.Rect(half,$"P{p+1} climb backing",0,0,210,45);Anchor(climbPanel,new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(0,182));
                 climb[p]=UiTheme.Label(climbPanel,$"P{p+1} climb","",10,0,190,45,23,UiTheme.Ink,TextAnchor.MiddleCenter);
             }
-            var divider=UiTheme.Box(root,"Screen divider",0,0,2,0,UiTheme.Ink).rectTransform;
+            var divider=UiTheme.Box(root,"Screen divider",0,0,2,0,UiTheme.Shadow).rectTransform;
             divider.anchorMin=new Vector2(.5f,0);divider.anchorMax=new Vector2(.5f,1);divider.pivot=new Vector2(.5f,.5f);divider.anchoredPosition=Vector2.zero;
         }
         public void Tick(bool visible)
@@ -69,7 +74,6 @@ namespace App.UI
                         var direction=Quaternion.Inverse(Quaternion.Euler(0,yaw,0))*(status.ImpactSource.Value-p.transform.position);
                         damageEdge[i]=Mathf.Abs(direction.x)>Mathf.Abs(direction.z)?direction.x<0?0:1:direction.z<0?2:3;
                     }
-                    UiFeedback.Impact(i,status.ImpactBlocked);
                 }
                 float flash=Mathf.Clamp01((damageUntil[i]-Time.unscaledTime)/.4f);
                 for(int e=0;e<4;e++){var tint=blockedImpact[i]?UiTheme.Gold:new Color(.8f,.16f,.1f);tint.a=(damageEdge[i]<0||damageEdge[i]==e)?flash*.8f:0;hurt[i,e].color=tint;}

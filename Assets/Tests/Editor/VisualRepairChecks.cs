@@ -37,7 +37,7 @@ public static class VisualRepairChecks
                 dir = "VisualReview/" + SessionState.GetString("VisualChecksDir", "After") + "/";
                 Directory.CreateDirectory(dir); results.Clear(); errors.Clear();
                 Application.logMessageReceived += Log;
-                routine = dir.Contains("Art") ? RunArt() : Run(); next = EditorApplication.timeSinceStartup + 1;
+                routine = dir.Contains("Motion") ? RunMotion() : dir.Contains("Art") ? RunArt() : Run(); next = EditorApplication.timeSinceStartup + 1;
             }
             if(s == PlayModeStateChange.ExitingPlayMode && routine != null) Finish(false);
         };
@@ -86,6 +86,15 @@ public static class VisualRepairChecks
     {
         ScreenCapture.CaptureScreenshot(dir+name+".png");
         File.WriteAllText(dir+"progress.txt",name);
+    }
+    static IEnumerator RunMotion()
+    {
+        pad1=InputSystem.AddDevice<Gamepad>("Motion check one");pad2=InputSystem.AddDevice<Gamepad>("Motion check two");yield return .4d;
+        SceneManager.LoadScene("Title");yield return .6d;
+        var join=SelectionTestInput.TwoGamepads(pad1,pad2);while(join.MoveNext())yield return join.Current;
+        var checks=dir.Contains("Flight") ? WeaponMotionChecks.Flight(Check,Shot) : dir.Contains("Capture") ? WeaponMotionChecks.Capture(Check,dir,pad1) : WeaponMotionChecks.Run(Check,Shot,dir,pad1,pad2);
+        while(checks.MoveNext())yield return checks.Current;
+        Check(errors.Count==0,"No motion runtime errors");
     }
     static IEnumerator Run()
     {

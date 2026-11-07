@@ -6,14 +6,14 @@ namespace App.UI
 {
     public static class UiTheme
     {
-        public static readonly Color Ink = new Color32(32, 36, 29, 255);
-        public static readonly Color Panel = new Color32(237, 238, 229, 255);
-        public static readonly Color Paper = new Color32(247, 246, 236, 255);
-        public static readonly Color Muted = new Color32(80, 87, 73, 255);
-        public static readonly Color Gold = new Color32(64, 104, 53, 255);
-        public static readonly Color Blue = new Color32(135, 88, 41, 255);
-        public static readonly Color Track = new Color32(196, 204, 185, 255);
-        public static readonly Color FocusColor = new Color32(214, 224, 201, 255);
+        public static readonly Color Ink = new Color32(247, 245, 234, 255);
+        public static readonly Color Muted = new Color32(200, 201, 191, 255);
+        public static readonly Color Gold = new Color32(165, 203, 150, 255);
+        public static readonly Color Blue = new Color32(234, 183, 116, 255);
+        public static readonly Color Shadow = new Color32(12, 17, 16, 255);
+        public static readonly Color Track = new Color32(105, 114, 105, 255);
+        public static readonly Color Rule = new Color32(228, 230, 214, 65);
+        public static readonly Color FocusColor = new Color32(234, 235, 215, 35);
         static Font font, titleFont;
         public static Color PlayerColor(int player) => player==0?Gold:Blue;
         public static RectTransform Rect(Transform parent, string name, float x, float y, float w, float h)
@@ -34,6 +34,32 @@ namespace App.UI
             var image = Rect(parent, name, x, y, w, h).gameObject.AddComponent<Image>();
             image.color = color; image.raycastTarget = hit; return image;
         }
+        public static RectTransform Shade(Transform parent,string name,float x,float y,float w,float h,UiSymbol.Kind edge,float opacity=.85f,float solid=0)
+        {
+            var graphic=Rect(parent,name,x,y,w,h).gameObject.AddComponent<UiSymbol>();
+            graphic.Shape=edge;graphic.Solid=solid;graphic.color=new Color(Shadow.r,Shadow.g,Shadow.b,opacity);graphic.raycastTarget=false;return graphic.rectTransform;
+        }
+        public static RectTransform EdgeShade(Transform parent,string name,float x,float y,float w,float h,UiSymbol.Kind edge,float opacity=.85f,float solid=0)
+        {
+            // Extend only the solid side and the perpendicular edges. The fade stays
+            // at the same content coordinates even when the canvas expands past 16:9.
+            const float margin=4096;
+            if(edge==UiSymbol.Kind.LeftShade||edge==UiSymbol.Kind.RightShade){
+                solid=(margin+w*solid)/(margin+w);
+                if(edge==UiSymbol.Kind.LeftShade)x-=margin;
+                w+=margin;y-=margin;h+=margin*2;
+            }else{
+                solid=(margin+h*solid)/(margin+h);
+                if(edge==UiSymbol.Kind.TopShade)y-=margin;
+                h+=margin;x-=margin;w+=margin*2;
+            }
+            return Shade(parent,name,x,y,w,h,edge,opacity,solid);
+        }
+        public static void ScreenDim(Transform parent,float opacity)
+        {
+            // The layout is centered at 1920x1080; overscan also covers wider/taller canvases.
+            Box(parent,"Screen dim",-4096,-4096,10112,9272,new Color(Shadow.r,Shadow.g,Shadow.b,opacity),true);
+        }
         public static Text Label(Transform parent, string name, string value, float x, float y, float w, float h, int size = 26, Color? color = null, TextAnchor align = TextAnchor.MiddleLeft)
         {
             if (font == null) font = Resources.Load<Font>("UI/NotoSansCJKjp-Regular");
@@ -41,18 +67,26 @@ namespace App.UI
             text.font = font; text.text = value; text.fontSize = size; text.color = color ?? Ink;
             text.alignment = align; text.raycastTarget = false;
             text.horizontalOverflow = HorizontalWrapMode.Wrap; text.verticalOverflow = VerticalWrapMode.Truncate;
+            var shadow=text.gameObject.AddComponent<UnityEngine.UI.Shadow>();shadow.effectColor=new Color(0,0,0,.65f);shadow.effectDistance=new Vector2(0,-1.5f);
             return text;
         }
         public static Button Button(Transform parent, string name, string caption, float x, float y, float w, float h, UnityAction action, bool primary = false)
         {
             var box = Box(parent, name, x, y, w, h, Color.white, true);
-            var button = box.gameObject.AddComponent<Button>(); button.targetGraphic = box;
+            var button = box.gameObject.AddComponent<UiMenuButton>(); button.targetGraphic = box;
             var colors = button.colors;
-            colors.normalColor = primary?Ink:Panel; colors.highlightedColor = primary?Gold:FocusColor;
-            colors.selectedColor = colors.highlightedColor; colors.pressedColor = primary?Muted:Track;
-            colors.disabledColor = new Color(Panel.r,Panel.g,Panel.b,.45f); colors.fadeDuration = .08f; button.colors = colors;
-            Label(box.transform, "Label", caption, 16, 4, w-32, h-8, 26, primary ? Paper : Ink, TextAnchor.MiddleCenter);
-            button.onClick.AddListener(()=>{UiFeedback.Play(false);action?.Invoke();}); return button;
+            colors.normalColor = Color.clear; colors.highlightedColor = FocusColor;
+            colors.selectedColor = FocusColor; colors.pressedColor = new Color(1,1,1,.22f);
+            colors.disabledColor = Color.clear; colors.fadeDuration = .08f; button.colors = colors;
+            button.Caption=Label(box.transform, "Label", caption, 16, 4, w-32, h-8, 26, Ink, TextAnchor.MiddleCenter);
+            button.FocusLine=Box(box.transform,"Focus line",16,h-3,w-32,2,Ink);
+            button.SetCurrent(primary);
+            box.gameObject.AddComponent<App.Audio.UiFocusSound>();
+            button.onClick.AddListener(()=>UiFeedback.Activate(action)); return button;
+        }
+        public static void Current(Button button,bool current)
+        {
+            if(button is UiMenuButton menuButton)menuButton.SetCurrent(current);
         }
         public static Text Heading(Transform parent,string name,string value,float x,float y,float w,float h,int size)
         {
@@ -68,8 +102,9 @@ namespace App.UI
         }
         public static Text Key(Transform parent,string name,string value,float x,float y,float w=72,float h=34)
         {
-            var box=Box(parent,name+" key",x,y,w,h,Track);
-            return Label(box.transform,name,value,3,1,w-6,h-2,h<32?18:20,Ink,TextAnchor.MiddleCenter);
+            var key=Rect(parent,name+" key",x,y,w,h);
+            Box(key,"Key underline",3,h-1,w-6,1,Rule);
+            return Label(key,name,value,3,1,w-6,h-2,h<32?18:20,Ink,TextAnchor.MiddleCenter);
         }
         public static RawImage Portrait(Transform parent,string name,Texture texture,float x,float y,float size)
         {
@@ -88,6 +123,26 @@ namespace App.UI
             Box(rt, "Left", 0, 0, 4, 70, color);
             Box(rt, "Right", 66, 0, 4, 70, color);
             return rt;
+        }
+    }
+
+    // Uses the same mouse/controller selection states and hit area as a normal Button.
+    public sealed class UiMenuButton : Button
+    {
+        public Text Caption;
+        public Image FocusLine;
+        bool current;
+        public void SetCurrent(bool value){current=value;RefreshAppearance();}
+        protected override void DoStateTransition(SelectionState state,bool instant)
+        {
+            base.DoStateTransition(state,instant);RefreshAppearance();
+        }
+        void RefreshAppearance()
+        {
+            bool enabled=IsInteractable();
+            bool focus=currentSelectionState==SelectionState.Selected||currentSelectionState==SelectionState.Highlighted||currentSelectionState==SelectionState.Pressed;
+            if(Caption!=null)Caption.color=enabled?UiTheme.Ink:UiTheme.Muted;
+            if(FocusLine!=null){FocusLine.gameObject.SetActive(enabled&&(current||focus));FocusLine.color=focus?UiTheme.Ink:UiTheme.Gold;}
         }
     }
 }

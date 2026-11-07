@@ -7,8 +7,9 @@ namespace App.UI
     [RequireComponent(typeof(CanvasRenderer))]
     public sealed class UiSymbol : MaskableGraphic
     {
-        public enum Kind { Heart, Bow, Gun, Sword, Shield, Zoom, Jump, Dash, Flash, Slow, Turret, Gamepad, Keyboard, Check, Pause, Ring, LeftShade }
+        public enum Kind { Heart, Bow, Gun, Sword, Shield, Zoom, Jump, Dash, Flash, Slow, Turret, Gamepad, Keyboard, Check, Pause, Ring, LeftShade, RightShade, TopShade, BottomShade }
         public Kind Shape;
+        public float Solid;
         float fill=1;
         public float Fill { get=>fill;set {value=Mathf.Clamp01(value);if(Mathf.Approximately(fill,value))return;fill=value;SetVerticesDirty();} }
         public void SetShape(Kind shape){if(Shape==shape)return;Shape=shape;SetVerticesDirty();}
@@ -28,14 +29,29 @@ namespace App.UI
             }
         }
         void Arrow(VertexHelper vh,float x,float y,float up=1){Line(vh,x,y-up*.22f,x,y+up*.22f);Path(vh,x-.15f,y+up*.07f,x,y+up*.22f,x+.15f,y+up*.07f);}
+        Vector2 ShadePoint(float depth,float side)
+        {
+            return Point(Shape==Kind.LeftShade?new Vector2(depth,side):Shape==Kind.RightShade?new Vector2(1-depth,side):Shape==Kind.TopShade?new Vector2(side,1-depth):new Vector2(side,depth));
+        }
+        void ShadeQuad(VertexHelper vh,float start,float end,Color from,Color to)
+        {
+            int j=vh.currentVertCount;
+            vh.AddVert(ShadePoint(start,0),from,Vector2.zero);vh.AddVert(ShadePoint(start,1),from,Vector2.zero);
+            vh.AddVert(ShadePoint(end,1),to,Vector2.zero);vh.AddVert(ShadePoint(end,0),to,Vector2.zero);
+            vh.AddTriangle(j,j+1,j+2);vh.AddTriangle(j,j+2,j+3);
+        }
         protected override void OnPopulateMesh(VertexHelper vh)
         {
             vh.Clear();
             switch(Shape)
             {
                 case Kind.LeftShade:
-                    int j=vh.currentVertCount;var clear=color;clear.a=0;
-                    vh.AddVert(Point(Vector2.zero),color,Vector2.zero);vh.AddVert(Point(Vector2.up),color,Vector2.zero);vh.AddVert(Point(Vector2.one),clear,Vector2.zero);vh.AddVert(Point(Vector2.right),clear,Vector2.zero);vh.AddTriangle(j,j+1,j+2);vh.AddTriangle(j,j+2,j+3);break;
+                case Kind.RightShade:
+                case Kind.TopShade:
+                case Kind.BottomShade:
+                    var clear=color;clear.a=0;float solid=Mathf.Clamp01(Solid);
+                    if(solid>0)ShadeQuad(vh,0,solid,color,color);
+                    ShadeQuad(vh,solid,1,color,clear);break;
                 case Kind.Ring: Circle(vh,.5f,.5f,.45f,fill,.055f);break;
                 case Kind.Heart:
                     Vector2 last=Vector2.zero;for(int i=0;i<=64;i++){float t=i*Mathf.PI*2/64f;var p=new Vector2(.5f+Mathf.Pow(Mathf.Sin(t),3)*.39f,.52f+(13*Mathf.Cos(t)-5*Mathf.Cos(2*t)-2*Mathf.Cos(3*t)-Mathf.Cos(4*t))*.026f);if(i>0)Line(vh,last.x,last.y,p.x,p.y);last=p;}break;

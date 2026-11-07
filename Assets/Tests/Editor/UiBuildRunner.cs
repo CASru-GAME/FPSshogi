@@ -19,5 +19,6 @@ public static class UiBuildRunner
         File.WriteAllText("Logs/ui-build-results.txt",$"Result: {report.summary.result}\nErrors: {report.summary.totalErrors}\nWarnings: {report.summary.totalWarnings}\nSize: {report.summary.totalSize}\nTime: {report.summary.totalTime}\nPath: {report.summary.outputPath}\n");
         if(report.summary.result!=BuildResult.Succeeded) throw new System.Exception("Windows build failed; see Logs/ui-build-results.txt");
         File.Copy("Assets/Resources/UI/OFL.txt","Builds/FPSshogi/Noto-OFL.txt",true);
+        File.Copy("THIRD_PARTY_AUDIO.md","Builds/FPSshogi/THIRD_PARTY_AUDIO.md",true);
     }
 }

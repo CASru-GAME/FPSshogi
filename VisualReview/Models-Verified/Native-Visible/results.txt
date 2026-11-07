@@ -1,0 +1,43 @@
+PASS Built player shader supported: Transparent
+PASS Built player shader supported: SlowField
+PASS Built player shader supported: Glow
+PASS Native weapon present 0
+PASS Native held and flying arrows share mesh
+PASS Native arrow retains held scale
+PASS Native visual effect present 0
+PASS Native weapon present 1
+PASS Native visual effect present 1
+PASS Native weapon present 2
+PASS Native visual effect present 2
+PASS Native weapon present 3
+PASS Native visual effect present 3
+PASS Native weapon present 4
+PASS Native attack animates 4
+PASS Native weapon present 5
+PASS Native attack animates 5
+PASS Native weapon present 6
+PASS Native attack animates 6
+PASS Native weapon present 7
+PASS Native attack animates 7
+PASS Native scene change cleans effects
+PASS Native frame rendered: board.png
+PASS Native frame rendered: bow-redrawn.png
+PASS Native frame rendered: bow-release.png
+PASS Native frame rendered: gun-shot.png
+PASS Native frame rendered: king-fan.png
+PASS Native frame rendered: silver-buff.png
+PASS Native frame rendered: slow-field.png
+PASS Native frame rendered: title.png
+PASS Native frame rendered: weapon-0-idle.png
+PASS Native frame rendered: weapon-1-idle.png
+PASS Native frame rendered: weapon-2-idle.png
+PASS Native frame rendered: weapon-3-idle.png
+PASS Native frame rendered: weapon-4-attack.png
+PASS Native frame rendered: weapon-4-idle.png
+PASS Native frame rendered: weapon-5-attack.png
+PASS Native frame rendered: weapon-5-idle.png
+PASS Native frame rendered: weapon-6-attack.png
+PASS Native frame rendered: weapon-6-idle.png
+PASS Native frame rendered: weapon-7-attack.png
+PASS Native frame rendered: weapon-7-idle.png
+PASS No native runtime errors

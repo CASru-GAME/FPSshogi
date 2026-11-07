@@ -37,12 +37,12 @@ namespace App.Main.Player
             root.transform.localPosition=new Vector3(0,-.35f,0);
             Ring(root,1.2f,color,.035f,true);Ring(root,1.1f,color,.025f);
             foreach(var node in root.GetComponentsInChildren<Transform>())node.gameObject.layer=player.BodyLayer;
-            var weapon=player.WeaponObject?.GetComponent<WeaponPresentation>();weapon?.Guard(Mathf.Min(seconds,1));
+            var weapon=player.WeaponObject?.GetComponent<WeaponPresentation>();weapon?.Guard(seconds);
             // A small border near the grip makes the state visible to its owner too.
             if(weapon!=null)
             {
-                var grip=Scope(player,name+"_Grip",seconds);grip.transform.SetParent(weapon.transform,false);
-                grip.transform.localPosition=weapon.holdPosition;Ring(grip,.22f,color,.018f,true);
+                var grip=Scope(player,name+"_Grip",seconds);grip.transform.SetParent(weapon.visual,false);
+                grip.transform.localPosition=weapon.GripLocal+Vector3.up*.25f;Ring(grip,.22f,color,.018f,true);
             }
         }
         public static void Shot(Player player,Vector3 end,bool impact)
@@ -59,11 +59,12 @@ namespace App.Main.Player
             var flash=GameObject.CreatePrimitive(PrimitiveType.Sphere);flash.name="MuzzleFlash";Object.Destroy(flash.GetComponent<Collider>());
             flash.transform.SetParent(root.transform,false);flash.transform.localScale=Vector3.one*.16f;
             var r=flash.GetComponent<Renderer>();r.sharedMaterial=Glow;var block=new MaterialPropertyBlock();block.SetColor("_BaseColor",new Color(1,.75f,.3f));r.SetPropertyBlock(block);r.shadowCastingMode=ShadowCastingMode.Off;
-            if(impact)
-            {
-                var hit=Scope(owner,"ImpactFeedback",.2f);hit.transform.position=end;
-                Line(hit,"Impact",new[]{new Vector3(-.12f,-.12f,0),new Vector3(.12f,.12f,0),Vector3.zero,new Vector3(-.12f,.12f,0),new Vector3(.12f,-.12f,0)},new Color(1,.85f,.4f),.025f);
-            }
+            if(impact)Impact(owner,end);
+        }
+        public static void Impact(Player owner,Vector3 point)
+        {
+            var hit=Scope(owner,"ImpactFeedback",.2f);hit.transform.position=point;
+            Line(hit,"Impact",new[]{new Vector3(-.12f,-.12f,0),new Vector3(.12f,.12f,0),Vector3.zero,new Vector3(-.12f,.12f,0),new Vector3(.12f,-.12f,0)},new Color(1,.85f,.4f),.025f);
         }
     }
 }

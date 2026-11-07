@@ -1,3 +1,4 @@
+using App.Audio;
 using UnityEngine;
 namespace App.Main.Player
 {
@@ -22,6 +23,8 @@ namespace App.Main.Player
         {
             if(isOnCooldown||player==null||playerStatus==null)return;
             this.player=player;this.playerStatus=playerStatus;cooldownTimer=cooldownTime;
+            GameAudio.Play(SoundCue.Command,player);
+            player.WeaponObject?.GetComponent<WeaponPresentation>()?.PlaySkill(WeaponPresentation.SkillMotion.Command,.85f);
             if(gunbaiPrefab!=null)
             {
                 var fan=Object.Instantiate(gunbaiPrefab,player.transform);fan.name="Gunbai_Command";
@@ -45,6 +48,7 @@ namespace App.Main.Player
                 }
                 position.y=floor+.02f;
                 var turret=Object.Instantiate(proto,position,player.transform.rotation);turret.name="KingTurret";
+                GameAudio.Play(SoundCue.TurretSpawn,player,position);
                 var life=turret.AddComponent<CombatVisualLifetime>();life.owner=player;life.remaining=skillDuration;
                 var script=turret.GetComponent<KingTurret>()??turret.AddComponent<KingTurret>();
                 script.Initialize(player,playerStatus,turretFireInterval,turretRange,turretFalloffStart,turretMinDamageMul,turretDamageMultiplier,turretHitLayers,"");

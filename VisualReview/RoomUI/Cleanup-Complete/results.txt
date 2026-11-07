@@ -1,0 +1,113 @@
+PASS 01-title text fits
+PASS 01-title controls fit
+PASS Title stages all forty real pieces
+PASS Title shade has rendered geometry
+PASS Title action is on left
+PASS 01-title-2560x1080 text fits
+PASS 01-title-2560x1080 controls fit
+PASS 01-title-1280x1024 text fits
+PASS 01-title-1280x1024 controls fit
+PASS 02-quit text fits
+PASS 02-quit controls fit
+PASS Title help remains usable when its owner disconnects
+PASS Failed load has actionable return
+PASS 02-load-error text fits
+PASS 02-load-error controls fit
+PASS Error survives help and back
+PASS Keyboard exits failed load
+PASS 03-selection text fits
+PASS 03-selection controls fit
+PASS View opens help from selection
+PASS 04-rules text fits
+PASS 04-rules controls fit
+PASS 05-controls text fits
+PASS 05-controls controls fit
+PASS 06-pieces text fits
+PASS 06-pieces controls fit
+PASS Piece guide shows a rendered model
+PASS 07-promoted text fits
+PASS 07-promoted controls fit
+PASS Promotion changes model and movement
+PASS Guide returns to caller controls tab
+PASS Help returns to lobby with assignments and preparation
+PASS Both prepared players load a match
+PASS 08-board text fits
+PASS 08-board controls fit
+PASS 08-board-2560x1080 text fits
+PASS 08-board-2560x1080 controls fit
+PASS Board footer stays clear of playable squares at (2560, 1080)
+PASS 09-pause-2560x1080 text fits
+PASS 09-pause-2560x1080 controls fit
+PASS 08-board-1280x1024 text fits
+PASS 08-board-1280x1024 controls fit
+PASS Board footer stays clear of playable squares at (1280, 1024)
+PASS 09-pause-1280x1024 text fits
+PASS 09-pause-1280x1024 controls fit
+PASS Opening player owns pause
+PASS 09-pause text fits
+PASS 09-pause controls fit
+PASS Pause hides board HUD while preserving the board scene
+PASS Other player cannot dismiss pause
+PASS 10-settings text fits
+PASS 10-settings controls fit
+PASS Controller adjusts focused first-player sensitivity
+PASS Controller navigates to second-player sensitivity
+PASS Controller adjusts focused second-player sensitivity
+PASS Nested settings keep gameplay HUD hidden
+PASS Reset restores both sensitivity and HP preference
+PASS Settings returns to pause
+PASS 11-return-confirm text fits
+PASS 11-return-confirm controls fit
+PASS Cancelled return restores pause
+PASS Disconnect in nested menu blocks immediately
+PASS 12-disconnected text fits
+PASS 12-disconnected controls fit
+PASS Connection alone cannot resume
+PASS Cancel exit returns to reconnect
+PASS Held button on reconnect does not confirm
+PASS Reconnect waits for second confirmation
+PASS 13-reconnected text fits
+PASS 13-reconnected controls fit
+PASS Both confirmations resume existing board
+PASS 14-countdown text fits
+PASS 14-countdown controls fit
+PASS Countdown blocks gameplay
+PASS 15-duel text fits
+PASS 15-duel controls fit
+PASS Damage feedback points toward the actual source
+PASS HP gauge follows damage without numeric text
+PASS 16-damage text fits
+PASS 16-damage controls fit
+PASS Cooldown arc reflects the actual attack
+PASS 17-cooldown text fits
+PASS 17-cooldown controls fit
+PASS Pause hides FPS HUD and crosshairs
+PASS Pause freezes cooldown
+PASS Held movement remains blocked after resume
+PASS Neutral movement releases gameplay gate
+PASS Resume restores FPS HUD and both crosshairs
+PASS Crosshair 1 centered at (1280, 720)
+PASS Crosshair 2 centered at (1280, 720)
+PASS 18-duel-1280x720 text fits
+PASS 18-duel-1280x720 controls fit
+PASS Crosshair 1 centered at (2560, 1080)
+PASS Crosshair 2 centered at (2560, 1080)
+PASS 18-duel-2560x1080 text fits
+PASS 18-duel-2560x1080 controls fit
+PASS Crosshair 1 centered at (1280, 1024)
+PASS Crosshair 2 centered at (1280, 1024)
+PASS 18-duel-1280x1024 text fits
+PASS 18-duel-1280x1024 controls fit
+PASS 19-duel-result text fits
+PASS 19-duel-result controls fit
+PASS 20-result text fits
+PASS 20-result controls fit
+PASS King defeat offers rematch
+PASS Return loads usable title
+PASS 21-title-720 text fits
+PASS 21-title-720 controls fit
+PASS 22-settings-720 text fits
+PASS 22-settings-720 controls fit
+PASS 23-selection-720 text fits
+PASS 23-selection-720 controls fit
+PASS No runtime errors

@@ -1,0 +1,46 @@
+PASS Keima cooldown input does not restart attack
+FAIL Keima cutting stroke stays visible across the view
+PASS Keima blade sweeps from the right through the aim to the left
+PASS Keima attack returns to idle with hitbox closed
+PASS Keima attack restores its resting orientation
+PASS Keima second player has the same attack motion
+PASS Keima secondary action changes the weapon stance
+PASS Keima defensive weapon remains visible in the viewport
+PASS Keima dash starts smoothly from an active guard
+PASS Keima dash recovers smoothly to its still-active guard
+PASS Keima accepted skill animates its held weapon
+PASS Keima cooldown skill input does not restart the effect
+PASS Keima pause freezes the current motion
+PASS Keima skill does not create an unintended primary hitbox
+PASS Gin cooldown input does not restart attack
+FAIL Gin cutting stroke stays visible across the view
+PASS Gin blade sweeps from the right through the aim to the left
+PASS Gin attack returns to idle with hitbox closed
+PASS Gin attack restores its resting orientation
+PASS Gin second player has the same attack motion
+PASS Gin secondary action changes the weapon stance
+PASS Gin defensive weapon remains visible in the viewport
+PASS Gin attack starts from the current defensive stance without snapping
+PASS Gin accepted skill animates its held weapon
+PASS Gin cooldown skill input does not restart the effect
+PASS Gin pause freezes the current motion
+PASS Gin defensive stance remains while the actual buff is active after one second
+PASS Gin attack recovers smoothly to a still-active defensive stance
+PASS Gin skill does not create an unintended primary hitbox
+PASS Kin cooldown input does not restart attack
+FAIL Kin cutting stroke stays visible across the view
+PASS Kin blade sweeps from the right through the aim to the left
+PASS Kin attack returns to idle with hitbox closed
+PASS Kin attack restores its resting orientation
+PASS Kin second player has the same attack motion
+PASS Kin secondary action changes the weapon stance
+PASS Kin defensive weapon remains visible in the viewport
+PASS Kin attack starts from the current defensive stance without snapping
+PASS Kin accepted skill animates its held weapon
+PASS Kin cooldown skill input does not restart the effect
+PASS Kin pause freezes the current motion
+PASS Kin defensive stance remains while the actual buff is active after one second
+PASS Kin attack recovers smoothly to a still-active defensive stance
+PASS Kin skill does not create an unintended primary hitbox
+PASS Changing duel clears temporary skill visuals
+PASS No motion runtime errors

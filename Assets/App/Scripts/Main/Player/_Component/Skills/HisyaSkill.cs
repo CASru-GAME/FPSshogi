@@ -1,3 +1,4 @@
+using App.Audio;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -97,6 +98,8 @@ namespace App.Main.Player
             // クールダウン開始
             isOnCooldown = true;
             cooldownTimer = cooldownTime;
+            GameAudio.Play(SoundCue.FieldCast,player);
+            player.WeaponObject?.GetComponent<WeaponPresentation>()?.PlaySkill(WeaponPresentation.SkillMotion.Field, .6f);
         }
 
         public void UpdateSkill()
@@ -174,6 +177,7 @@ namespace App.Main.Player
             var effect = ps.EffectList.GetEffect<HisyaFieldSlowEffect>();
             if (effect == null)
             {
+                GameAudio.Play(SoundCue.FieldEnter,p);
                 effect = new HisyaFieldSlowEffect(slowMultiplier);
                 ps.EffectList.AddEffect(effect);
             }
@@ -306,6 +310,7 @@ namespace App.Main.Player
         {
             if (!isActive && playerStatus == null) return;
 
+            GameAudio.Play(SoundCue.FieldExit,player);
             playerStatus?.MoveSpeed.RemoveMultiplier(this);
             fields.Clear();
 

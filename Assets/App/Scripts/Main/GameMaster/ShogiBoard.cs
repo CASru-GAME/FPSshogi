@@ -1,3 +1,4 @@
+using App.Audio;
 using UnityEngine;
 using App.Main.ShogiThings;
 using App.Common.Initialize;
@@ -120,12 +121,14 @@ namespace App.Main.GameMaster
             }
             else
             {
+                GameAudio.Play(SoundCue.BoardMove);
                 // 通常の移動処理
                 board[toX, toY] = board[fromX, fromY];
                 RemovePiece(fromX, fromY);
                 // 成る判定
                 if (IsPromotableMove(fromY, toY, board[toX, toY]))
                 {
+                    if(!board[toX, toY].IsPromoted)GameAudio.Play(SoundCue.Promote);
                     board[toX, toY].Promote();
                 }
 
@@ -230,6 +233,7 @@ namespace App.Main.GameMaster
             currentPlayer = player;
             board[x, y] = pieceInstance;
             capturedPieces[player].Remove(pieceInstance.Type);
+            GameAudio.Play(SoundCue.BoardDrop);
             if (currentPlayer == PlayerType.PlayerOne)
             {
                 gameStateHolder.ChangeState(GameStateHolder.GameState.PlayerTwoTurn);
@@ -458,6 +462,7 @@ namespace App.Main.GameMaster
                 RemovePiece(savedFromX, savedFromY);
                 if (IsPromotableMove(savedFromY, savedToY, board[savedToX, savedToY]))
                 {
+                    if(!board[savedToX, savedToY].IsPromoted)GameAudio.Play(SoundCue.Promote);
                     board[savedToX, savedToY].Promote();
                 }
 
@@ -499,6 +504,7 @@ namespace App.Main.GameMaster
                 RemovePiece(savedFromX, savedFromY);
                 if (IsPromotableMove(savedFromY, savedToY, board[savedToX, savedToY]))
                 {
+                    if(!board[savedToX, savedToY].IsPromoted)GameAudio.Play(SoundCue.Promote);
                     board[savedToX, savedToY].Promote();
                 }
 

@@ -1,0 +1,20 @@
+2026-11-07 / Windows / Unity 6000.2.12f1
+
+Ordinary player: Builds/FPSshogi/FPSshogi.exe
+Observed with Computer Use at a 1280x720 client area.
+PASS Title shows the washitsu, board and pieces without a white menu window.
+PASS Mouse click opens Settings.
+PASS Dragging the 1P sensitivity handle changes its displayed value from 2.0 to 3.7.
+PASS Mouse click changes HP numbers from off to on.
+PASS Reset returns both sensitivity values to 2.0 and HP numbers to off.
+PASS Back returns to the title with Settings selected.
+The ordinary player is left open at the title.
+
+Latest automated results: 113 UI + 56 selection + 60 legacy UI + 199 gameplay + 23 native input = 451 PASS / 0 FAIL.
+Native input checks use virtual Input System devices. Two physical controllers have not been tested.
+The ordinary-player checks above are additional manual observations, not included in the count of 451.
+
+Screenshots were inspected at 1920x1080, 1280x720, 2560x1080 and 1280x1024.
+The final 1280x1024 board image confirms that the footer is below the playable squares.
+Final images remain in this local review folder. They are not bundled as runtime assets.
+This revision has not replaced the previously published OpenCloud ZIP.

@@ -1,0 +1,124 @@
+PASS Fuhyo cooldown input does not restart attack
+PASS Spear blade points along the aim during its thrust
+PASS Spear tip advances along its shaft instead of lifting sideways
+PASS Fuhyo attack returns to idle with hitbox closed
+PASS Fuhyo attack restores its resting orientation
+PASS Fuhyo second player has the same attack motion
+PASS Fuhyo secondary action changes the weapon stance
+PASS Fuhyo defensive weapon remains visible in the viewport
+PASS Fuhyo accepted skill animates its held weapon
+PASS Fuhyo cooldown skill input does not restart the effect
+PASS Fuhyo pause freezes the current motion
+PASS Fuhyo skill does not create an unintended primary hitbox
+PASS Kyosya cooldown input does not restart attack
+PASS Kyosya attack returns to idle with hitbox closed
+PASS Kyosya attack restores its resting orientation
+PASS Kyosya second player has the same attack motion
+PASS Kyosya secondary action changes the weapon stance
+PASS Kyosya accepted skill animates its held weapon
+PASS Kyosya cooldown skill input does not restart the effect
+PASS Kyosya pause freezes the current motion
+PASS Kyosya skill does not create an unintended primary hitbox
+PASS Keima cooldown input does not restart attack
+PASS Keima cutting stroke stays visible across the view
+PASS Keima blade sweeps from the right through the aim to the left
+PASS Keima attack returns to idle with hitbox closed
+PASS Keima attack restores its resting orientation
+PASS Keima second player has the same attack motion
+PASS Keima secondary action changes the weapon stance
+PASS Keima defensive weapon remains visible in the viewport
+PASS Keima dash starts smoothly from an active guard
+PASS Keima dash recovers smoothly to its still-active guard
+PASS Keima accepted skill animates its held weapon
+PASS Keima cooldown skill input does not restart the effect
+PASS Keima pause freezes the current motion
+PASS Keima skill does not create an unintended primary hitbox
+PASS Gin cooldown input does not restart attack
+PASS Gin cutting stroke stays visible across the view
+PASS Gin blade sweeps from the right through the aim to the left
+PASS Gin attack returns to idle with hitbox closed
+PASS Gin attack restores its resting orientation
+PASS Gin second player has the same attack motion
+PASS Gin secondary action changes the weapon stance
+PASS Gin defensive weapon remains visible in the viewport
+PASS Gin attack starts from the current defensive stance without snapping
+PASS Gin accepted skill animates its held weapon
+PASS Gin cooldown skill input does not restart the effect
+PASS Gin pause freezes the current motion
+PASS Gin defensive stance remains while the actual buff is active after one second
+PASS Gin attack recovers smoothly to a still-active defensive stance
+PASS Gin skill does not create an unintended primary hitbox
+PASS Kin cooldown input does not restart attack
+PASS Kin cutting stroke stays visible across the view
+PASS Kin blade sweeps from the right through the aim to the left
+PASS Kin attack returns to idle with hitbox closed
+PASS Kin attack restores its resting orientation
+PASS Kin second player has the same attack motion
+PASS Kin secondary action changes the weapon stance
+PASS Kin defensive weapon remains visible in the viewport
+PASS Kin attack starts from the current defensive stance without snapping
+PASS Kin accepted skill animates its held weapon
+PASS Kin cooldown skill input does not restart the effect
+PASS Kin pause freezes the current motion
+PASS Kin defensive stance remains while the actual buff is active after one second
+PASS Kin attack recovers smoothly to a still-active defensive stance
+PASS Kin skill does not create an unintended primary hitbox
+PASS Kakugyo cooldown input does not restart attack
+PASS Kakugyo attack returns to idle with hitbox closed
+PASS Kakugyo attack restores its resting orientation
+PASS Kakugyo second player has the same attack motion
+PASS Kakugyo secondary action changes the weapon stance
+PASS Kakugyo accepted skill animates its held weapon
+PASS Kakugyo cooldown skill input does not restart the effect
+PASS Kakugyo pause freezes the current motion
+PASS Kakugyo skill does not create an unintended primary hitbox
+PASS Bow projectile starts at the visible nocked arrow
+PASS Fired arrow retains the visible arrow geometry
+PASS Fired arrow retains the visible arrow scale
+PASS Fired arrow points in its travel direction
+PASS Hisya cooldown input does not restart attack
+PASS Bow limb/string contact 01-windup
+PASS Released bow string is straight 01-windup
+PASS Bow limb/string contact 02-active
+PASS Released bow string is straight 02-active
+PASS Bow limb/string contact 03-strike
+PASS Released bow string is straight 03-strike
+PASS Bow limb/string contact 04-follow-through
+PASS Arrow nock follows string during redraw 04-follow-through
+PASS Bow limb/string contact 05-recovery
+PASS Arrow nock follows string during redraw 05-recovery
+PASS Hisya attack returns to idle with hitbox closed
+PASS Hisya attack restores its resting orientation
+PASS Hisya second player has the same attack motion
+PASS Hisya secondary action changes the weapon stance
+PASS Hisya accepted skill animates its held weapon
+PASS Hisya cooldown skill input does not restart the effect
+PASS Hisya pause freezes the current motion
+PASS Hisya skill does not create an unintended primary hitbox
+PASS Hisya nock behind thin cover cannot damage the target beyond it
+PASS Hisya shot is consumed by cover between camera and bow
+PASS Low cover leaves the reticle aim unobstructed
+PASS Bow does not spawn its solid projectile intersecting low cover
+PASS Bow nock below the reticle cannot shoot through low cover
+PASS Bow launch against low cover is consumed at the obstruction
+PASS Bow still damages a point-blank opponent between camera and nock once
+PASS King cooldown input does not restart attack
+PASS King attack returns to idle with hitbox closed
+PASS King attack restores its resting orientation
+PASS King second player has the same attack motion
+PASS King secondary action changes the weapon stance
+PASS King defensive weapon remains visible in the viewport
+PASS King accepted skill animates its held weapon
+PASS King cooldown skill input does not restart the effect
+PASS King pause freezes the current motion
+PASS King turret barrel points at the actual elevated firing target
+PASS King turret shot produces barrel recoil
+PASS King skill does not create an unintended primary hitbox
+PASS Changing duel clears temporary skill visuals
+PASS Fuhyo promoted piece retains its weapon attack
+PASS Kyosya promoted piece retains its weapon attack
+PASS Keima promoted piece retains its weapon attack
+PASS Gin promoted piece retains its weapon attack
+PASS Kakugyo promoted piece retains its weapon attack
+PASS Hisya promoted piece retains its weapon attack
+PASS No motion runtime errors
