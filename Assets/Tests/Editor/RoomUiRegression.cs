@@ -63,6 +63,18 @@ public static class RoomUiRegression
     static void Check(string name,bool pass){results.Add((pass?"PASS ":"FAIL ")+name);File.WriteAllLines(dir+"results.txt",results);}
     static T Find<T>() where T:UnityEngine.Object=>UnityEngine.Object.FindFirstObjectByType<T>();
     static bool Visible(string name)=>GameObject.Find(name)!=null;
+    static void CheckGuideForm(PieceType type, bool promoted)
+    {
+        Canvas.ForceUpdateCanvases();
+        var description = GameObject.Find("Skill description")?.GetComponent<Text>();
+        string name = PiecePresentation.Name(type, promoted);
+        Check("Guide shows the weapon and skill effect for " + name,
+            GameObject.Find("Guide piece name").GetComponent<Text>().text == name &&
+            GameObject.Find("Weapon name").GetComponent<Text>().text == PiecePresentation.Weapon(type) &&
+            description != null && !string.IsNullOrWhiteSpace(description.text) &&
+            description.text == PiecePresentation.SkillDescription(type) &&
+            description.preferredHeight <= description.rectTransform.rect.height + 1 && !Visible("Matchup tip"));
+    }
     static Rect ScreenBounds(RectTransform rect)
     {
         var corners=new Vector3[4];rect.GetWorldCorners(corners);
@@ -129,6 +141,15 @@ public static class RoomUiRegression
         Check("Piece guide shows a rendered model",portrait!=null&&portrait.GetPixels32().Count(p=>p.a>20)>500);
         GameObject.Find("Guide promoted").GetComponent<Button>().onClick.Invoke();yield return .25d;Shot("07-promoted");yield return .15d;
         Check("Promotion changes model and movement",Session.GuidePromoted&&GameObject.Find("Guide piece name").GetComponent<Text>().text=="龍王");
+        foreach (PieceType type in Enum.GetValues(typeof(PieceType)))
+        {
+            if (type == PieceType.None) continue;
+            GameObject.Find("Guide " + type).GetComponent<Button>().onClick.Invoke();
+            CheckGuideForm(type, false);
+            if (!PiecePresentation.CanPromote(type)) continue;
+            GameObject.Find("Guide promoted").GetComponent<Button>().onClick.Invoke();
+            CheckGuideForm(type, true);
+        }
         Session.Back();yield return .25d;Check("Guide returns to caller controls tab",Visible("Controls sheet 0"));
         Session.Back();yield return .4d;Check("Help returns to lobby with assignments and preparation",Visible("Player selection panel")&&Session.Devices.PlayerFor(one)==0&&Session.Devices.PlayerFor(two)==1&&Session.Devices.IsPrepared(0)&&!Session.Devices.IsPrepared(1));
         tap=Tap(two,GamepadButton.South);while(tap.MoveNext())yield return tap.Current;yield return 1.5d;
